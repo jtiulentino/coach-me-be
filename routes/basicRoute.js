@@ -69,4 +69,8 @@ router.get('/getMetrics', authenticateToken, (req, res) => {
         });
 });
 
+router.post('/logMetrics', (req, res) => {
+    res.status(200).json({ message: 'needs something' });
+});
+
 module.exports = router;
