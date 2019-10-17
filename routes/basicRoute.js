@@ -45,7 +45,28 @@ router.post('/login', (req, res) => {
 });
 
 router.get('/getMetrics', authenticateToken, (req, res) => {
-    res.status(200).json({ message: req.clientInfo });
+    // res.status(200).json({ message: req.clientInfo });
+    axios
+        .get(
+            `https://api.airtable.com/v0/app3X8S0GqsEzH9iW/Outcomes/?filterByFormula=OR({Blood_sugar}!='',{Weight}!='',{Blood_pressure_over}!='')&api_key=${process.env.AIRTABLE_KEY}`
+        )
+        .then(results => {
+            const clientRecords = [];
+            for (let j = 0; j < results.data.records.length; j++) {
+                if (
+                    results.data.records[j].fields.Client_Name[0] ===
+                    req.clientInfo.clientId
+                ) {
+                    clientRecords.push(results.data.records[j]);
+                }
+            }
+            console.log('before dispatch', clientRecords);
+
+            res.status(200).json({ message: 'it worked!!!', clientRecords });
+        })
+        .catch(err => {
+            res.status(500).json({ error: err });
+        });
 });
 
 module.exports = router;
