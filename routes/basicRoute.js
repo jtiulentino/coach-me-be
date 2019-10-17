@@ -2,6 +2,10 @@ const express = require('express');
 const axios = require('axios');
 // grabbing token and auth middleware
 const { generateToken, authenticateToken } = require('./authenticate');
+const {
+    loginMiddleware,
+    reformatPhoneNumber
+} = require('./clientMiddleware.js');
 
 const router = express.Router();
 
@@ -9,7 +13,7 @@ router.get('/', (req, res) => {
     res.status(200).json({ message: 'hello from basic route' });
 });
 
-router.post('/login', (req, res) => {
+router.post('/login', loginMiddleware, reformatPhoneNumber, (req, res) => {
     const requestOptions = {
         headers: { accept: 'application/json' }
     };
@@ -19,6 +23,7 @@ router.post('/login', (req, res) => {
             `https://api.airtable.com/v0/app3X8S0GqsEzH9iW/Intake?api_key=${process.env.AIRTABLE_KEY}`
         )
         .then(results => {
+            // console.log('body type', Number(req.body.clientPhone));
             // need to put the results in an object so it will return json data
             let clientObject = {};
             // declare token outside of for loop because the loop has its own scope, and we need clientObject to be generated inside the token
