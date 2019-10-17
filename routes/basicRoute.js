@@ -1,5 +1,6 @@
 const express = require('express');
 const axios = require('axios');
+const { generateToken } = require('./authenticate');
 
 const router = express.Router();
 
@@ -18,6 +19,7 @@ router.post('/login', (req, res) => {
         )
         .then(results => {
             let clientObject = {};
+            let token = '';
             for (let i = 0; i < results.data.records.length; i++) {
                 if (
                     req.body.clientPhone ===
@@ -25,11 +27,14 @@ router.post('/login', (req, res) => {
                 ) {
                     console.log(results.data.records[i]);
                     clientObject = { ...results.data.records[i] };
+                    token = generateToken(clientObject);
+                    console.log('token', token);
                 }
             }
             // console.log(results.data.records);
             res.status(200).json({
                 message: `Welcome back, ${clientObject.fields['Client Name']}!`,
+                token,
                 clientObject
             });
         })
