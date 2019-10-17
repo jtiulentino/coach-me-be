@@ -7,7 +7,7 @@ const server = express();
 
 configureMiddleware(server);
 
-server.use('/basicRoute', basicRoute);
+server.use('/clientRoute', basicRoute);
 
 server.get('/', (req, res) => {
     res.status(200).json({ message: 'hello world from base server' });

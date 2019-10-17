@@ -2,6 +2,7 @@ const express = require('express');
 const helmet = require('helmet');
 const cors = require('cors');
 
+// custom log middleware
 const logger = (req, res, next) => {
     console.log(
         `[${new Date().toISOString()}] ${req.method} to ${
