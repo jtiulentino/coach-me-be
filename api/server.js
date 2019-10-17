@@ -1,16 +1,11 @@
 const express = require('express');
-// const configureMiddleware = require('./middleware');
-const helmet = require('helmet');
-const cors = require('cors');
+const configureMiddleware = require('./middleware');
 
 const basicRoute = require('../routes/basicRoute.js');
 
 const server = express();
 
-server.use(helmet());
-server.use(express.json());
-// server.use(logger);
-server.use(cors());
+configureMiddleware(server);
 
 server.use('/basicRoute', basicRoute);
 

@@ -1,6 +1,6 @@
 const express = require('express');
 const axios = require('axios');
-const { generateToken } = require('./authenticate');
+const { generateToken, authenticateToken } = require('./authenticate');
 
 const router = express.Router();
 
@@ -42,6 +42,10 @@ router.post('/login', (req, res) => {
             console.log(err);
             res.status(500).json({ error: err });
         });
+});
+
+router.get('/getMetrics', authenticateToken, (req, res) => {
+    res.status(200).json({ message: req.clientInfo });
 });
 
 module.exports = router;
