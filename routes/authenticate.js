@@ -6,9 +6,9 @@ module.exports = {
 };
 
 function generateToken(client) {
-
     const payload = {
-      // this is referencing intake table
+        // this is referencing intake table
+        // commit difference
         clientId: client.fields['Coaching master table'][0],
         clientName: client.fields['Client Name'],
         clientPhone: client.fields.Phone
@@ -22,7 +22,7 @@ function generateToken(client) {
 }
 
 function authenticateToken(req, res, next) {
-  // dont forget to add token to headers when testing auth requests
+    // dont forget to add token to headers when testing auth requests
     const token = req.headers.authorization;
     console.log(token);
 
