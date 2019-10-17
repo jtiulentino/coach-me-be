@@ -12,23 +12,25 @@ router.post('/login', (req, res) => {
         headers: { accept: 'application/json' }
     };
 
-    console.log(process.env.AIRTABLE_KEY);
-
     axios
         .get(
-            `https://api.airtable.com/v0/app3X8S0GqsEzH9iW/Intake?api_key=${process.env.AIRTABLE_KEY}`,
-            requestOptions
+            `https://api.airtable.com/v0/app3X8S0GqsEzH9iW/Intake?api_key=${process.env.AIRTABLE_KEY}`
         )
         .then(results => {
-            const newArray = [];
+            let clientObject = {};
             for (let i = 0; i < results.data.records.length; i++) {
-                console.log(results.data.records[i]);
-                newArray.push(results.data.records[i]);
+                if (
+                    req.body.clientPhone ===
+                    results.data.records[i].fields.Phone
+                ) {
+                    console.log(results.data.records[i]);
+                    clientObject = { ...results.data.records[i] };
+                }
             }
             // console.log(results.data.records);
             res.status(200).json({
-                message: 'Hello is it me youre looking?',
-                data: newArray
+                message: `Welcome back, ${clientObject.fields['Client Name']}!`,
+                clientObject
             });
         })
         .catch(err => {
