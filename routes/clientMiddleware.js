@@ -1,7 +1,11 @@
 function loginMiddleware(req, res, next) {
+    // checks to see if req.body has clientPhone key.
     if (req.body.clientPhone) {
-        console.log('inside the middleware', Number(req.body.clientPhone));
+        // console.log('inside the middleware', Number(req.body.clientPhone));
+
+        // middleware check to see if req.body has all integers in place of english characters
         if (/^\d+$/.test(req.body.clientPhone) === true) {
+            // middleware for
             if (req.body.clientPhone.length === 10) {
                 // console.log(req.body.clientPhone.length);
                 next();
