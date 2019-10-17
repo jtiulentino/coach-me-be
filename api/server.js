@@ -1,19 +1,16 @@
 const express = require('express');
-const cors = require('cors');
-const helmet = require('helmet');
+const configureMiddleware = require('./middleware');
 
 const basicRoute = require('../routes/basicRoute.js');
 
 const server = express();
 
-server.use(helmet());
-server.use(express.json());
-server.use(cors());
+configureMiddleware(server);
+
+server.use('/clientRoute', basicRoute);
 
 server.get('/', (req, res) => {
-    res.status(200).json({message: 'hello world from base server'})
+    res.status(200).json({ message: 'hello world from base server' });
 });
-
-server.use('/basicRoute', basicRoute);
 
 module.exports = server;
