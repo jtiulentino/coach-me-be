@@ -6,41 +6,30 @@
 
 # API Documentation
 
-#### 1️⃣ Backend delpoyed at [🚫name service here](🚫add URL here) <br>
-
-## 1️⃣ Getting started
-
-To get the server running locally:
-
-🚫 adjust these scripts to match your project
-
--   Clone this repo
--   **yarn install** to install all required dependencies
--   **yarn server** to start the local server
--   **yarn test** to start server using testing environment
+#### 1️⃣ Backend delpoyed at heroku.com https://coach-me-backend.herokuapp.com/ <br>
 
 ### Backend framework goes here
 
 🚫 Why did you choose this framework?
 
--   Point One
--   Point Two
--   Point Three
--   Point Four
+-   Node.js and Express gives us the flexibility to control the flow of requests to airtable in a controlled and easy to read environment.
+-   We are going to need a database that can be seeded with massive amounts of data and control the relationships between the tables.
+-   Custom Middleware
+-   prebuilt middleware packages
 
 ## 2️⃣ Endpoints
 
 🚫This is a placeholder, replace the endpoints, access controll, and descriptioin to match your project
 
-#### Organization Routes
+#### Client Routes
 
-| Method | Endpoint                | Access Control | Description                                  |
-| ------ | ----------------------- | -------------- | -------------------------------------------- |
-| GET    | `/organizations/:orgId` | all users      | Returns the information for an organization. |
-| PUT    | `/organizatoins/:orgId` | owners         | Modify an existing organization.             |
-| DELETE | `/organizations/:orgId` | owners         | Delete an organization.                      |
+| Method | Endpoint                  | Access Control         | Description                                |
+| ------ | ------------------------- | ---------------------- | ------------------------------------------ |
+| POST   | `/clientRoute/login`      | all registered clients | Returns token to access client information |
+| GET    | `/clientRoute/getMetrics` | client(token required) | Access current and past client Metrics     |
+| POST   | `/client/logMetrics`      | client(token required) | input new Health Metric to database        |
 
-#### User Routes
+#### Coach Routes (these are examples to be updated and do not exist yet)
 
 | Method | Endpoint                | Access Control      | Description                                        |
 | ------ | ----------------------- | ------------------- | -------------------------------------------------- |
@@ -51,9 +40,55 @@ To get the server running locally:
 | PUT    | `/users/:userId`        | owners, supervisors |                                                    |
 | DELETE | `/users/:userId`        | owners, supervisors |                                                    |
 
-# Data Model
+# Data Model - Clients
 
-🚫This is just an example. Replace this with your data model
+_Example_
+
+# To retrieve token login with non formatted 10 digit phone number
+
+```javascript
+{
+    clientPhone: '1234567899';
+}
+```
+
+# THis Will return an object as such: (token, name and phone number have been altered for security reasons)
+
+```javascript
+{
+  "message": "Welcome back, Joycee!",
+  "token": "dlkjdlhlkhdlkaHGFLFlkhLKHGDLKSHLKHGLKHDFLKHDL;KhlkHLGKHSLDKhlkhlkhlKLKFHGLKFHLKFHl'khgflkfhlkfhlfkhLKHGLKHFL",
+  "clientObject": {
+    "id": "recIsYAcq6lv1AFJa",
+    "fields": {
+      "Client Name": "Scarlet",
+      "Phone": "(***) ***-1639",
+      "Coaching master table": [
+        "recZNs8pQo2rSsw0T"
+      ],
+      "Language": "English",
+      "Availability": "Afternoons 4-6",
+      "Coach": [
+        "recUwfzBrKLTpHdtv"
+      ],
+      "Conditions": [
+        "High blood pressure"
+      ],
+      "Health goal": "Lose weight, look good",
+      "Motivations": "Be sexy, start dating again",
+      "Date": "2019-05-15T22:58:00.000Z",
+      "Type of Visit": "In person",
+      "Physical activity / Healthy eating / Medication": [
+        "Physical activity",
+        "Healthy eating"
+      ]
+    },
+    "createdTime": "2019-09-17T02:31:20.000Z"
+  }
+}
+```
+
+🚫 The rest of the README will be filled in as the Back-end develops - Everything below this line is from the example. Remove this before project is finished
 
 #### 2️⃣ ORGANIZATIONS
 
@@ -122,12 +157,16 @@ In order for the app to function correctly, the user must set up their own envir
 
 create a .env file that includes the following:
 
-🚫 These are just examples, replace them with the specifics for your app
+-   PORT
+-   AIRTABLE\*KEY
+-   JWT_SECRET
 
+🚫 These are just examples, replace them with the specifics for your app
 _ STAGING_DB - optional development db for using functionality not available in SQLite
-_ NODE*ENV - set to "development" until ready for "production"
-* JWT*SECRET - you can generate this by using a python shell and running import random''.join([random.SystemRandom().choice('abcdefghijklmnopqrstuvwxyz0123456789!@#\$%^&amp;*(-_=+)') for i in range(50)])
-_ SENDGRID_API_KEY - this is generated in your Sendgrid account \* stripe_secret - this is generated in the Stripe dashboard
+_ NODE\*ENV - set to "development" until ready for "production"
+
+-   JWT*SECRET - you can generate this by using a python shell and running import random''.join([random.SystemRandom().choice('abcdefghijklmnopqrstuvwxyz0123456789!@#\$%^&amp;*(-_=+)') for i in range(50)])
+    _ SENDGRID_API_KEY - this is generated in your Sendgrid account \* stripe_secret - this is generated in the Stripe dashboard
 
 ## Contributing
 
