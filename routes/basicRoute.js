@@ -75,7 +75,7 @@ router.get('/getMetrics', authenticateToken, (req, res) => {
     // res.status(200).json({ message: req.clientInfo });
     axios
         .get(
-            `https://api.airtable.com/v0/appcN0W3AgVhxnhNI/Outcomes?filterByFormula=OR({Blood_sugar}!='',{Weight}!='',{Blood_pressure_over}!='')&api_key=keyHl8AuDrb2mt77E`
+            `https://api.airtable.com/v0/appcN0W3AgVhxnhNI/Outcomes?filterByFormula=OR({Blood_sugar}!='',{Weight}!='',{Blood_pressure_over}!='')&api_key=${process.env.AIRTABLE_KEY}`
         )
         .then(results => {
             // declare clientRecords out of the for loop scope to reference data returned from outcomes table
