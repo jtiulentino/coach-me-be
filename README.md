@@ -157,9 +157,9 @@ In order for the app to function correctly, the user must set up their own envir
 
 create a .env file that includes the following:
 
-_ PORT
-_ AIRTABLE*KEY
-* JWT_SECRET
+-   PORT
+-   AIRTABLE\*KEY
+-   JWT_SECRET
 
 🚫 These are just examples, replace them with the specifics for your app
 _ STAGING_DB - optional development db for using functionality not available in SQLite
