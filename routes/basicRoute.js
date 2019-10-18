@@ -122,8 +122,23 @@ router.get('/getMetrics', authenticateToken, (req, res) => {
         });
 });
 
-router.patch('/logMetrics', (req, res) => {
-    res.status(200).json({ message: 'needs something!!!!' });
+router.post('/logMetrics', authenticateToken, (req, res) => {
+    // res.status(200).json({ message: 'needs something!!!!' });
+
+    axios
+        .post(
+            `https://api.airtable.com/v0/appcN0W3AgVhxnhNI/Outcomes`,
+            req.body,
+            requestOptions
+        )
+        .then(results => {
+            res.status(201).json({
+                message: `record has been added for patient ${req.clientInfo.clientName}`
+            });
+        })
+        .catch(err => {
+            res.status(500).json({ error: err });
+        });
 });
 
 module.exports = router;
