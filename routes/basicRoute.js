@@ -18,6 +18,8 @@ router.post('/login', loginMiddleware, reformatPhoneNumber, (req, res) => {
         headers: { accept: 'application/json' }
     };
 
+    console.log('from the router body', process.env.AIRTABLE_KEY);
+
     axios
         .get(
             `https://api.airtable.com/v0/app3X8S0GqsEzH9iW/Intake?api_key=${process.env.AIRTABLE_KEY}`
