@@ -9,18 +9,31 @@ const {
 
 const router = express.Router();
 
+const requestOptions = {
+    headers: {
+        accept: 'application/json',
+        Authorization: `Bearer ${process.env.AIRTABLE_KEY}`
+    }
+};
+
 router.get('/', (req, res) => {
     res.status(200).json({ message: 'hello from basic route' });
 });
 
 router.post('/login', loginMiddleware, reformatPhoneNumber, (req, res) => {
     const requestOptions = {
-        headers: { accept: 'application/json' }
+        headers: {
+            accept: 'application/json',
+            Authorization: `Bearer ${process.env.AIRTABLE_KEY}`
+        }
     };
+
+    console.log('from the router body', process.env.AIRTABLE_KEY);
 
     axios
         .get(
-            `https://api.airtable.com/v0/app3X8S0GqsEzH9iW/Intake?api_key=${process.env.AIRTABLE_KEY}`
+            `https://api.airtable.com/v0/appcN0W3AgVhxnhNI/Intake`,
+            requestOptions
         )
         .then(results => {
             // console.log('body type', Number(req.body.clientPhone));
@@ -72,23 +85,34 @@ router.get('/getMetrics', authenticateToken, (req, res) => {
     // res.status(200).json({ message: req.clientInfo });
     axios
         .get(
-            `https://api.airtable.com/v0/app3X8S0GqsEzH9iW/Outcomes/?filterByFormula=OR({Blood_sugar}!='',{Weight}!='',{Blood_pressure_over}!='')&api_key=${process.env.AIRTABLE_KEY}`
+            `https://api.airtable.com/v0/appcN0W3AgVhxnhNI/Outcomes?filterByFormula=OR({Blood_sugar}!='',{Weight}!='',{Blood_pressure_over}!='')`,
+            requestOptions
         )
         .then(results => {
             // declare clientRecords out of the for loop scope to reference data returned from outcomes table
             const clientRecords = [];
             // looping through data received
+
+            console.log(
+                'client name',
+                results.data.records[0].fields.Client_Name[0]
+            );
             for (let j = 0; j < results.data.records.length; j++) {
+                console.log(
+                    'results in j',
+                    results.data.records[j].fields.Client_Name
+                );
                 if (
                     // if the client name is equal to the clientId from intake table then return client record
+                    results.data.records[j].fields.Client_Name &&
                     results.data.records[j].fields.Client_Name[0] ===
-                    req.clientInfo.clientId
+                        req.clientInfo.clientId
                 ) {
                     // push into empty array so we can access records
                     clientRecords.push(results.data.records[j]);
                 }
             }
-            // console.log('clientRecords', clientRecords);
+            console.log('clientRecords', clientRecords);
 
             res.status(200).json({ message: 'it worked!!!', clientRecords });
         })
@@ -98,8 +122,23 @@ router.get('/getMetrics', authenticateToken, (req, res) => {
         });
 });
 
-router.patch('/logMetrics', (req, res) => {
-    res.status(200).json({ message: 'needs something' });
+router.post('/logMetrics', authenticateToken, (req, res) => {
+    // res.status(200).json({ message: 'needs something!!!!' });
+
+    axios
+        .post(
+            `https://api.airtable.com/v0/appcN0W3AgVhxnhNI/Outcomes`,
+            req.body,
+            requestOptions
+        )
+        .then(results => {
+            res.status(201).json({
+                message: `record has been added for patient ${req.clientInfo.clientName}`
+            });
+        })
+        .catch(err => {
+            res.status(500).json({ error: err });
+        });
 });
 
 module.exports = router;
