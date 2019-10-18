@@ -44,6 +44,8 @@ router.post('/login', loginMiddleware, reformatPhoneNumber, (req, res) => {
                 }
             }
 
+            // checks if the login user phone number exists in the intake airtable.
+            // returns a status code 401 if the user can't be found.
             if (clientObject.id) {
                 // console.log(results.data.records);
                 // return token and client info from intake table
