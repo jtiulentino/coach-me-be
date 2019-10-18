@@ -13,7 +13,7 @@ router.get('/', (req, res) => {
     res.status(200).json({ message: 'hello from basic route' });
 });
 
-router.post('/login', loginMiddleware, reformatPhoneNumber, (req, res) => {
+router.post('/newLogin', loginMiddleware, reformatPhoneNumber, (req, res) => {
     const requestOptions = {
         headers: { accept: 'application/json' }
     };
@@ -22,7 +22,8 @@ router.post('/login', loginMiddleware, reformatPhoneNumber, (req, res) => {
 
     axios
         .get(
-            `https://api.airtable.com/v0/app3X8S0GqsEzH9iW/Intake?api_key=${process.env.AIRTABLE_KEY}`
+            `https://api.airtable.com/v0/appcN0W3AgVhxnhNI/Intake?api_key=${process.env.AIRTABLE_KEY}`
+            // `https://api.airtable.com/v0/app3X8S0GqsEzH9iW/Intake?api_key=${process.env.AIRTABLE_KEY}`
         )
         .then(results => {
             // console.log('body type', Number(req.body.clientPhone));
@@ -74,7 +75,7 @@ router.get('/getMetrics', authenticateToken, (req, res) => {
     // res.status(200).json({ message: req.clientInfo });
     axios
         .get(
-            `https://api.airtable.com/v0/app3X8S0GqsEzH9iW/Outcomes/?filterByFormula=OR({Blood_sugar}!='',{Weight}!='',{Blood_pressure_over}!='')&api_key=${process.env.AIRTABLE_KEY}`
+            `https://api.airtable.com/v0/appcN0W3AgVhxnhNI/Outcomes?filterByFormula=OR({Blood_sugar}!='',{Weight}!='',{Blood_pressure_over}!='')&api_key=keyHl8AuDrb2mt77E`
         )
         .then(results => {
             // declare clientRecords out of the for loop scope to reference data returned from outcomes table
