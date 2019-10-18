@@ -43,13 +43,22 @@ router.post('/login', loginMiddleware, reformatPhoneNumber, (req, res) => {
                     console.log('token', token);
                 }
             }
-            // console.log(results.data.records);
-            // return token and client info from intake table
-            res.status(200).json({
-                message: `Welcome back, ${clientObject.fields['Client Name']}!`,
-                token,
-                clientObject
-            });
+
+            if (clientObject.id) {
+                // console.log(results.data.records);
+                // return token and client info from intake table
+                res.status(200).json({
+                    message: `Welcome back, ${
+                        clientObject.fields['Client Name']
+                    }!`,
+                    token,
+                    clientObject
+                });
+            } else {
+                res.status(401).json({
+                    message: 'user cannot be found in database'
+                });
+            }
         })
         .catch(err => {
             console.log(err);
