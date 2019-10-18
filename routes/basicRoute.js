@@ -20,7 +20,7 @@ router.get('/', (req, res) => {
     res.status(200).json({ message: 'hello from basic route' });
 });
 
-router.post('/newLogin', loginMiddleware, reformatPhoneNumber, (req, res) => {
+router.post('/login', loginMiddleware, reformatPhoneNumber, (req, res) => {
     const requestOptions = {
         headers: {
             accept: 'application/json',
