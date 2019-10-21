@@ -95,3 +95,24 @@ module.exports = {
     validateMetrics,
     overUnderPressureValidation
 };
+
+// experiment data
+// {
+//     "records": [
+
+//       {
+//         "fields": {
+//           "Client_Name": [
+//             "rec8DkcsKev4Q8EvF"
+//           ],
+//           "Date_time": null,
+//   "Blood_sugar":123435643561234,
+//   "Blood_pressure_over":1421341223,
+//   "Blood_pressure_under":12321342134555,
+//   "Weight":1234
+//         }
+//       }
+
+//     ]
+
+//    }
