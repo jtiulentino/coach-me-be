@@ -149,6 +149,21 @@ router.post(
     }
 );
 
+router.get('/getCoachInfo', authenticateToken, (req, res) => {
+    axios
+        .get(
+            `https://api.airtable.com/v0/${process.env.AIRTABLE_REFERENCE}/Coaches`,
+            requestOptions
+        )
+        .then(result => {
+            // console.log('in coach table', result.data.records);
+            res.status(200).json({ coachObject: result.data.records });
+        })
+        .catch(err => {
+            res.status(500).json({ error: err });
+        });
+});
+
 module.exports = router;
 
 // experiment data
@@ -170,4 +185,4 @@ module.exports = router;
 
 //     ]
 
-//    }
+// }
