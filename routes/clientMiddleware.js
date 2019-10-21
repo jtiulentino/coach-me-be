@@ -66,7 +66,28 @@ function validateMetrics(req, res, next) {
     }
 }
 
+function overUnderPressureValidation(req, res, next) {
+    // need to check if bothy over and under are inputed together as one, otherwise throw error that say both are needed
 
+    if (
+        req.body.records[0].fields.Blood_pressure_under ||
+        req.body.records[0].fields.Blood_pressure_over
+    ) {
+        if (
+            req.body.records[0].fields.Blood_pressure_over &&
+            req.body.records[0].fields.Blood_pressure_under
+        ) {
+            next();
+        } else {
+            res.status(422).json({
+                error:
+                    'Input must include both over blood pressure and under blood pressure'
+            });
+        }
+    } else {
+        next();
+    }
+}
 
 module.exports = {
     loginMiddleware,
