@@ -139,13 +139,11 @@ router.post(
                 requestOptions
             )
             .then(results => {
-                // console.log('logMetrics', results)
                 res.status(201).json({
                     message: `record has been added for patient ${req.clientInfo.clientName}`
                 });
             })
             .catch(err => {
-                console.log('error', err);
                 res.status(500).json({ error: err });
             });
     }
