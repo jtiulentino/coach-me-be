@@ -32,36 +32,66 @@ function reformatPhoneNumber(req, res, next) {
 
 function validateMetrics(req, res, next) {
     if (Object.keys(req.body.records[0].fields).length > 2) {
-        console.log(req.body.records[0].fields.Blood_sugar);
+        // console.log(req.body.records[0].fields.Blood_sugar);
         // res.status(200).json({ message: 'It works!!!' });
+
+        let validMetrics = true;
+
         for (metric in req.body.records[0].fields) {
-            console.log('from metric for in loop', metric);
+            // console.log('from metric for in loop', metric);
             if (
                 metric === 'Blood_pressure_over' ||
                 metric === 'Blood_pressure_under' ||
                 metric === 'Blood_sugar' ||
                 metric === 'Weight'
             ) {
-                if (req.body.records[0].fields[metric].toString().length <= 3) {
-                    console.log('from metric for of loop', metric);
-                    res.status(200).json({
-                        message: 'less than three integers'
-                    });
-                } else {
-                    res.status(400).json({
-                        message: 'more than three integers'
-                    });
+                if (req.body.records[0].fields[metric].toString().length > 3) {
+                    // console.log('from metric for of loop', metric);
+                    validMetrics = false;
                 }
             }
         }
-        // res.status(200).json({ message: 'It works!!!' });
+
+        if (validMetrics) {
+            next();
+        } else {
+            res.status(422).json({
+                error: 'One of the values is over three digits'
+            });
+        }
     } else {
-        res.status(401).json({ message: 'less than two' });
+        res.status(422).json({
+            error: 'less than three keys inside records.fields(no metrics)'
+        });
+    }
+}
+
+function overUnderPressureValidation(req, res, next) {
+    // need to check if bothy over and under are inputed together as one, otherwise throw error that say both are needed
+
+    if (
+        req.body.records[0].fields.Blood_pressure_under ||
+        req.body.records[0].fields.Blood_pressure_over
+    ) {
+        if (
+            req.body.records[0].fields.Blood_pressure_over &&
+            req.body.records[0].fields.Blood_pressure_under
+        ) {
+            next();
+        } else {
+            res.status(422).json({
+                error:
+                    'Input must include both over blood pressure and under blood pressure'
+            });
+        }
+    } else {
+        next();
     }
 }
 
 module.exports = {
     loginMiddleware,
     reformatPhoneNumber,
-    validateMetrics
+    validateMetrics,
+    overUnderPressureValidation
 };

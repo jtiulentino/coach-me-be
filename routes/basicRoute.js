@@ -5,7 +5,8 @@ const { generateToken, authenticateToken } = require('./authenticate');
 const {
     loginMiddleware,
     reformatPhoneNumber,
-    validateMetrics
+    validateMetrics,
+    overUnderPressureValidation
 } = require('./clientMiddleware.js');
 
 const router = express.Router();
@@ -82,7 +83,7 @@ router.post('/login', loginMiddleware, reformatPhoneNumber, (req, res) => {
         });
 });
 
-router.get('/getMetrics', authenticateToken, validateMetrics, (req, res) => {
+router.get('/getMetrics', authenticateToken, (req, res) => {
     // res.status(200).json({ message: req.clientInfo });
     axios
         .get(
@@ -123,24 +124,30 @@ router.get('/getMetrics', authenticateToken, validateMetrics, (req, res) => {
         });
 });
 
-router.post('/logMetrics', authenticateToken, (req, res) => {
-    // res.status(200).json({ message: 'needs something!!!!' });
+router.post(
+    '/logMetrics',
+    authenticateToken,
+    validateMetrics,
+    overUnderPressureValidation,
+    (req, res) => {
+        // res.status(200).json({ message: 'needs something!!!!' });
 
-    axios
-        .post(
-            `https://api.airtable.com/v0/${process.env.AIRTABLE_REFERENCE}/Outcomes`,
-            req.body,
-            requestOptions
-        )
-        .then(results => {
-            res.status(201).json({
-                message: `record has been added for patient ${req.clientInfo.clientName}`
+        axios
+            .post(
+                `https://api.airtable.com/v0/${process.env.AIRTABLE_REFERENCE}/Outcomes`,
+                req.body,
+                requestOptions
+            )
+            .then(results => {
+                res.status(201).json({
+                    message: `record has been added for patient ${req.clientInfo.clientName}`
+                });
+            })
+            .catch(err => {
+                res.status(500).json({ error: err });
             });
-        })
-        .catch(err => {
-            res.status(500).json({ error: err });
-        });
-});
+    }
+);
 
 module.exports = router;
 
