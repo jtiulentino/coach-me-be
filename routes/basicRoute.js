@@ -32,7 +32,7 @@ router.post('/login', loginMiddleware, reformatPhoneNumber, (req, res) => {
 
     axios
         .get(
-            `https://api.airtable.com/v0/appcN0W3AgVhxnhNI/Intake`,
+            `https://api.airtable.com/v0/${process.env.AIRTABLE_REFERENCE}/Intake`,
             requestOptions
         )
         .then(results => {
@@ -85,7 +85,7 @@ router.get('/getMetrics', authenticateToken, (req, res) => {
     // res.status(200).json({ message: req.clientInfo });
     axios
         .get(
-            `https://api.airtable.com/v0/appcN0W3AgVhxnhNI/Outcomes?filterByFormula=OR({Blood_sugar}!='',{Weight}!='',{Blood_pressure_over}!='')`,
+            `https://api.airtable.com/v0/${process.env.AIRTABLE_REFERENCE}/Outcomes?filterByFormula=OR({Blood_sugar}!='',{Weight}!='',{Blood_pressure_over}!='')`,
             requestOptions
         )
         .then(results => {
@@ -127,7 +127,7 @@ router.post('/logMetrics', authenticateToken, (req, res) => {
 
     axios
         .post(
-            `https://api.airtable.com/v0/appcN0W3AgVhxnhNI/Outcomes`,
+            `https://api.airtable.com/v0/${process.env.AIRTABLE_REFERENCE}/Outcomes`,
             req.body,
             requestOptions
         )
@@ -142,3 +142,24 @@ router.post('/logMetrics', authenticateToken, (req, res) => {
 });
 
 module.exports = router;
+
+// experiment data
+// {
+//     "records": [
+
+//       {
+//         "fields": {
+//           "Client_Name": [
+//             "rec8DkcsKev4Q8EvF"
+//           ],
+//           "Date_time": null,
+//                   "Blood_sugar":123435643561234,
+//                   "Blood_pressure_over":1421341223,
+//                       "Blood_pressure_under":12321342134555,
+//                   "Weight":1234
+//         }
+//       }
+
+//     ]
+
+//    }
