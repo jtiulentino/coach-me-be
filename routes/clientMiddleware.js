@@ -30,7 +30,38 @@ function reformatPhoneNumber(req, res, next) {
     next();
 }
 
+function validateMetrics(req, res, next) {
+    if (Object.keys(req.body.records[0].fields).length > 2) {
+        console.log(req.body.records[0].fields.Blood_sugar);
+        // res.status(200).json({ message: 'It works!!!' });
+        for (metric in req.body.records[0].fields) {
+            console.log('from metric for in loop', metric);
+            if (
+                metric === 'Blood_pressure_over' ||
+                metric === 'Blood_pressure_under' ||
+                metric === 'Blood_sugar' ||
+                metric === 'Weight'
+            ) {
+                if (req.body.records[0].fields[metric].toString().length <= 3) {
+                    console.log('from metric for of loop', metric);
+                    res.status(200).json({
+                        message: 'less than three integers'
+                    });
+                } else {
+                    res.status(400).json({
+                        message: 'more than three integers'
+                    });
+                }
+            }
+        }
+        // res.status(200).json({ message: 'It works!!!' });
+    } else {
+        res.status(401).json({ message: 'less than two' });
+    }
+}
+
 module.exports = {
     loginMiddleware,
-    reformatPhoneNumber
+    reformatPhoneNumber,
+    validateMetrics
 };

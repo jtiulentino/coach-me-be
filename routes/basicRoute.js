@@ -4,7 +4,8 @@ const axios = require('axios');
 const { generateToken, authenticateToken } = require('./authenticate');
 const {
     loginMiddleware,
-    reformatPhoneNumber
+    reformatPhoneNumber,
+    validateMetrics
 } = require('./clientMiddleware.js');
 
 const router = express.Router();
@@ -81,7 +82,7 @@ router.post('/login', loginMiddleware, reformatPhoneNumber, (req, res) => {
         });
 });
 
-router.get('/getMetrics', authenticateToken, (req, res) => {
+router.get('/getMetrics', authenticateToken, validateMetrics, (req, res) => {
     // res.status(200).json({ message: req.clientInfo });
     axios
         .get(
