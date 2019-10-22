@@ -6,45 +6,37 @@
 
 # API Documentation
 
-#### 1️⃣ Backend delpoyed at heroku.com https://coach-me-backend.herokuapp.com/ <br>
+#### 1️⃣ Backend delpoyed at 
+heroku.com https://coach-me-backend.herokuapp.com/ 
+
+---
 
 ### Backend framework goes here
-
-🚫 Why did you choose this framework?
 
 -   Node.js and Express gives us the flexibility to control the flow of requests to airtable in a controlled and easy to read environment.
 -   We are going to need a database that can be seeded with massive amounts of data and control the relationships between the tables.
 -   Custom Middleware
 -   prebuilt middleware packages
 
+
 ## 2️⃣ Endpoints
 
-🚫This is a placeholder, replace the endpoints, access controll, and descriptioin to match your project
+**Client Routes**
 
-#### Client Routes
-
-| Method | Endpoint                  | Access Control         | Description                                |
-| ------ | ------------------------- | ---------------------- | ------------------------------------------ |
-| POST   | `/clientRoute/login`      | all registered clients | Returns token to access client information |
-| GET    | `/clientRoute/getMetrics` | client(token required) | Access current and past client Metrics     |
-| POST   | `/client/logMetrics`      | client(token required) | input new Health Metric to database        |
-
-#### Coach Routes (these are examples to be updated and do not exist yet)
-
-| Method | Endpoint                | Access Control      | Description                                        |
-| ------ | ----------------------- | ------------------- | -------------------------------------------------- |
-| GET    | `/users/current`        | all users           | Returns info for the logged in user.               |
-| GET    | `/users/org/:userId`    | owners, supervisors | Returns all users for an organization.             |
-| GET    | `/users/:userId`        | owners, supervisors | Returns info for a single user.                    |
-| POST   | `/users/register/owner` | none                | Creates a new user as owner of a new organization. |
-| PUT    | `/users/:userId`        | owners, supervisors |                                                    |
-| DELETE | `/users/:userId`        | owners, supervisors |                                                    |
+| Method | Endpoint                        | Access Control         | Description                                |
+| ------ | ------------------------------- | ---------------------- | ------------------------------------------ |
+| POST   | `/clientRoute/login`            | all registered clients | Returns token to access client information |
+| GET    | `/clientRoute/getMetrics`       | client(token required) | Access current and past client Metrics     |
+| GET    | `/clientRoute/getIntakeRecords` | client(token required) | Receives formated client Objects     |
+| POST   | `/clientRoute/logMetrics`       | client(token required) | input new Health Metric to database        |
+                                                  |
 
 # Data Model - Clients
 
-_Example_
 
 # To retrieve token login with non formatted 10 digit phone number
+
+_Example_
 
 ```javascript
 {
@@ -52,7 +44,10 @@ _Example_
 }
 ```
 
-# THis Will return an object as such: (token, name and phone number have been altered for security reasons)
+# THis Will return an object as such: 
+(token, name and phone number have been altered for security reasons)
+
+_Example_
 
 ```javascript
 {
@@ -87,8 +82,100 @@ _Example_
   }
 }
 ```
+---
 
-🚫 The rest of the README will be filled in as the Back-end develops - Everything below this line is from the example. Remove this before project is finished
+#### Restricted Routes(need token for access)
+
+---
+GET `/clientRoute/getMetrics` will return objects like so:
+
+_Example_
+
+```javascript
+{
+  "message": "it worked!!!",
+  "clientRecords": [
+    {
+      "id": "rec0gkAMkknlJLb8p",
+      "fields": {
+        "Record Number": 102,
+        "Client_Name": [
+          "rec8DkcsKev4Q8EvF"
+        ],
+        "Blood_sugar": 12,
+        "Weight": 120,
+        "Blood_pressure_over": 14,
+        "Blood_pressure_under": 12
+      },
+      "createdTime": "2019-10-21T16:26:03.000Z"
+    },
+
+  ```
+
+---
+
+GET `/clientRoute/getIntakeRecords` will return objects like so:
+
+_Example_
+
+```javascript
+{
+  "data": [
+    {
+      "phoneNumber": "(650) 293-1740",
+      "loginTime": 0,
+      "clientId": "reck4WW8RRKy9ftQL"
+    },
+    {
+      "phoneNumber": "(650) 281-7582",
+      "loginTime": 0,
+      "clientId": "rec1CpLM0RxgOfXfx"
+    }
+  ]
+}
+
+  ```
+
+---
+
+POST `/clientRoute/logMetrics` will post an object to outcomes form like so:
+
+_Example_
+
+```javascript
+{
+  "records": [
+        
+    {
+        
+      "fields": {
+        "Client_Name": [
+          "rec43ppgrbQld6xPJ"
+        ],
+        "Date_time": 1000,
+        "Blood_sugar":10000,
+        "Blood_pressure_over":14,
+        "Blood_pressure_under":12,
+        "Weight":12
+                
+      }
+    }
+   
+  ]
+
+}
+
+  ```
+
+---
+
+## 2️⃣ Actions
+
+
+`findPatientByPhone(filter)` -> finds the clientPhone and references against the phoneNumber in the 'patient-login' DB
+
+`updateLoginTime(filter, changes)` -> updates the LoginTime associated with the phone number that was used to Log in
+
 
 #### 2️⃣ ORGANIZATIONS
 
@@ -125,31 +212,19 @@ _Example_
 }
 ```
 
-## 2️⃣ Actions
 
-🚫 This is an example, replace this with the actions that pertain to your backend
 
-`getOrgs()` -> Returns all organizations
 
-`getOrg(orgId)` -> Returns a single organization by ID
+#### Coach Routes (these are examples to be updated and do not exist yet)
 
-`addOrg(org)` -> Returns the created org
-
-`updateOrg(orgId)` -> Update an organization by ID
-
-`deleteOrg(orgId)` -> Delete an organization by ID
-<br>
-<br>
-<br>
-`getUsers(orgId)` -> if no param all users
-
-`getUser(userId)` -> Returns a single user by user ID
-
-`addUser(user object)` --> Creates a new user and returns that user. Also creates 7 availabilities defaulted to hours of operation for their organization.
-
-`updateUser(userId, changes object)` -> Updates a single user by ID.
-
-`deleteUser(userId)` -> deletes everything dependent on the user
+| Method | Endpoint                | Access Control      | Description                                        |
+| ------ | ----------------------- | ------------------- | -------------------------------------------------- |
+| GET    | `/users/current`        | all users           | Returns info for the logged in user.               |
+| GET    | `/users/org/:userId`    | owners, supervisors | Returns all users for an organization.             |
+| GET    | `/users/:userId`        | owners, supervisors | Returns info for a single user.                    |
+| POST   | `/users/register/owner` | none                | Creates a new user as owner of a new organization. |
+| PUT    | `/users/:userId`        | owners, supervisors |                                                    |
+| DELETE | `/users/:userId`        | owners, supervisors |  
 
 ## 3️⃣ Environment Variables
 
