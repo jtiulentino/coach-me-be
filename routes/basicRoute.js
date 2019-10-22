@@ -6,7 +6,8 @@ const {
     loginMiddleware,
     reformatPhoneNumber,
     validateMetrics,
-    overUnderPressureValidation
+    overUnderPressureValidation,
+    getLoginAmount
 } = require('./clientMiddleware.js');
 
 const router = express.Router();
@@ -38,6 +39,7 @@ router.get('/getIntakeRecords', (req, res) => {
             for (let i = 0; i < results.data.records.length; i++) {
                 let clientObject = {};
                 clientObject.phoneNumber = results.data.records[i].fields.Phone;
+                clientObject.loginTime = 0;
                 if (results.data.records[i].fields['Coaching master table']) {
                     clientObject.clientId =
                         results.data.records[i].fields[
@@ -56,66 +58,75 @@ router.get('/getIntakeRecords', (req, res) => {
         });
 });
 
-router.post('/login', loginMiddleware, reformatPhoneNumber, (req, res) => {
-    const requestOptions = {
-        headers: {
-            accept: 'application/json',
-            Authorization: `Bearer ${process.env.AIRTABLE_KEY}`
-        }
-    };
+router.post(
+    '/login',
+    loginMiddleware,
+    reformatPhoneNumber,
+    getLoginAmount,
+    (req, res) => {
+        const requestOptions = {
+            headers: {
+                accept: 'application/json',
+                Authorization: `Bearer ${process.env.AIRTABLE_KEY}`
+            }
+        };
 
-    console.log('from the router body', process.env.AIRTABLE_KEY);
+        console.log('from the router body', process.env.AIRTABLE_KEY);
 
-    axios
-        .get(
-            `https://api.airtable.com/v0/${process.env.AIRTABLE_REFERENCE}/Intake`,
-            requestOptions
-        )
-        .then(results => {
-            // console.log('body type', Number(req.body.clientPhone));
-            // need to put the results in an object so it will return json data
-            let clientObject = {};
-            // declare token outside of for loop because the loop has its own scope, and we need clientObject to be generated inside the token
-            let token = '';
-            // looping through the results of looping through the airtable records
-            for (let i = 0; i < results.data.records.length; i++) {
-                if (
-                    // does the "phone number" from client login match any of the "phone" keys from records?
-                    req.body.clientPhone ===
-                    results.data.records[i].fields.Phone
-                ) {
-                    console.log(results.data.records[i]);
-                    // if it does then spread results into clientObject to be referenced
-                    clientObject = { ...results.data.records[i] };
-                    // stick the new clientObject with reference data in the token
-                    token = generateToken(clientObject);
-                    console.log('token', token);
+        axios
+            .get(
+                `https://api.airtable.com/v0/${process.env.AIRTABLE_REFERENCE}/Intake`,
+                requestOptions
+            )
+            .then(results => {
+                // console.log('body type', Number(req.body.clientPhone));
+                // need to put the results in an object so it will return json data
+                let clientObject = {};
+                // declare token outside of for loop because the loop has its own scope, and we need clientObject to be generated inside the token
+                let token = '';
+                // looping through the results of looping through the airtable records
+                for (let i = 0; i < results.data.records.length; i++) {
+                    if (
+                        // does the "phone number" from client login match any of the "phone" keys from records?
+                        req.body.clientPhone ===
+                        results.data.records[i].fields.Phone
+                    ) {
+                        console.log(results.data.records[i]);
+                        // if it does then spread results into clientObject to be referenced
+                        clientObject = { ...results.data.records[i] };
+                        // stick the new clientObject with reference data in the token
+                        token = generateToken(clientObject);
+                        console.log('token', token);
+                    }
                 }
-            }
 
-            // checks if the login user phone number exists in the intake airtable.
-            // returns a status code 401 if the user can't be found.
-            if (clientObject.id) {
-                // console.log(results.data.records);
-                // return token and client info from intake table
-                res.status(200).json({
-                    message: `Welcome back, ${
-                        clientObject.fields['Client Name']
-                    }!`,
-                    token,
-                    clientObject
-                });
-            } else {
-                res.status(401).json({
-                    message: 'user cannot be found in database'
-                });
-            }
-        })
-        .catch(err => {
-            console.log(err);
-            res.status(500).json({ error: err });
-        });
-});
+                // checks if the login user phone number exists in the intake airtable.
+                // returns a status code 401 if the user can't be found.
+
+                console.log('login attempts', req.loginTime);
+                if (clientObject.id) {
+                    // console.log(results.data.records);
+                    // return token and client info from intake table
+                    res.status(200).json({
+                        message: `Welcome back, ${
+                            clientObject.fields['Client Name']
+                        }!`,
+                        loginAttempts: req.loginTime,
+                        token,
+                        clientObject
+                    });
+                } else {
+                    res.status(401).json({
+                        message: 'user cannot be found in database'
+                    });
+                }
+            })
+            .catch(err => {
+                console.log(err);
+                res.status(500).json({ error: err });
+            });
+    }
+);
 
 router.get('/getMetrics', authenticateToken, (req, res) => {
     // res.status(200).json({ message: req.clientInfo });
