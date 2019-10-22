@@ -1,5 +1,3 @@
-const axios = require('axios');
-
 exports.seed = function(knex) {
     return knex('patient-login').insert([
         {

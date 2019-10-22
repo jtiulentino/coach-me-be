@@ -25,6 +25,7 @@ function loginMiddleware(req, res, next) {
 }
 
 function reformatPhoneNumber(req, res, next) {
+    // phone number needs to be received by airtable in a specific format (123) 123-1234. But the input from FE is 1234567899
     req.body.clientPhone = req.body.clientPhone.replace(
         /(\d{3})(\d{3})(\d{4})/,
         '($1) $2-$3'
