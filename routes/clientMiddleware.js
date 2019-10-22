@@ -1,3 +1,5 @@
+const { findPatientByPhone, updateLoginTime } = require('./clientModel.js');
+
 function loginMiddleware(req, res, next) {
     // checks to see if req.body has clientPhone key.
     if (req.body.clientPhone) {
@@ -89,11 +91,41 @@ function overUnderPressureValidation(req, res, next) {
     }
 }
 
+function getLoginAmount(req, res, next) {
+    findPatientByPhone({ phoneNumber: req.body.clientPhone })
+        .first()
+        .then(result => {
+            // console.log('before mutation', result);
+            if (result.loginTime <= 0) {
+                result.loginTime = Number(result.loginTime) + 1;
+                console.log('onlogin middleware', result.loginTime);
+                req.loginTime = result.loginTime;
+
+                updateLoginTime({ phoneNumber: result.phoneNumber }, result)
+                    .then(results => {
+                        next();
+                    })
+                    .catch(err => {
+                        res.status(500).json({
+                            error: 'unable to update record in patient-login'
+                        });
+                    });
+            } else {
+                req.loginTime = Number(result.loginTime) + 1;
+                next();
+            }
+        })
+        .catch(err => {
+            res.status(500).json({ message: 'didnt work!!!' });
+        });
+}
+
 module.exports = {
     loginMiddleware,
     reformatPhoneNumber,
     validateMetrics,
-    overUnderPressureValidation
+    overUnderPressureValidation,
+    getLoginAmount
 };
 
 // experiment data
