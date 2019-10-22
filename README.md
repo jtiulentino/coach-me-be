@@ -142,8 +142,8 @@ _Example_
 
 ---
 
-POST `/clientRoute/logMetrics` will post an object to outcomes form like so:
-_(needs min of one metric)_
+POST `/clientRoute/logMetrics` will post an object to outcomes form like so:<br>
+_(needs min of one metric)_<br>
 _(if over or under metric, both must be used)_
 
 _Example_
