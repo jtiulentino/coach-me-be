@@ -25,6 +25,7 @@ function loginMiddleware(req, res, next) {
 }
 
 function reformatPhoneNumber(req, res, next) {
+    // phone number needs to be received by airtable in a specific format (123) 123-1234. But the input from FE is 1234567899
     req.body.clientPhone = req.body.clientPhone.replace(
         /(\d{3})(\d{3})(\d{4})/,
         '($1) $2-$3'
@@ -69,7 +70,7 @@ function validateMetrics(req, res, next) {
 }
 
 function overUnderPressureValidation(req, res, next) {
-    // need to check if bothy over and under are inputed together as one, otherwise throw error that say both are needed
+    // need to check if both over and under are inputed together as one, otherwise throw error that say both are needed
 
     if (
         req.body.records[0].fields.Blood_pressure_under ||
@@ -92,15 +93,18 @@ function overUnderPressureValidation(req, res, next) {
 }
 
 function getLoginAmount(req, res, next) {
+    // find clientPhone by comparing to phoneNumber key in the patient-login db. The patient-login DB is seeded from the /getIntakeRecords endpoint found in basicRoutes
     findPatientByPhone({ phoneNumber: req.body.clientPhone })
         .first()
         .then(result => {
+            //check to see if the result has a loginTime that has a value less than or equal to zero.
             // console.log('before mutation', result);
             if (result.loginTime <= 0) {
+                // seeded values are strings and need conversion to integers
                 result.loginTime = Number(result.loginTime) + 1;
                 console.log('onlogin middleware', result.loginTime);
                 req.loginTime = result.loginTime;
-
+              //updates the LoginTime associated with the phoneNumber on first login
                 updateLoginTime({ phoneNumber: result.phoneNumber }, result)
                     .then(results => {
                         next();
@@ -111,6 +115,7 @@ function getLoginAmount(req, res, next) {
                         });
                     });
             } else {
+                // iterates LoginTime past 1 so FE can see if client has already logged in before
                 req.loginTime = Number(result.loginTime) + 1;
                 next();
             }
