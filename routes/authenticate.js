@@ -11,7 +11,8 @@ function generateToken(client) {
         // commit difference
         clientId: client.fields['Coaching master table'][0],
         clientName: client.fields['Client Name'],
-        clientPhone: client.fields.Phone
+        clientPhone: client.fields.Phone,
+        coachId: client.fields.Coach[0]
     };
 
     const options = {

@@ -1,3 +1,5 @@
+const { findPatientByPhone, updateLoginTime } = require('./clientModel.js');
+
 function loginMiddleware(req, res, next) {
     // checks to see if req.body has clientPhone key.
     if (req.body.clientPhone) {
@@ -23,6 +25,7 @@ function loginMiddleware(req, res, next) {
 }
 
 function reformatPhoneNumber(req, res, next) {
+    // phone number needs to be received by airtable in a specific format (123) 123-1234. But the input from FE is 1234567899
     req.body.clientPhone = req.body.clientPhone.replace(
         /(\d{3})(\d{3})(\d{4})/,
         '($1) $2-$3'
@@ -30,7 +33,123 @@ function reformatPhoneNumber(req, res, next) {
     next();
 }
 
+function validateMetrics(req, res, next) {
+    if (Object.keys(req.body.records[0].fields).length > 2) {
+        // console.log(req.body.records[0].fields.Blood_sugar);
+        // res.status(200).json({ message: 'It works!!!' });
+
+        let validMetrics = true;
+
+        for (metric in req.body.records[0].fields) {
+            // console.log('from metric for in loop', metric);
+            if (
+                metric === 'Blood_pressure_over' ||
+                metric === 'Blood_pressure_under' ||
+                metric === 'Blood_sugar' ||
+                metric === 'Weight'
+            ) {
+                if (req.body.records[0].fields[metric].toString().length > 3) {
+                    // console.log('from metric for of loop', metric);
+                    validMetrics = false;
+                }
+            }
+        }
+
+        if (validMetrics) {
+            next();
+        } else {
+            res.status(422).json({
+                error: 'One of the values is over three digits'
+            });
+        }
+    } else {
+        res.status(422).json({
+            error: 'less than three keys inside records.fields(no metrics)'
+        });
+    }
+}
+
+function overUnderPressureValidation(req, res, next) {
+    // need to check if both over and under are inputed together as one, otherwise throw error that say both are needed
+
+    if (
+        req.body.records[0].fields.Blood_pressure_under ||
+        req.body.records[0].fields.Blood_pressure_over
+    ) {
+        if (
+            req.body.records[0].fields.Blood_pressure_over &&
+            req.body.records[0].fields.Blood_pressure_under
+        ) {
+            next();
+        } else {
+            res.status(422).json({
+                error:
+                    'Input must include both over blood pressure and under blood pressure'
+            });
+        }
+    } else {
+        next();
+    }
+}
+
+function getLoginAmount(req, res, next) {
+    // find clientPhone by comparing to phoneNumber key in the patient-login db. The patient-login DB is seeded from the /getIntakeRecords endpoint found in basicRoutes
+    findPatientByPhone({ phoneNumber: req.body.clientPhone })
+        .first()
+        .then(result => {
+            //check to see if the result has a loginTime that has a value less than or equal to zero.
+            // console.log('before mutation', result);
+            if (result.loginTime <= 0) {
+                // seeded values are strings and need conversion to integers
+                result.loginTime = Number(result.loginTime) + 1;
+                console.log('onlogin middleware', result.loginTime);
+                req.loginTime = result.loginTime;
+              //updates the LoginTime associated with the phoneNumber on first login
+                updateLoginTime({ phoneNumber: result.phoneNumber }, result)
+                    .then(results => {
+                        next();
+                    })
+                    .catch(err => {
+                        res.status(500).json({
+                            error: 'unable to update record in patient-login'
+                        });
+                    });
+            } else {
+                // iterates LoginTime past 1 so FE can see if client has already logged in before
+                req.loginTime = Number(result.loginTime) + 1;
+                next();
+            }
+        })
+        .catch(err => {
+            res.status(500).json({ message: 'didnt work!!!' });
+        });
+}
+
 module.exports = {
     loginMiddleware,
-    reformatPhoneNumber
+    reformatPhoneNumber,
+    validateMetrics,
+    overUnderPressureValidation,
+    getLoginAmount
 };
+
+// experiment data
+// {
+//     "records": [
+
+//       {
+//         "fields": {
+//           "Client_Name": [
+//             "rec8DkcsKev4Q8EvF"
+//           ],
+//           "Date_time": null,
+//   "Blood_sugar":123435643561234,
+//   "Blood_pressure_over":1421341223,
+//   "Blood_pressure_under":12321342134555,
+//   "Weight":1234
+//         }
+//       }
+
+//     ]
+
+//    }
