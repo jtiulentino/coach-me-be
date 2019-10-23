@@ -2,8 +2,8 @@ exports.up = function(knex) {
     return knex.schema
         .createTable('patient-login', tbl => {
             tbl.increments();
-            tbl.string('phoneNumber', 128).notNullable();
-            tbl.string('clientId', 128).notNullable();
+            tbl.string('phoneNumber', 128);
+            tbl.string('clientId', 128);
             tbl.string('loginTime', 500);
         })
         .createTable('users', tbl => {
@@ -39,6 +39,43 @@ exports.up = function(knex) {
                 .onDelete('CASCADE')
                 .onUpdate('CASCADE');
             tbl.string('patientName', 255);
+        })
+        .createTable('conversations', tbl => {
+            tbl.uuid('conversationId').primary();
+            tbl.string('coachId')
+                .notNullable()
+                .unsigned()
+                .references('coachId')
+                .inTable('coaches')
+                .onDelete('CASCADE')
+                .onUpdate('CASCADE');
+            tbl.string('patientId')
+                .notNullable()
+                .unsigned()
+                .references('patientId')
+                .inTable('patients')
+                .onDelete('CASCADE')
+                .onUpdate('CASCADE');
+            tbl.string('createdDate', 255);
+        })
+        .createTable('messageHistory', tbl => {
+            tbl.uuid('messageId').primary();
+            tbl.string('conversationId')
+                .notNullable()
+                .unsigned()
+                .references('conversationId')
+                .inTable('conversations')
+                .onDelete('CASCADE')
+                .onUpdate('CASCADE');
+            tbl.string('createdDate', 255);
+            tbl.string('textContent');
+            tbl.string('senderId')
+                .notNullable()
+                .unsigned()
+                .references('userId')
+                .inTable('users')
+                .onDelete('CASCADE')
+                .onUpdate('CASCADE');
         });
 };
 
