@@ -7,12 +7,12 @@ exports.up = function(knex) {
             tbl.string('loginTime', 500);
         })
         .createTable('users', tbl => {
-            tbl.primary().uuid('userId');
+            tbl.uuid('userId').primary();
             tbl.string('role', 255);
             tbl.string('userPhone', 255).notNullable();
         })
         .createTable('coaches', tbl => {
-            tbl.primary().uuid('coachId');
+            tbl.uuid('coachId').primary();
             tbl.string('coachName', 255).notNullable();
             tbl.string('userId')
                 .notNullable()
@@ -23,7 +23,7 @@ exports.up = function(knex) {
                 .onUpdate('CASCADE');
         })
         .createTable('patients', tbl => {
-            tbl.primary().uuid('patientId');
+            tbl.uuid('patientId').primary();
             tbl.string('userId')
                 .notNullable()
                 .unsigned()

@@ -83,10 +83,6 @@ exports.seed = function(knex) {
             clientId: 'recFN5BlAo4IlZdit'
         },
         {
-            loginTime: 0,
-            clientId: 'undefined'
-        },
-        {
             phoneNumber: '(650) 281-7582',
             loginTime: 0,
             clientId: 'recWMVhm23ZOOU9HT'
