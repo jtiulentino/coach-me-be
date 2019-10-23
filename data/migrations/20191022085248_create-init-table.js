@@ -14,6 +14,10 @@ exports.up = function(knex) {
         .createTable('coaches', tbl => {
             tbl.uuid('coachId').primary();
             tbl.string('coachName', 255).notNullable();
+            tbl.string('email', 255)
+                .unique()
+                .notNullable();
+            tbl.string('password', 255).notNullable();
             tbl.string('userId')
                 .notNullable()
                 .unsigned()
