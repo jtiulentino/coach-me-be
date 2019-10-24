@@ -97,12 +97,17 @@ function getLoginAmount(req, res, next) {
     findPatientByPhone({ phoneNumber: req.body.clientPhone })
         // .first()
         .then(result => {
-            console.log('insertNewClient', result)
+            console.log('insertNewClient1', result)
             //check to see if the result has a loginTime that has a value less than or equal to zero.
 
-            if (result[0].length === 0 ) {
-                insertNewClient(result).then(client => {
-                    console.log('insertNewClient', client)
+             if (result.length === 0) {
+                 
+                insertNewClient({
+                    phoneNumber: req.body.clientPhone,
+                    clientId: req.body.clientId,
+                    loginTime: 0
+                }).then(client => {
+                    console.log('insertNewClient2', client)
                     res.status(204).json(client)
                 })
             }
@@ -113,6 +118,8 @@ function getLoginAmount(req, res, next) {
                 result.loginTime = Number(result.loginTime) + 1;
                 console.log('onlogin middleware', result.loginTime);
                 req.loginTime = result.loginTime;
+
+               
               //updates the LoginTime associated with the phoneNumber on first login
                 updateLoginTime({ phoneNumber: result.phoneNumber }, result)
                     .then(results => {
