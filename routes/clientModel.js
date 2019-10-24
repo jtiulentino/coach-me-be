@@ -2,7 +2,8 @@ const db = require('../data/dbConfig.js');
 
 module.exports = {
     findPatientByPhone,
-    updateLoginTime
+    updateLoginTime,
+    insertNewClient
 };
 
 // filter by clientPhone using the phoneNumber key in the patient-login db
@@ -15,4 +16,13 @@ function updateLoginTime(filter, changes) {
     return db('patient-login')
         .where(filter)
         .update(changes, 'id');
+}
+
+function insertNewClient(filter) {
+    return db('patient-login')
+        .insert(filter, 'id')
+        .then(res => {
+            const [client] = res;
+            return findPatientByPhone(client);
+        });
 }

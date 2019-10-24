@@ -1,7 +1,9 @@
 const express = require('express');
 const axios = require('axios');
 const Airtable = require('airtable');
+// const {insertNewClient} = require('./clientModel')
 // grabbing token and auth middleware
+
 const { generateToken, authenticateToken } = require('./authenticate');
 const {
     loginMiddleware,
