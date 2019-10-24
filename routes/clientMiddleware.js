@@ -1,4 +1,8 @@
-const { findPatientByPhone, updateLoginTime, insertNewClient } = require('./clientModel.js');
+const {
+    findPatientByPhone,
+    updateLoginTime,
+    insertNewClient
+} = require('./clientModel.js');
 
 function loginMiddleware(req, res, next) {
     // checks to see if req.body has clientPhone key.
@@ -97,30 +101,32 @@ function getLoginAmount(req, res, next) {
     findPatientByPhone({ phoneNumber: req.body.clientPhone })
         // .first()
         .then(result => {
-            console.log('insertNewClient1', result)
+            console.log('insertNewClient1', result);
             //check to see if the result has a loginTime that has a value less than or equal to zero.
 
-             if (result.length === 0) {
-                 
+            if (result.length === 0) {
                 insertNewClient({
                     phoneNumber: req.body.clientPhone,
                     clientId: req.body.clientId,
                     loginTime: 0
-                }).then(client => {
-                    console.log('insertNewClient2', client)
-                    res.status(204).json(client)
                 })
+                    .then(client => {
+                        console.log('insertNewClient2', client);
+                        res.status(204).json(client);
+                    })
+                    .catch(err => {
+                        console.log('insertNewClient ERROR', err);
+                        res.status(500).json({ error: 'INSERT not working' });
+                    });
             }
 
             if (result.loginTime <= 0) {
-                
                 // seeded values are strings and need conversion to integers
                 result.loginTime = Number(result.loginTime) + 1;
-                console.log('onlogin middleware', result.loginTime);
+                // console.log('onlogin middleware', result.loginTime);
                 req.loginTime = result.loginTime;
 
-               
-              //updates the LoginTime associated with the phoneNumber on first login
+                //updates the LoginTime associated with the phoneNumber on first login
                 updateLoginTime({ phoneNumber: result.phoneNumber }, result)
                     .then(results => {
                         next();
@@ -130,7 +136,6 @@ function getLoginAmount(req, res, next) {
                             error: 'unable to update record in patient-login'
                         });
                     });
-                
             } else {
                 // iterates LoginTime past 1 so FE can see if client has already logged in before
                 req.loginTime = Number(result.loginTime) + 1;
