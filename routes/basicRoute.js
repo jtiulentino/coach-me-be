@@ -24,6 +24,7 @@ router.get('/', (req, res) => {
     res.status(200).json({ message: 'hello from basic route' });
 });
 
+// need access to data for seeding local DB
 router.get('/getIntakeRecords', (req, res) => {
     axios
         .get(
@@ -34,13 +35,17 @@ router.get('/getIntakeRecords', (req, res) => {
                     Authorization: `Bearer ${process.env.AIRTABLE_KEY}`
                 }
             }
-        )
+        ) // grab the phone number and client id from the intake table to seed local db
         .then(results => {
+            //empty array form client objects from the loop iteration
             let userArray = [];
             for (let i = 0; i < results.data.records.length; i++) {
                 let clientObject = {};
+                // grab clients phone number
                 clientObject.phoneNumber = results.data.records[i].fields.Phone;
+                //create new object value loginTime
                 clientObject.loginTime = 0;
+                // search for user unique id from 'coaching master table' reference if it exists it become clientId and if not then undefined
                 if (results.data.records[i].fields['Coaching master table']) {
                     clientObject.clientId =
                         results.data.records[i].fields[
@@ -49,9 +54,10 @@ router.get('/getIntakeRecords', (req, res) => {
                 } else {
                     clientObject.clientId = 'undefined';
                 }
+                // take all returned objects and put them into the userArray
                 userArray.push(clientObject);
             }
-
+            // return all objects found within results as data
             res.status(200).json({ data: userArray });
         })
         .catch(err => {
