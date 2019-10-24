@@ -85,6 +85,8 @@ exports.up = function(knex) {
 
 exports.down = function(knex) {
     return knex.schema
+        .dropTableIfExists('messageHistory')
+        .dropTableIfExists('conversations')
         .dropTableIfExists('patients')
         .dropTableIfExists('coaches')
         .dropTableIfExists('users')
