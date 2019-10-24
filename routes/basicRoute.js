@@ -111,20 +111,24 @@ router.get('/paginationGetMetrics', authenticateToken, (req, res) => {
         }
 
         let models = records.map(record => {
-            if (req.clientInfo.clientId === record.get('Client_Name')[0]) {
-                return {
-                    fields: {
-                        Client_Name: record.get('Client_Name'),
-                        Blood_sugar: record.get('Blood_sugar'),
-                        Weight: record.get('Weight'),
-                        Blood_pressure_over: record.get('Blood_pressure_over'),
-                        Blood_pressure_under: record.get(
-                            'Blood_pressure_under'
-                        ),
-                        Date_time: record.get('Date_time'),
-                        'Record Number': record.get('Record Number')
-                    }
-                };
+            if (record.get('Client_Name')) {
+                if (req.clientInfo.clientId === record.get('Client_Name')[0]) {
+                    return {
+                        fields: {
+                            Client_Name: record.get('Client_Name'),
+                            Blood_sugar: record.get('Blood_sugar'),
+                            Weight: record.get('Weight'),
+                            Blood_pressure_over: record.get(
+                                'Blood_pressure_over'
+                            ),
+                            Blood_pressure_under: record.get(
+                                'Blood_pressure_under'
+                            ),
+                            Date_time: record.get('Date_time'),
+                            'Record Number': record.get('Record Number')
+                        }
+                    };
+                }
             }
         });
 
@@ -142,6 +146,35 @@ router.get('/paginationGetMetrics', authenticateToken, (req, res) => {
             view: 'Grid view'
         })
         .eachPage(processPage, processRecords);
+});
+
+router.get('/paginationExperiment', authenticateToken, (req, res) => {
+    const Airtable = require('airtable');
+    const base = new Airtable({ apiKey: process.env.AIRTABLE_KEY }).base(
+        process.env.AIRTABLE_REFERENCE
+    );
+
+    base('Outcomes')
+        .select({
+            view: 'Grid view'
+        })
+        .eachPage(
+            function page(records, fetchNextPage) {
+                records.forEach(function(record) {
+                    console.log('Retrieved', record.get('Client_Name')[0]);
+                });
+
+                fetchNextPage();
+            },
+            function done(err) {
+                if (err) {
+                    console.log(err);
+                    return;
+                }
+            }
+        );
+
+    res.status(200).json({ message: req.clientInfo.clientId });
 });
 
 router.post(
