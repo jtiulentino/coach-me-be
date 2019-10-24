@@ -10,7 +10,8 @@ const {
     reformatPhoneNumber,
     validateMetrics,
     overUnderPressureValidation,
-    getLoginAmount
+    getLoginAmount,
+    addPatient
 } = require('./clientMiddleware.js');
 
 const router = express.Router();
@@ -147,6 +148,7 @@ router.post(
     '/login',
     loginMiddleware,
     reformatPhoneNumber,
+    addPatient,
     getLoginAmount,
     (req, res) => {
         const requestOptions = {

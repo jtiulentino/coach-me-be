@@ -101,7 +101,7 @@ function addPatient(req, res, next) {
         if (result.length === 0) {
             insertNewClient({
                 phoneNumber: req.body.clientPhone,
-                clientId: req.body.clientId,
+                clientId: null,
                 loginTime: 0
             })
                 .then(client => {
@@ -112,6 +112,8 @@ function addPatient(req, res, next) {
                     console.log('insertNewClient ERROR', err);
                     res.status(500).json({ error: 'INSERT not working' });
                 });
+        } else {
+            res.status(200).json({ message: 'user is already saved' });
         }
     });
 }
