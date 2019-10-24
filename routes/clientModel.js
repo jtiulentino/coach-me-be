@@ -19,10 +19,9 @@ function updateLoginTime(filter, changes) {
 }
 
 function insertNewClient(filter) {
-    return db('patient-login')
-        .insert(filter, 'id')
-        .then(res => {
-            const [client] = res;
-            return findPatientByPhone(client);
-        });
+    return db('patient-login').insert(filter, 'id');
+    // .then(res => {
+    //     const [client] = res;
+    //     return findPatientByPhone({ id: client });
+    // });
 }

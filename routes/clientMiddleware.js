@@ -104,16 +104,18 @@ function addPatient(req, res, next) {
                 clientId: null,
                 loginTime: 0
             })
-                .then(client => {
-                    console.log('insertNewClient2', client);
-                    res.status(204).json(client);
+                .then(result => {
+                    console.log('insertNewClient2', result);
+                    // res.status(201).json({ message: result });
+                    next();
                 })
                 .catch(err => {
                     console.log('insertNewClient ERROR', err);
                     res.status(500).json({ error: 'INSERT not working' });
                 });
         } else {
-            res.status(200).json({ message: 'user is already saved' });
+            // res.status(200).json({ message: 'user is already saved' });
+            next();
         }
     });
 }
@@ -121,7 +123,7 @@ function addPatient(req, res, next) {
 function getLoginAmount(req, res, next) {
     // find clientPhone by comparing to phoneNumber key in the patient-login db. The patient-login DB is seeded from the /getIntakeRecords endpoint found in basicRoutes
     findPatientByPhone({ phoneNumber: req.body.clientPhone })
-        // .first()
+        .first()
         .then(result => {
             console.log('insertNewClient1', result);
             //check to see if the result has a loginTime that has a value less than or equal to zero.
@@ -135,8 +137,7 @@ function getLoginAmount(req, res, next) {
                 //updates the LoginTime associated with the phoneNumber on first login
                 updateLoginTime({ phoneNumber: result.phoneNumber }, result)
                     .then(results => {
-                        // next();
-                        res.status(200).json({ message: req.loginTime });
+                        next();
                     })
                     .catch(err => {
                         res.status(500).json({
@@ -146,8 +147,7 @@ function getLoginAmount(req, res, next) {
             } else {
                 // iterates LoginTime past 1 so FE can see if client has already logged in before
                 req.loginTime = Number(result.loginTime) + 1;
-                res.status(200).json({ message: result.loginTime });
-                // next();
+                next();
             }
         })
         .catch(err => {
