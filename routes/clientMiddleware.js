@@ -1,4 +1,4 @@
-const { findPatientByPhone, updateLoginTime } = require('./clientModel.js');
+const { findPatientByPhone, updateLoginTime, insertNewClient } = require('./clientModel.js');
 
 function loginMiddleware(req, res, next) {
     // checks to see if req.body has clientPhone key.
@@ -95,11 +95,20 @@ function overUnderPressureValidation(req, res, next) {
 function getLoginAmount(req, res, next) {
     // find clientPhone by comparing to phoneNumber key in the patient-login db. The patient-login DB is seeded from the /getIntakeRecords endpoint found in basicRoutes
     findPatientByPhone({ phoneNumber: req.body.clientPhone })
-        .first()
+        // .first()
         .then(result => {
+            console.log('insertNewClient', result)
             //check to see if the result has a loginTime that has a value less than or equal to zero.
-            // console.log('before mutation', result);
+
+            if (result[0].length === 0 ) {
+                insertNewClient(result).then(client => {
+                    console.log('insertNewClient', client)
+                    res.status(204).json(client)
+                })
+            }
+
             if (result.loginTime <= 0) {
+                
                 // seeded values are strings and need conversion to integers
                 result.loginTime = Number(result.loginTime) + 1;
                 console.log('onlogin middleware', result.loginTime);
@@ -114,6 +123,7 @@ function getLoginAmount(req, res, next) {
                             error: 'unable to update record in patient-login'
                         });
                     });
+                
             } else {
                 // iterates LoginTime past 1 so FE can see if client has already logged in before
                 req.loginTime = Number(result.loginTime) + 1;
