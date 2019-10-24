@@ -1,5 +1,6 @@
 const express = require('express');
 const axios = require('axios');
+const Airtable = require('airtable');
 // grabbing token and auth middleware
 const { generateToken, authenticateToken } = require('./authenticate');
 const {
@@ -62,6 +63,82 @@ router.get('/getIntakeRecords', (req, res) => {
         .catch(err => {
             console.log(err);
         });
+});
+
+router.get('/fakeRecord', (req, res) => {
+    axios
+        .get(
+            `https://api.airtable.com/v0/${process.env.AIRTABLE_REFERENCE}/Outcomes?maxRecords=100`,
+            {
+                headers: {
+                    accept: 'application/json',
+                    Authorization: `Bearer ${process.env.AIRTABLE_KEY}`
+                }
+            }
+        )
+        .then(results => {
+            const newArray = [...results.data.records];
+            console.log(newArray.length);
+            res.status(200).json({ data: 'message' });
+        })
+        .catch(err => {
+            res.status(500).json({ error: err });
+        });
+});
+
+// patch for the getMetrics problem of only being able to get back 100 records.
+router.get('/paginationGetMetrics', authenticateToken, (req, res) => {
+    const Airtable = require('airtable');
+    const base = new Airtable({ apiKey: process.env.AIRTABLE_KEY }).base(
+        process.env.AIRTABLE_REFERENCE
+    );
+
+    let records = [];
+    const limit = 24;
+
+    const processPage = (partialRecords, fetchNextPage) => {
+        records = [...records, ...partialRecords];
+        fetchNextPage();
+    };
+
+    const processRecords = err => {
+        if (err) {
+            console.error(err);
+            return;
+        }
+
+        let models = records.map(record => {
+            if (req.clientInfo.clientId === record.get('Client_Name')[0]) {
+                return {
+                    fields: {
+                        Client_Name: record.get('Client_Name'),
+                        Blood_sugar: record.get('Blood_sugar'),
+                        Weight: record.get('Weight'),
+                        Blood_pressure_over: record.get('Blood_pressure_over'),
+                        Blood_pressure_under: record.get(
+                            'Blood_pressure_under'
+                        ),
+                        Date_time: record.get('Date_time'),
+                        'Record Number': record.get('Record Number')
+                    }
+                };
+            }
+        });
+
+        let newModels = models.filter(record => record != undefined);
+
+        console.log('new models', newModels);
+
+        res.status(200).json({
+            clientRecords: newModels
+        });
+    };
+
+    base('Outcomes')
+        .select({
+            view: 'Grid view'
+        })
+        .eachPage(processPage, processRecords);
 });
 
 router.post(
@@ -239,7 +316,7 @@ module.exports = router;
 //       {
 //         "fields": {
 //           "Client_Name": [
-//             "rec8DkcsKev4Q8EvF"
+//             "recPWedfYT2Op9PBw"
 //           ],
 //           "Date_time": null,
 //                   "Blood_sugar":123435643561234,
