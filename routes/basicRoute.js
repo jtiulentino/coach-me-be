@@ -1,14 +1,17 @@
 const express = require('express');
 const axios = require('axios');
 const Airtable = require('airtable');
+// const {insertNewClient} = require('./clientModel')
 // grabbing token and auth middleware
+
 const { generateToken, authenticateToken } = require('./authenticate');
 const {
     loginMiddleware,
     reformatPhoneNumber,
     validateMetrics,
     overUnderPressureValidation,
-    getLoginAmount
+    getLoginAmount,
+    addPatient
 } = require('./clientMiddleware.js');
 
 const router = express.Router();
@@ -145,6 +148,7 @@ router.post(
     '/login',
     loginMiddleware,
     reformatPhoneNumber,
+    addPatient,
     getLoginAmount,
     (req, res) => {
         const requestOptions = {
