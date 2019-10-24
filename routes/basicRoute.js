@@ -139,7 +139,7 @@ router.post(
     '/login',
     loginMiddleware,
     reformatPhoneNumber,
-    // getLoginAmount,
+    getLoginAmount,
     (req, res) => {
         const requestOptions = {
             headers: {
