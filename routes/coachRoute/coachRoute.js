@@ -5,7 +5,7 @@ const bcrypt = require('bcryptjs');
 const coachDb = require('./coachModel.js');
 const uuidv4 = require('uuid/v4');
 
-const { generateToken } = require('./coachAuth.js');
+const { generateToken, authenticateToken } = require('./coachAuth.js');
 
 const router = express.Router();
 
@@ -133,7 +133,7 @@ router.get('/coachFake', (req, res) => {
         });
 });
 
-router.get('/fakePagination', (req, res) => {
+router.get('/getPatients', authenticateToken, (req, res) => {
     const Airtable = require('airtable');
     const base = new Airtable({ apiKey: process.env.AIRTABLE_KEY }).base(
         process.env.AIRTABLE_REFERENCE
@@ -153,10 +153,14 @@ router.get('/fakePagination', (req, res) => {
         }
 
         let models = records.map(record => {
-            if ('rec5UAL376PrC0shY' === record.get('Coach')) {
-                return {
-                    clientName: record.get('Client Name')
-                };
+            // return record;
+            if (record.get('Coach')) {
+                if (req.clientInfo.coachId === record.get('Coach')[0]) {
+                    return {
+                        clientName: record.get('Client Name'),
+                        clientId: record.get('Coaching master table')[0]
+                    };
+                }
             }
         });
 
@@ -165,7 +169,7 @@ router.get('/fakePagination', (req, res) => {
         console.log('new models', newModels);
 
         res.status(200).json({
-            clientRecords: newModels
+            patientList: newModels
         });
     };
 
