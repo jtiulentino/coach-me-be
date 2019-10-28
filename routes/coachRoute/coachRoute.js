@@ -135,7 +135,10 @@ router.get('/getPatients', authenticateToken, (req, res) => {
                 if (req.clientInfo.coachId === record.get('Coach')[0]) {
                     return {
                         clientName: record.get('Client Name'),
-                        clientId: record.get('Coaching master table')[0]
+                        clientId: record.get('Coaching master table')[0],
+                        conditions: record.get('Conditions'),
+                        motivations: record.get('Motivations'),
+                        language: record.get('Language')
                     };
                 }
             }
