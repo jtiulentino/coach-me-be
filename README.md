@@ -32,6 +32,7 @@ https://coach-me-backend.herokuapp.com/
 | GET    | `/clientRoute/getMetrics`       | client(token required) | Access current and past client Metrics     |
 | GET    | `/clientRoute/getIntakeRecords` | client(token required) | Receives formated client Objects           |
 | POST   | `/clientRoute/logMetrics`       | client(token required) | input new Health Metric to database        |
+| POST   | `/clientRoute/getCoachInfo`       | client(token required) | returns current coach object       |
 
 # Data Model - Clients
 
@@ -181,40 +182,7 @@ _Example_
 
 `updateLoginTime(filter, changes)` -> updates the LoginTime associated with the phone number that was used to Log in
 
-#### 2️⃣ ORGANIZATIONS
-
----
-
-```
-{
-  id: UUID
-  name: STRING
-  industry: STRING
-  paid: BOOLEAN
-  customer_id: STRING
-  subscription_id: STRING
-}
-```
-
-#### USERS
-
----
-
-```
-{
-  id: UUID
-  organization_id: UUID foreign key in ORGANIZATIONS table
-  first_name: STRING
-  last_name: STRING
-  role: STRING [ 'owner', 'supervisor', 'employee' ]
-  email: STRING
-  phone: STRING
-  cal_visit: BOOLEAN
-  emp_visit: BOOLEAN
-  emailpref: BOOLEAN
-  phonepref: BOOLEAN
-}
-```
+`insertNewClient(filter)` -> adds new client id, loginTime and phone number to database
 
 #### Coach Routes (these are examples to be updated and do not exist yet)
 
