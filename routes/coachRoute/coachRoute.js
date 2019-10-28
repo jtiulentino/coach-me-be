@@ -199,7 +199,7 @@ router.get('/getClientGoals/:id', (req, res) => {
         console.log('new models', newModels);
 
         res.status(200).json({
-            patientList: newModels
+            patientGoals: newModels
         });
     };
 
@@ -255,7 +255,7 @@ router.get('/getClientMetrics/:id', (req, res) => {
         console.log('new models', newModels);
 
         res.status(200).json({
-            patientList: newModels
+            patientMetrics: newModels
         });
     };
 
