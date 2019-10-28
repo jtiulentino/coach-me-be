@@ -1,4 +1,8 @@
-const { findPatientByPhone, updateLoginTime } = require('./clientModel.js');
+const {
+    findPatientByPhone,
+    updateLoginTime,
+    insertNewClient
+} = require('./clientModel.js');
 
 function loginMiddleware(req, res, next) {
     // checks to see if req.body has clientPhone key.
@@ -92,19 +96,45 @@ function overUnderPressureValidation(req, res, next) {
     }
 }
 
+function addPatient(req, res, next) {
+    findPatientByPhone({ phoneNumber: req.body.clientPhone }).then(result => {
+        if (result.length === 0) {
+            insertNewClient({
+                phoneNumber: req.body.clientPhone,
+                clientId: null,
+                loginTime: 0
+            })
+                .then(result => {
+                    console.log('insertNewClient2', result);
+                    // res.status(201).json({ message: result });
+                    next();
+                })
+                .catch(err => {
+                    console.log('insertNewClient ERROR', err);
+                    res.status(500).json({ error: 'INSERT not working' });
+                });
+        } else {
+            // res.status(200).json({ message: 'user is already saved' });
+            next();
+        }
+    });
+}
+
 function getLoginAmount(req, res, next) {
     // find clientPhone by comparing to phoneNumber key in the patient-login db. The patient-login DB is seeded from the /getIntakeRecords endpoint found in basicRoutes
     findPatientByPhone({ phoneNumber: req.body.clientPhone })
         .first()
         .then(result => {
+            console.log('insertNewClient1', result);
             //check to see if the result has a loginTime that has a value less than or equal to zero.
-            // console.log('before mutation', result);
+
             if (result.loginTime <= 0) {
                 // seeded values are strings and need conversion to integers
                 result.loginTime = Number(result.loginTime) + 1;
-                console.log('onlogin middleware', result.loginTime);
+                // console.log('onlogin middleware', result.loginTime);
                 req.loginTime = result.loginTime;
-              //updates the LoginTime associated with the phoneNumber on first login
+
+                //updates the LoginTime associated with the phoneNumber on first login
                 updateLoginTime({ phoneNumber: result.phoneNumber }, result)
                     .then(results => {
                         next();
@@ -130,7 +160,8 @@ module.exports = {
     reformatPhoneNumber,
     validateMetrics,
     overUnderPressureValidation,
-    getLoginAmount
+    getLoginAmount,
+    addPatient
 };
 
 // experiment data
