@@ -26,12 +26,14 @@ https://coach-me-backend.herokuapp.com/
 
 **Client Routes**
 
-| Method | Endpoint                        | Access Control         | Description                                |
-| ------ | ------------------------------- | ---------------------- | ------------------------------------------ |
-| POST   | `/clientRoute/login`            | all registered clients | Returns token to access client information |
-| GET    | `/clientRoute/getMetrics`       | client(token required) | Access current and past client Metrics     |
-| GET    | `/clientRoute/getIntakeRecords` | client(token required) | Receives formated client Objects           |
-| POST   | `/clientRoute/logMetrics`       | client(token required) | input new Health Metric to database        |
+| Method | Endpoint                             | Access Control         | Description                                |
+| ------ | ------------------------------------ | ---------------------- | ------------------------------------------ |
+| POST   | `/clientRoute/login`                 | all registered clients | Returns token to access client information |
+| GET    | `/clientRoute/getMetrics`            | client(token required) | Access current and past client Metrics     |
+| GET    | `/clientRoute/getIntakeRecords`      | client(token required) | Receives formated client Objects           |
+| POST   | `/clientRoute/logMetrics`            | client(token required) | input new Health Metric to database        |
+| GET    | `/clientRoute/getCoachInfo`          | client(token required) | returns current coach object               |
+| GET    | `/clientRoute//paginationGetMetrics` | client(token required) | returns full history of Metrics for client |
 
 # Data Model - Clients
 
@@ -91,7 +93,9 @@ _Example_
 
 ---
 
-GET `/clientRoute/getMetrics` will return objects like so:
+GET `/clientRoute/getMetrics` and `/clientRoute/paginationGetMetrics` will return objects like so:
+<br>
+`/paginationGetMetrics` returns the full client history using pagination
 
 _Example_
 
@@ -142,6 +146,22 @@ _Example_
 
 ---
 
+GET `/clientRoute/getCoachInfo` will return an object like so:
+
+_Example_
+
+```javascript
+{
+    "coachObject": {
+        "coachName": "Karin Underwood",
+        "coachUrl": "https://dl.airtable.com/.attachments/2964a7624923f374610c1b583a7edc24/3b8b5096/Karin_bitmoji.jpeg"
+    }
+}
+
+```
+
+---
+
 POST `/clientRoute/logMetrics` will post an object to outcomes form like so:<br>
 _(needs min of one metric)_<br>
 _(if over or under metric, both must be used)_
@@ -181,40 +201,7 @@ _Example_
 
 `updateLoginTime(filter, changes)` -> updates the LoginTime associated with the phone number that was used to Log in
 
-#### 2️⃣ ORGANIZATIONS
-
----
-
-```
-{
-  id: UUID
-  name: STRING
-  industry: STRING
-  paid: BOOLEAN
-  customer_id: STRING
-  subscription_id: STRING
-}
-```
-
-#### USERS
-
----
-
-```
-{
-  id: UUID
-  organization_id: UUID foreign key in ORGANIZATIONS table
-  first_name: STRING
-  last_name: STRING
-  role: STRING [ 'owner', 'supervisor', 'employee' ]
-  email: STRING
-  phone: STRING
-  cal_visit: BOOLEAN
-  emp_visit: BOOLEAN
-  emailpref: BOOLEAN
-  phonepref: BOOLEAN
-}
-```
+`insertNewClient(filter)` -> adds new client id, loginTime and phone number to database
 
 #### Coach Routes (these are examples to be updated and do not exist yet)
 
