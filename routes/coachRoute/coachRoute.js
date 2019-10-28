@@ -80,7 +80,29 @@ router.post('/register', (req, res) => {
         });
 });
 
-router.post('/login', (req, res) => {});
+router.post('/login', (req, res) => {
+    let coach = req.body;
+
+    coachDb
+        .findCoachByEmail({ email: coach.email })
+        .then(userInfo => {
+            if (
+                coach &&
+                bcrypt.compareSync(coach.password, userInfo.password)
+            ) {
+                res.status(200).json({
+                    message: `Welcome back!!!! ${userInfo.coachName}`
+                });
+            } else {
+                res.status(401).json({
+                    message: 'Invalid username or password'
+                });
+            }
+        })
+        .catch(err => {
+            res.status(500).json({ error: err });
+        });
+});
 
 router.get('/coachFake', (req, res) => {
     axios
