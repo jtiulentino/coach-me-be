@@ -158,11 +158,13 @@ router.get('/getPatients', authenticateToken, (req, res) => {
 });
 
 // getClientGoals endpoint.
-router.get('/getClientGoals/:id', authenticateToken, (req, res) => {
+router.get('/getClientGoals/:id', (req, res) => {
     const Airtable = require('airtable');
     const base = new Airtable({ apiKey: process.env.AIRTABLE_KEY }).base(
         process.env.AIRTABLE_REFERENCE
     );
+
+    const patientId = req.params.id;
 
     let records = [];
 
@@ -178,15 +180,18 @@ router.get('/getClientGoals/:id', authenticateToken, (req, res) => {
         }
 
         let models = records.map(record => {
-            return record;
-            // if (record.get('Coach')) {
-            //     if (req.clientInfo.coachId === record.get('Coach')[0]) {
-            //         return {
-            //             clientName: record.get('Client Name'),
-            //             clientId: record.get('Coaching master table')[0]
-            //         };
-            //     }
-            // }
+            // return record;
+            if (record.get('Client Name')) {
+                if (patientId === record.get('Client Name')[0]) {
+                    return {
+                        clientId: record.get('Client Name')[0],
+                        goal: record.get("This week's goal"),
+                        goalDetails: record.get('Goal details'),
+                        startDate: record.get('Date of Check-in'),
+                        metGoal: record.get('Met goal?')
+                    };
+                }
+            }
         });
 
         let newModels = models.filter(record => record != undefined);
@@ -199,6 +204,62 @@ router.get('/getClientGoals/:id', authenticateToken, (req, res) => {
     };
 
     base('Check-ins')
+        .select({
+            view: 'Grid view'
+        })
+        .eachPage(processPage, processRecords);
+});
+
+// getClientMetrics/:id
+router.get('/getClientMetrics/:id', (req, res) => {
+    const Airtable = require('airtable');
+    const base = new Airtable({ apiKey: process.env.AIRTABLE_KEY }).base(
+        process.env.AIRTABLE_REFERENCE
+    );
+
+    const patientId = req.params.id;
+
+    let records = [];
+
+    const processPage = (partialRecords, fetchNextPage) => {
+        records = [...records, ...partialRecords];
+        fetchNextPage();
+    };
+
+    const processRecords = err => {
+        if (err) {
+            console.error(err);
+            return;
+        }
+
+        let models = records.map(record => {
+            // return record;
+            if (record.get('Client_Name')) {
+                if (patientId === record.get('Client_Name')[0]) {
+                    return {
+                        clientId: record.get('Client_Name')[0],
+                        date: record.get('Date_time'),
+                        Blood_pressure_over: record.get('Blood_pressure_over'),
+                        Blood_pressure_under: record.get(
+                            'Blood_pressure_under'
+                        ),
+                        Weight: record.get('Weight'),
+                        Blood_sugar: record.get('Blood_sugar')
+                    };
+                }
+            }
+        });
+
+        let newModels = models.filter(record => record != undefined);
+
+        console.log('new models', newModels);
+
+        res.status(200).json({
+            patientList: newModels
+        });
+    };
+
+    base('Outcomes')
         .select({
             view: 'Grid view'
         })
