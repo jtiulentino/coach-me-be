@@ -34,6 +34,9 @@ https://coach-me-backend.herokuapp.com/
 | POST   | `/clientRoute/logMetrics`            | client(token required) | input new Health Metric to database        |
 | GET    | `/clientRoute/getCoachInfo`          | client(token required) | returns current coach object               |
 | GET    | `/clientRoute//paginationGetMetrics` | client(token required) | returns full history of Metrics for client |
+| GET    | `/coachRoute/getPatients`            |                        | client(token required)                     |
+
+returns array of clients that logged in health coach is charged with
 
 # Data Model - Clients
 
@@ -194,6 +197,22 @@ _Example_
 ```
 
 ---
+
+GET `/coachRoute/getPatients` will return objects like so:
+<br>
+`/coachRoute/getPatients` returns the full list of client names and client ids that are under the coach's supervision using pagination
+
+_Example_
+
+```javascript
+"patientList": [
+        {
+            "clientName": "Joycee",
+            "clientId": "rec3NQI2MqXCQNQX1"
+        }, ...
+]
+
+```
 
 ## 2️⃣ Actions
 
