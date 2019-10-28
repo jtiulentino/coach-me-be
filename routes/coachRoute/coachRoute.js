@@ -108,31 +108,8 @@ router.post('/login', (req, res) => {
         });
 });
 
-router.get('/coachFake', (req, res) => {
-    axios
-        .get(
-            `https://api.airtable.com/v0/${process.env.AIRTABLE_REFERENCE}/Coaches`,
-            {
-                headers: {
-                    accept: 'application/json',
-                    Authorization: `Bearer ${process.env.AIRTABLE_KEY}`
-                }
-            }
-        )
-        .then(result => {
-            // console.log(result.data);
-            const records = result.data.records.filter(
-                flea => flea.fields['Full Name'] === 'Karin Underwood'
-                // flea => flea.id === 'rec5UAL376PrC0shY'
-            );
-
-            res.status(200).json({ patients: records[0].fields.Patients });
-        })
-        .catch(err => {
-            res.status(500).json({ message: err });
-        });
-});
-
+// getPatients endpoint: returns an array of patients according to the coachId of the
+// logged in account.
 router.get('/getPatients', authenticateToken, (req, res) => {
     const Airtable = require('airtable');
     const base = new Airtable({ apiKey: process.env.AIRTABLE_KEY }).base(
@@ -174,6 +151,54 @@ router.get('/getPatients', authenticateToken, (req, res) => {
     };
 
     base('Intake')
+        .select({
+            view: 'Grid view'
+        })
+        .eachPage(processPage, processRecords);
+});
+
+// getClientGoals endpoint.
+router.get('/getClientGoals/:id', authenticateToken, (req, res) => {
+    const Airtable = require('airtable');
+    const base = new Airtable({ apiKey: process.env.AIRTABLE_KEY }).base(
+        process.env.AIRTABLE_REFERENCE
+    );
+
+    let records = [];
+
+    const processPage = (partialRecords, fetchNextPage) => {
+        records = [...records, ...partialRecords];
+        fetchNextPage();
+    };
+
+    const processRecords = err => {
+        if (err) {
+            console.error(err);
+            return;
+        }
+
+        let models = records.map(record => {
+            return record;
+            // if (record.get('Coach')) {
+            //     if (req.clientInfo.coachId === record.get('Coach')[0]) {
+            //         return {
+            //             clientName: record.get('Client Name'),
+            //             clientId: record.get('Coaching master table')[0]
+            //         };
+            //     }
+            // }
+        });
+
+        let newModels = models.filter(record => record != undefined);
+
+        console.log('new models', newModels);
+
+        res.status(200).json({
+            patientList: newModels
+        });
+    };
+
+    base('Check-ins')
         .select({
             view: 'Grid view'
         })
