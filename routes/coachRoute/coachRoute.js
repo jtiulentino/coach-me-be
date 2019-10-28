@@ -135,7 +135,10 @@ router.get('/getPatients', authenticateToken, (req, res) => {
                 if (req.clientInfo.coachId === record.get('Coach')[0]) {
                     return {
                         clientName: record.get('Client Name'),
-                        clientId: record.get('Coaching master table')[0]
+                        clientId: record.get('Coaching master table')[0],
+                        conditions: record.get('Conditions'),
+                        motivations: record.get('Motivations'),
+                        language: record.get('Language')
                     };
                 }
             }
@@ -199,7 +202,7 @@ router.get('/getClientGoals/:id', (req, res) => {
         console.log('new models', newModels);
 
         res.status(200).json({
-            patientList: newModels
+            patientGoals: newModels
         });
     };
 
@@ -255,7 +258,7 @@ router.get('/getClientMetrics/:id', (req, res) => {
         console.log('new models', newModels);
 
         res.status(200).json({
-            patientList: newModels
+            patientMetrics: newModels
         });
     };
 

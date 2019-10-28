@@ -26,15 +26,19 @@ https://coach-me-backend.herokuapp.com/
 
 **Client Routes**
 
-| Method | Endpoint                             | Access Control         | Description                                |
-| ------ | ------------------------------------ | ---------------------- | ------------------------------------------ |
-| POST   | `/clientRoute/login`                 | all registered clients | Returns token to access client information |
-| GET    | `/clientRoute/getMetrics`            | client(token required) | Access current and past client Metrics     |
-| GET    | `/clientRoute/getIntakeRecords`      | client(token required) | Receives formated client Objects           |
-| POST   | `/clientRoute/logMetrics`            | client(token required) | input new Health Metric to database        |
-| GET    | `/clientRoute/getCoachInfo`          | client(token required) | returns current coach object               |
-| GET    | `/clientRoute//paginationGetMetrics` | client(token required) | returns full history of Metrics for client |
-| GET    | `/coachRoute/getPatients`            |                        | client(token required)                     |
+| Method                                                            | Endpoint                             | Access Control         | Description                                |
+| ----------------------------------------------------------------- | ------------------------------------ | ---------------------- | ------------------------------------------ |
+| POST                                                              | `/clientRoute/login`                 | all registered clients | Returns token to access client information |
+| GET                                                               | `/clientRoute/getMetrics`            | client(token required) | Access current and past client Metrics     |
+| GET                                                               | `/clientRoute/getIntakeRecords`      | client(token required) | Receives formated client Objects           |
+| POST                                                              | `/clientRoute/logMetrics`            | client(token required) | input new Health Metric to database        |
+| GET                                                               | `/clientRoute/getCoachInfo`          | client(token required) | returns current coach object               |
+| GET                                                               | `/clientRoute//paginationGetMetrics` | client(token required) | returns full history of Metrics for client |
+| GET                                                               | `/coachRoute/getPatients`            |                        | client(token required)                     | returns full list of patients |
+| GET                                                               | `/coachRoute/getClientMetrics/:id`   | requires clientId      |
+| returns full Metrics history of client id passed in dynamic route |
+| GET                                                               | `/coachRoute/getClientGoals/:id`     | requires clientId      |
+| returns full goal history of client id passed in dynamic route    |
 
 returns array of clients that logged in health coach is charged with
 
@@ -198,7 +202,7 @@ _Example_
 
 ---
 
-GET `/coachRoute/getPatients` will return objects like so:
+GET `/coachRoute/getPatients` and `/coachRoute/getClientGoals/:id` and `/coachRoute/getClientMetrics/:id` will return objects like so:
 <br>
 `/coachRoute/getPatients` returns the full list of client names and client ids that are under the coach's supervision using pagination
 
@@ -211,6 +215,43 @@ _Example_
             "clientId": "rec3NQI2MqXCQNQX1"
         }, ...
 ]
+
+```
+
+`/coachRoute/getClientGoals/:id` returns the full list of client ids, current goals, start date, goal details, and whether they met the goal. (make sure to pass a valid clientId to the dynamic route)
+
+_Example_
+
+```javascript
+"patientGoals": [
+        {
+            "clientId": "rec3NQI2MqXCQNQX1",
+            "goal": "Eating breakfast\nDo squats",
+            "goalDetails": "Going on more walks; no details on stew\n\nNumbers not what she expectedDidn't get to exercise more than 2xs a week; high calorie tiramisu for birthday\nGetting back on track - skipping a lot of things - don't miss it\nClothes fitting better",
+            "startDate": "2019-10-10T01:02:00.000Z",
+            "metGoal": "Yes"
+        }, ...
+]
+}
+
+```
+
+`/coachRoute/getClientMetrics/:id` returns the full list of client ids, blood pressure over, blood pressure under, blood glucose, and weight. (make sure to pass a valid clientId to the dynamic route)
+
+_Example_
+
+```javascript
+{
+    "patientMetrics": [
+        {
+            "clientId": "rec3NQI2MqXCQNQX1",
+            "date": "2019-10-10T01:02:00.000Z",
+            "Blood_pressure_over": 154,
+            "Blood_pressure_under": 96,
+            "Weight": 212
+        }, ...
+    ]
+}
 
 ```
 
