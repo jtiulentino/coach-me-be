@@ -7,7 +7,7 @@ const router = express.Router();
 router.get('/coachFake', (req, res) => {
     axios
         .get(
-            `https://api.airtable.com/v0/${process.env.AIRTABLE_REFERENCE}/Check-ins`,
+            `https://api.airtable.com/v0/${process.env.AIRTABLE_REFERENCE}/Coaches`,
             {
                 headers: {
                     accept: 'application/json',
@@ -17,8 +17,12 @@ router.get('/coachFake', (req, res) => {
         )
         .then(result => {
             // console.log(result.data);
-            const records = [...result.data.records];
-            res.status(200).json({ records });
+            const records = result.data.records.filter(
+                flea => flea.fields['Full Name'] === 'Karin Underwood'
+                // flea => flea.id === 'rec5UAL376PrC0shY'
+            );
+
+            res.status(200).json({ patients: records[0].fields.Patients });
         })
         .catch(err => {
             res.status(500).json({ message: err });
@@ -45,13 +49,11 @@ router.get('/fakePagination', (req, res) => {
         }
 
         let models = records.map(record => {
-            return {
-                clientName: record.get('Client Name'),
-                startDate: record.get('Date of Check-in'),
-                goal: record.get("This week's goal"),
-                metGoal: record.get('Met goal?'),
-                goalDetails: record.get('Goal details')
-            };
+            if ('rec5UAL376PrC0shY' === record.get('Coach')) {
+                return {
+                    clientName: record.get('Client Name')
+                };
+            }
         });
 
         let newModels = models.filter(record => record != undefined);
@@ -63,7 +65,7 @@ router.get('/fakePagination', (req, res) => {
         });
     };
 
-    base('Check-ins')
+    base('Intake')
         .select({
             view: 'Grid view'
         })
