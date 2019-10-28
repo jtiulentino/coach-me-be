@@ -26,13 +26,14 @@ https://coach-me-backend.herokuapp.com/
 
 **Client Routes**
 
-| Method | Endpoint                        | Access Control         | Description                                |
-| ------ | ------------------------------- | ---------------------- | ------------------------------------------ |
-| POST   | `/clientRoute/login`            | all registered clients | Returns token to access client information |
-| GET    | `/clientRoute/getMetrics`       | client(token required) | Access current and past client Metrics     |
-| GET    | `/clientRoute/getIntakeRecords` | client(token required) | Receives formated client Objects           |
-| POST   | `/clientRoute/logMetrics`       | client(token required) | input new Health Metric to database        |
-| POST   | `/clientRoute/getCoachInfo`       | client(token required) | returns current coach object       |
+| Method | Endpoint                             | Access Control         | Description                                |
+| ------ | ------------------------------------ | ---------------------- | ------------------------------------------ |
+| POST   | `/clientRoute/login`                 | all registered clients | Returns token to access client information |
+| GET    | `/clientRoute/getMetrics`            | client(token required) | Access current and past client Metrics     |
+| GET    | `/clientRoute/getIntakeRecords`      | client(token required) | Receives formated client Objects           |
+| POST   | `/clientRoute/logMetrics`            | client(token required) | input new Health Metric to database        |
+| GET    | `/clientRoute/getCoachInfo`          | client(token required) | returns current coach object               |
+| GET    | `/clientRoute//paginationGetMetrics` | client(token required) | returns full history of Metrics for client |
 
 # Data Model - Clients
 
@@ -92,7 +93,9 @@ _Example_
 
 ---
 
-GET `/clientRoute/getMetrics` will return objects like so:
+GET `/clientRoute/getMetrics` and `/clientRoute/paginationGetMetrics` will return objects like so:
+<br>
+`/paginationGetMetrics` returns the full client history using pagination
 
 _Example_
 
@@ -137,6 +140,22 @@ _Example_
       "clientId": "rec1CpLM0RxgOfXfx"
     }
   ]
+}
+
+```
+
+---
+
+GET `/clientRoute/getCoachInfo` will return an object like so:
+
+_Example_
+
+```javascript
+{
+    "coachObject": {
+        "coachName": "Karin Underwood",
+        "coachUrl": "https://dl.airtable.com/.attachments/2964a7624923f374610c1b583a7edc24/3b8b5096/Karin_bitmoji.jpeg"
+    }
 }
 
 ```
