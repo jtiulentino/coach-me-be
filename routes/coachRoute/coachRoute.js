@@ -5,6 +5,8 @@ const bcrypt = require('bcryptjs');
 const coachDb = require('./coachModel.js');
 const uuidv4 = require('uuid/v4');
 
+const { generateToken } = require('./coachAuth.js');
+
 const router = express.Router();
 
 router.post('/register', (req, res) => {
@@ -90,8 +92,10 @@ router.post('/login', (req, res) => {
                 coach &&
                 bcrypt.compareSync(coach.password, userInfo.password)
             ) {
+                const token = generateToken(userInfo);
                 res.status(200).json({
-                    message: `Welcome back!!!! ${userInfo.coachName}`
+                    message: `Welcome back!!!! ${userInfo.coachName}`,
+                    token
                 });
             } else {
                 res.status(401).json({
