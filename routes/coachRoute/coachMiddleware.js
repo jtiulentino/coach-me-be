@@ -5,8 +5,37 @@ const coachDb = require('./coachModel.js');
 
 module.exports = {
     validateCoachName,
-    addToUserTable
+    addToUserTable,
+    formatCoachName,
+    validateRegisterPost,
+    validateLoginPost
 };
+
+function validateLoginPost(req, res, next) {
+    if (req.body.email && req.body.password) {
+        next();
+    } else {
+        res.status(400).json({
+            message: 'Input fields require an email and password.'
+        });
+    }
+}
+
+function validateRegisterPost(req, res, next) {
+    if (req.body.name && req.body.password && req.body.email) {
+        next();
+    } else {
+        res.status(400).json({
+            message: 'You need to input a name, email, and password.'
+        });
+    }
+}
+
+function formatCoachName(req, res, next) {
+    let coachName = req.body.name.split(/[ ]+/);
+    req.body.name = coachName.join(' ');
+    next();
+}
 
 function validateCoachName(req, res, next) {
     axios
