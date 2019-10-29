@@ -269,4 +269,50 @@ router.get('/getClientMetrics/:id', (req, res) => {
         .eachPage(processPage, processRecords);
 });
 
+// getLastCheckinTime/:id Returns the date of the last checkin.
+router.get('/getLastCheckinTime/:id', (req, res) => {
+    const Airtable = require('airtable');
+    const base = new Airtable({ apiKey: process.env.AIRTABLE_KEY }).base(
+        process.env.AIRTABLE_REFERENCE
+    );
+
+    const patientId = req.params.id;
+
+    let records = [];
+
+    const processPage = (partialRecords, fetchNextPage) => {
+        records = [...records, ...partialRecords];
+        fetchNextPage();
+    };
+
+    const processRecords = err => {
+        if (err) {
+            console.error(err);
+            return;
+        }
+
+        let models = records.map(record => {
+            // return record.id;
+            if (patientId === record.id) {
+                return {
+                    lastCheckin: record.get('Last check-in')
+                };
+            }
+        });
+
+        let newModels = models.filter(record => record != undefined);
+
+        res.status(200).json({
+            lastCheckin: newModels[0].lastCheckin,
+            clientId: patientId
+        });
+    };
+
+    base('Master')
+        .select({
+            view: 'Grid view'
+        })
+        .eachPage(processPage, processRecords);
+});
+
 module.exports = router;
