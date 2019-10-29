@@ -4,7 +4,8 @@ module.exports = {
     insertNewCoach,
     insertNewUser,
     findCoachByPhone,
-    findCoachByEmail
+    findCoachByEmail,
+    insertNewPatient
 };
 
 function findCoachByPhone(filter) {
@@ -25,4 +26,8 @@ function findCoachByEmail(filter) {
     return db('coaches')
         .where(filter)
         .first();
+}
+
+function insertNewPatient(patientObject) {
+    return db('patients').insert(patientObject, 'patientId');
 }
