@@ -1,6 +1,4 @@
-import crypto from 'crypto';
 const bcrypt = require('bcryptjs');
-require('dotenv').config();
 const User = require('./coachRoute/coachModel.js');
 
 const router = express.Router();
@@ -21,3 +19,5 @@ router.get('/reset', (req, res, next) => {
         }
     });
 });
+
+module.exports = router;
