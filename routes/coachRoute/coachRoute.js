@@ -6,11 +6,35 @@ const coachDb = require('./coachModel.js');
 const uuidv4 = require('uuid/v4');
 
 const { generateToken, authenticateToken } = require('./coachAuth.js');
-const { validateCoachName } = require('./coachMiddleware.js');
+const { validateCoachName, addToUserTable } = require('./coachMiddleware.js');
 
 const router = express.Router();
 
-router.post('/newRegister', validateCoachName, (req, res) => {});
+router.post('/newRegister', validateCoachName, addToUserTable, (req, res) => {
+    coachDb
+        .findCoachByPhone({ userPhone: req.body.userPhone })
+        .then(result => {
+            coachDb
+                .insertNewCoach({
+                    coachId: req.body.coachId,
+                    coachName: req.body.name,
+                    email: req.body.email,
+                    password: req.body.password,
+                    userId: result.userId
+                })
+                .then(result => {
+                    res.status(201).json({
+                        message: 'new Coach has been added to coach table!'
+                    });
+                })
+                .catch(err => {
+                    res.status(500).json({ error: err });
+                });
+        })
+        .catch(err => {
+            res.status(500).json({ message: err });
+        });
+});
 
 router.post('/register', (req, res) => {
     let coach = req.body;

@@ -1,9 +1,11 @@
 const axios = require('axios');
+const uuidv4 = require('uuid/v4');
 
 const coachDb = require('./coachModel.js');
 
 module.exports = {
-    validateCoachName
+    validateCoachName,
+    addToUserTable
 };
 
 function validateCoachName(req, res, next) {
@@ -26,10 +28,10 @@ function validateCoachName(req, res, next) {
                 req.body.userPhone = records[0].fields['Google Voice Number'];
                 req.body.coachId = records[0].id;
                 req.body.role = 'coach';
-                res.status(200).json({
-                    ...req.body
-                });
-                // next();
+                // res.status(200).json({
+                //     ...req.body
+                // });
+                next();
             } else {
                 res.status(400).json({
                     message: "Can't find name in airtable database."
@@ -41,4 +43,17 @@ function validateCoachName(req, res, next) {
         });
 }
 
-// function addToUserTable()
+function addToUserTable(req, res, next) {
+    coachDb
+        .insertNewUser({
+            userPhone: req.body.userPhone,
+            role: req.body.role,
+            userId: uuidv4()
+        })
+        .then(result => {
+            next();
+        })
+        .catch(err => {
+            res.status(500).json({ error: err });
+        });
+}
