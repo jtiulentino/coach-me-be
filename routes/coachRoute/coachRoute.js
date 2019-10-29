@@ -6,10 +6,11 @@ const coachDb = require('./coachModel.js');
 const uuidv4 = require('uuid/v4');
 
 const { generateToken, authenticateToken } = require('./coachAuth.js');
+const { validateCoachName } = require('./coachMiddleware.js');
 
 const router = express.Router();
 
-router.post('/newRegister', (req, res) => {});
+router.post('/newRegister', validateCoachName, (req, res) => {});
 
 router.post('/register', (req, res) => {
     let coach = req.body;

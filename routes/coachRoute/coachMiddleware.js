@@ -1,3 +1,5 @@
+const axios = require('axios');
+
 const coachDb = require('./coachModel.js');
 
 module.exports = {
@@ -19,9 +21,24 @@ function validateCoachName(req, res, next) {
             const records = result.data.records.filter(
                 flea => flea.fields['Full Name'] === req.body.name
             );
-            res.status(200).json({ message: records });
+
+            if (records.length > 0) {
+                req.body.userPhone = records[0].fields['Google Voice Number'];
+                req.body.coachId = records[0].id;
+                req.body.role = 'coach';
+                res.status(200).json({
+                    ...req.body
+                });
+                // next();
+            } else {
+                res.status(400).json({
+                    message: "Can't find name in airtable database."
+                });
+            }
         })
         .catch(err => {
             res.status(500).json({ error: err });
         });
 }
+
+// function addToUserTable()
