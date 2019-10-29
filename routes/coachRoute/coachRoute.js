@@ -10,7 +10,8 @@ const {
     validateCoachName,
     addToUserTable,
     formatCoachName,
-    validateRegisterPost
+    validateRegisterPost,
+    validateLoginPost
 } = require('./coachMiddleware.js');
 
 const router = express.Router();
@@ -25,6 +26,8 @@ router.post(
         coachDb
             .findCoachByPhone({ userPhone: req.body.userPhone })
             .then(result => {
+                const hash = bcrypt.hashSync(req.body.password, 14);
+                req.body.password = hash;
                 coachDb
                     .insertNewCoach({
                         coachId: req.body.coachId,
@@ -121,7 +124,7 @@ router.post('/register', (req, res) => {
         });
 });
 
-router.post('/login', (req, res) => {
+router.post('/login', validateLoginPost, (req, res) => {
     let coach = req.body;
 
     coachDb

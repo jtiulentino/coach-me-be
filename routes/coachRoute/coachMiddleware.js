@@ -7,8 +7,19 @@ module.exports = {
     validateCoachName,
     addToUserTable,
     formatCoachName,
-    validateRegisterPost
+    validateRegisterPost,
+    validateLoginPost
 };
+
+function validateLoginPost(req, res, next) {
+    if (req.body.email && req.body.password) {
+        next();
+    } else {
+        res.status(400).json({
+            message: 'Input fields require an email and password.'
+        });
+    }
+}
 
 function validateRegisterPost(req, res, next) {
     if (req.body.name && req.body.password && req.body.email) {
