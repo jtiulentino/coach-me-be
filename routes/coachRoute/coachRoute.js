@@ -9,6 +9,8 @@ const { generateToken, authenticateToken } = require('./coachAuth.js');
 
 const router = express.Router();
 
+router.post('/newRegister', (req, res) => {});
+
 router.post('/register', (req, res) => {
     let coach = req.body;
 
