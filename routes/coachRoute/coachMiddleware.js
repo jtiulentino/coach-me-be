@@ -161,16 +161,42 @@ function addToUserPatientTable(req, res, next) {
                                 })
                                 .then(res => {
                                     console.log('from findCoachByPhone', res);
+
+                                    coachDb
+                                        .insertNewPatient({
+                                            userId: res.userId,
+                                            patientId:
+                                                req.patientInfo[i].patientId,
+                                            patientName:
+                                                req.patientInfo[i].patientName,
+                                            coachId: req.patientInfo[i].coachId
+                                        })
+                                        .then(res => {
+                                            console.log(
+                                                'patient added to patient table'
+                                            );
+                                        })
+                                        .catch(err => {
+                                            console.log(
+                                                'error from patient table',
+                                                err
+                                            );
+                                        });
+                                })
+                                .catch(err => {
+                                    console.log(
+                                        'unable to find user with phone number'
+                                    );
                                 });
                         })
                         .catch(err => {
                             console.log('unable to add patient');
                         });
                 } else {
-                    console.log('patient name', req.patientInfo[i].clientName);
+                    console.log('patient name', req.patientInfo[i].patientName);
                 }
             });
     }
 
-    res.status(200).json({ message: 'endpoint hit!!!' });
+    next();
 }
