@@ -1,11 +1,16 @@
 const express = require('express');
 const axios = require('axios');
+const twilio = require('twilio')
 // grabbing token and auth middleware
 const { generateToken, authenticateToken } = require('./authenticate');
 const {
     loginMiddleware,
     reformatPhoneNumber
 } = require('./clientMiddleware.js');
+const accountSid = process.env.ACCOUNT_SID;
+const authToken = process.env.AUTH_TOKEN;
+const client = require("twilio")(accountSid, authToken);
+
 
 const router = express.Router();
 
@@ -90,5 +95,9 @@ router.get('/getMetrics', authenticateToken, (req, res) => {
 router.patch('/logMetrics', (req, res) => {
     res.status(200).json({ message: 'needs something' });
 });
+
+
+
+
 
 module.exports = router;
