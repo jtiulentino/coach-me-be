@@ -365,4 +365,20 @@ router.get('/getLastCheckinTime/:id', (req, res) => {
         .eachPage(processPage, processRecords);
 });
 
+// creates conversation instance in the conversations table. Requires coachId and patientId:
+router.post('/makeConversation', authenticateToken, (req, res) => {
+    req.body.coachId = req.clientInfo.coachId;
+    req.body.conversationId = uuidv4();
+    coachDb
+        .insertConversation(req.body)
+        .then(result => {
+            res.status(201).json({
+                message: 'New conversation has been added'
+            });
+        })
+        .catch(err => {
+            res.status(500).json({ error: err });
+        });
+});
+
 module.exports = router;
