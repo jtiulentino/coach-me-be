@@ -11,7 +11,9 @@ const {
     addToUserTable,
     formatCoachName,
     validateRegisterPost,
-    validateLoginPost
+    validateLoginPost,
+    getPatientInfo,
+    addToUserPatientTable
 } = require('./coachMiddleware.js');
 
 const router = express.Router();
@@ -152,55 +154,61 @@ router.post('/login', validateLoginPost, (req, res) => {
 
 // getPatients endpoint: returns an array of patients according to the coachId of the
 // logged in account.
-router.get('/getPatients', authenticateToken, (req, res) => {
-    const Airtable = require('airtable');
-    const base = new Airtable({ apiKey: process.env.AIRTABLE_KEY }).base(
-        process.env.AIRTABLE_REFERENCE
-    );
+router.get(
+    '/getPatients',
+    authenticateToken,
+    getPatientInfo,
+    addToUserPatientTable,
+    (req, res) => {
+        const Airtable = require('airtable');
+        const base = new Airtable({ apiKey: process.env.AIRTABLE_KEY }).base(
+            process.env.AIRTABLE_REFERENCE
+        );
 
-    let records = [];
+        let records = [];
 
-    const processPage = (partialRecords, fetchNextPage) => {
-        records = [...records, ...partialRecords];
-        fetchNextPage();
-    };
+        const processPage = (partialRecords, fetchNextPage) => {
+            records = [...records, ...partialRecords];
+            fetchNextPage();
+        };
 
-    const processRecords = err => {
-        if (err) {
-            console.error(err);
-            return;
-        }
-
-        let models = records.map(record => {
-            // return record;
-            if (record.get('Coach')) {
-                if (req.clientInfo.coachId === record.get('Coach')[0]) {
-                    return {
-                        clientName: record.get('Client Name'),
-                        clientId: record.get('Coaching master table')[0],
-                        conditions: record.get('Conditions'),
-                        motivations: record.get('Motivations'),
-                        language: record.get('Language')
-                    };
-                }
+        const processRecords = err => {
+            if (err) {
+                console.error(err);
+                return;
             }
-        });
 
-        let newModels = models.filter(record => record != undefined);
+            let models = records.map(record => {
+                // return record;
+                if (record.get('Coach')) {
+                    if (req.clientInfo.coachId === record.get('Coach')[0]) {
+                        return {
+                            clientName: record.get('Client Name'),
+                            clientId: record.get('Coaching master table')[0],
+                            conditions: record.get('Conditions'),
+                            motivations: record.get('Motivations'),
+                            language: record.get('Language')
+                        };
+                    }
+                }
+            });
 
-        console.log('new models', newModels);
+            let newModels = models.filter(record => record != undefined);
 
-        res.status(200).json({
-            patientList: newModels
-        });
-    };
+            console.log('new models', newModels);
 
-    base('Intake')
-        .select({
-            view: 'Grid view'
-        })
-        .eachPage(processPage, processRecords);
-});
+            res.status(200).json({
+                patientList: newModels
+            });
+        };
+
+        base('Intake')
+            .select({
+                view: 'Grid view'
+            })
+            .eachPage(processPage, processRecords);
+    }
+);
 
 // getClientGoals endpoint.
 router.get('/getClientGoals/:id', (req, res) => {
@@ -355,6 +363,22 @@ router.get('/getLastCheckinTime/:id', (req, res) => {
             view: 'Grid view'
         })
         .eachPage(processPage, processRecords);
+});
+
+// creates conversation instance in the conversations table. Requires coachId and patientId:
+router.post('/makeConversation', authenticateToken, (req, res) => {
+    req.body.coachId = req.clientInfo.coachId;
+    req.body.conversationId = uuidv4();
+    coachDb
+        .insertConversation(req.body)
+        .then(result => {
+            res.status(201).json({
+                message: 'New conversation has been added'
+            });
+        })
+        .catch(err => {
+            res.status(500).json({ error: err });
+        });
 });
 
 module.exports = router;

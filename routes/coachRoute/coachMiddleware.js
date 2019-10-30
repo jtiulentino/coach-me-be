@@ -1,5 +1,6 @@
 const axios = require('axios');
 const uuidv4 = require('uuid/v4');
+const Airtable = require('airtable');
 
 const coachDb = require('./coachModel.js');
 
@@ -8,7 +9,9 @@ module.exports = {
     addToUserTable,
     formatCoachName,
     validateRegisterPost,
-    validateLoginPost
+    validateLoginPost,
+    addToUserPatientTable,
+    getPatientInfo
 };
 
 function validateLoginPost(req, res, next) {
@@ -85,4 +88,115 @@ function addToUserTable(req, res, next) {
         .catch(err => {
             res.status(500).json({ error: err });
         });
+}
+
+function getPatientInfo(req, res, next) {
+    const base = new Airtable({ apiKey: process.env.AIRTABLE_KEY }).base(
+        process.env.AIRTABLE_REFERENCE
+    );
+
+    let records = [];
+
+    const processPage = (partialRecords, fetchNextPage) => {
+        records = [...records, ...partialRecords];
+        fetchNextPage();
+    };
+
+    const processRecords = err => {
+        if (err) {
+            console.error(err);
+            return;
+        }
+
+        let models = records.map(record => {
+            // return record;
+            if (record.get('Coach')) {
+                if (req.clientInfo.coachId === record.get('Coach')[0]) {
+                    return {
+                        patientName: record.get('Client Name'),
+                        patientId: record.get('Coaching master table')[0],
+                        coachId: record.get('Coach')[0],
+                        role: 'patient',
+                        userPhone: record.get('Phone')
+                    };
+                }
+            }
+        });
+
+        let patientInfo = models.filter(record => record != undefined);
+
+        // res.status(200).json({
+        //     patientList: newModels
+        // });
+
+        req.patientInfo = patientInfo;
+
+        next();
+    };
+
+    base('Intake')
+        .select({
+            view: 'Grid view'
+        })
+        .eachPage(processPage, processRecords);
+}
+
+function addToUserPatientTable(req, res, next) {
+    for (let i = 0; i < req.patientInfo.length; i++) {
+        coachDb
+            .findCoachByPhone({ userPhone: req.patientInfo[i].userPhone })
+            .then(result => {
+                console.log(result);
+                if (result === undefined) {
+                    coachDb
+                        .insertNewUser({
+                            userPhone: req.patientInfo[i].userPhone,
+                            role: req.patientInfo[i].role,
+                            userId: uuidv4()
+                        })
+                        .then(result => {
+                            coachDb
+                                .findCoachByPhone({
+                                    userPhone: req.patientInfo[i].userPhone
+                                })
+                                .then(res => {
+                                    console.log('from findCoachByPhone', res);
+
+                                    coachDb
+                                        .insertNewPatient({
+                                            userId: res.userId,
+                                            patientId:
+                                                req.patientInfo[i].patientId,
+                                            patientName:
+                                                req.patientInfo[i].patientName,
+                                            coachId: req.patientInfo[i].coachId
+                                        })
+                                        .then(res => {
+                                            console.log(
+                                                'patient added to patient table'
+                                            );
+                                        })
+                                        .catch(err => {
+                                            console.log(
+                                                'error from patient table',
+                                                err
+                                            );
+                                        });
+                                })
+                                .catch(err => {
+                                    console.log(
+                                        'unable to find user with phone number'
+                                    );
+                                });
+                        })
+                        .catch(err => {
+                            console.log('unable to add patient');
+                        });
+                } else {
+                    console.log('patient name', req.patientInfo[i].patientName);
+                }
+            });
+    }
+
+    next();
 }
