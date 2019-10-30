@@ -8,7 +8,8 @@ module.exports = {
     addToUserTable,
     formatCoachName,
     validateRegisterPost,
-    validateLoginPost
+    validateLoginPost,
+    addToPatientTable
 };
 
 function validateLoginPost(req, res, next) {
@@ -84,5 +85,16 @@ function addToUserTable(req, res, next) {
         })
         .catch(err => {
             res.status(500).json({ error: err });
+        });
+}
+
+function addToPatientTable(req, res, next) {
+    coachDb
+        .findCoachByPhone({ userPhone: placeholder })
+        .then(result => {
+            console.log(result);
+        })
+        .catch(err => {
+            console.log(err);
         });
 }
