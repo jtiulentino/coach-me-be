@@ -3,6 +3,11 @@ const axios = require('axios');
 const http = require('http');
 const MessagingResponse = require('twilio').twiml.MessagingResponse;
 
+const {
+    generateToken,
+    authenticateToken
+} = require('../coachRoute/coachAuth.js');
+
 const accountSid = process.env.ACCOUNT_SID;
 const authToken = process.env.AUTH_TOKEN;
 const client = require('twilio')(accountSid, authToken);
