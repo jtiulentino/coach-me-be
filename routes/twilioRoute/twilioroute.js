@@ -33,7 +33,7 @@ router.post('/twilio', (req, res) => {
         });
 });
 
-router.get('/messagehistory/:phone', authenticateToken, (req, res) => {
+router.get('/messagehistory/:phone', (req, res) => {
     let cleanedPhone = ('' + req.params.phone).replace(/\D/g, '');
     client.messages
 
