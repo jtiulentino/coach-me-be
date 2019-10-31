@@ -9,6 +9,8 @@ const router = express.Router();
 
 router.post('/forgotPassword', (req, res, next) => {
     // Error Handling
+
+    console.log('email from forget route', req.body.email);
     if (req.body.email === '') {
         res.json('email required');
     }
