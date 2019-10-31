@@ -59,19 +59,23 @@ router.post('/schedule', (req, res) => {
     // res.status(200).json({ lookit: req.body });
     let cleanedNumber = ('' + req.body.Phone).replace(/\D/g, '');
 
-    // res.status(200).json({ cleaned });
+    const numbers = req.body.numbers;
 
     var textJob = new cronJob(
         `${req.body.min} ${req.body.hour} ${req.body.dom} ${req.body.month} ${req.body.weekday} ${req.body.year}`,
         function() {
-            client.messages.create(
-                {
-                    to: '+13529893703',
-                    from: '+12055123191',
-                    body: `${req.body.msg}`
-                },
-                function(err, data) {}
-            );
+            for (var i = 0; i < numbers.length; i++) {
+                client.messages.create(
+                    {
+                        to: numbers[i],
+                        from: '+12055123191',
+                        body: `${req.body.msg}`
+                    },
+                    function(err, data) {
+                        console.log(data.body);
+                    }
+                );
+            }
         },
         null,
         true
