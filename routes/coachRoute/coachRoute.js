@@ -28,7 +28,7 @@ router.post(
         coachDb
             .findCoachByPhone({ userPhone: req.body.userPhone })
             .then(result => {
-                const hash = bcrypt.hashSync(req.body.password, 14);
+                const hash = bcrypt.hashSync(req.body.password, 4);
                 req.body.password = hash;
                 coachDb
                     .insertNewCoach({
@@ -39,9 +39,23 @@ router.post(
                         userId: result.userId
                     })
                     .then(result => {
-                        res.status(201).json({
-                            message: 'new Coach has been added to coach table!'
-                        });
+                        // res.status(201).json({
+                        //     message: 'new Coach has been added to coach table!'
+                        // });
+                        let coach = req.body;
+
+                        coachDb
+                            .findCoachByEmail({ email: coach.email })
+                            .then(userInfo => {
+                                const token = generateToken(userInfo);
+                                res.status(200).json({
+                                    message: `Coach ${userInfo.coachName} has been register in database.`,
+                                    token
+                                });
+                            })
+                            .catch(err => {
+                                res.status(500).json({ error: err });
+                            });
                     })
                     .catch(err => {
                         res.status(500).json({ error: err });
@@ -56,7 +70,7 @@ router.post(
 router.post('/register', (req, res) => {
     let coach = req.body;
 
-    const hash = bcrypt.hashSync(coach.password, 14);
+    const hash = bcrypt.hashSync(coach.password, 4);
     coach.password = hash;
 
     axios
@@ -187,7 +201,8 @@ router.get(
                             clientId: record.get('Coaching master table')[0],
                             conditions: record.get('Conditions'),
                             motivations: record.get('Motivations'),
-                            language: record.get('Language')
+                            language: record.get('Language'),
+                            clientPhone: record.get('Phone')
                         };
                     }
                 }
