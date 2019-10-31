@@ -47,8 +47,7 @@ router.get('/messagehistory/:phone', (req, res) => {
                 message => message.from === `+1${cleanedPhone}`
             );
             res.status(200).json({
-                toMessages: filteredMessagesTo,
-                fromMessages: filteredMessagesFrom
+                messages: [...filteredMessagesTo, ...filteredMessagesFrom]
             });
         })
         .catch(err => {
