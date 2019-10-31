@@ -1,6 +1,6 @@
 const express = require('express');
 const axios = require('axios');
-const twilio = require('twilio')
+const twilio = require('twilio');
 const Airtable = require('airtable');
 // const {insertNewClient} = require('./clientModel')
 // grabbing token and auth middleware
@@ -16,8 +16,7 @@ const {
 } = require('./clientMiddleware.js');
 const accountSid = process.env.ACCOUNT_SID;
 const authToken = process.env.AUTH_TOKEN;
-const client = require("twilio")(accountSid, authToken);
-
+const client = require('twilio')(accountSid, authToken);
 
 const router = express.Router();
 
@@ -348,10 +347,6 @@ router.get('/getCoachInfo', authenticateToken, (req, res) => {
             res.status(500).json({ error: err });
         });
 });
-
-
-
-
 
 module.exports = router;
 

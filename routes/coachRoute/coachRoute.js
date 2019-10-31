@@ -210,7 +210,7 @@ router.get(
 
             let newModels = models.filter(record => record != undefined);
 
-            console.log('new models', newModels);
+            // console.log('new models', newModels);
 
             res.status(200).json({
                 patientList: newModels

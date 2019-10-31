@@ -32,6 +32,7 @@ router.post('/twilio', (req, res) => {
             res.status(500).json({ error: err });
         });
 });
+
 router.get('/messagehistory/:phone', authenticateToken, (req, res) => {
     let cleanedPhone = ('' + req.params.phone).replace(/\D/g, '');
     client.messages
