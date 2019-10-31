@@ -34,15 +34,21 @@ router.post('/twilio', (req, res) => {
 });
 router.get('/messagehistory/:phone', authenticateToken, (req, res) => {
     let cleanedPhone = ('' + req.params.phone).replace(/\D/g, '');
-    res.status(200).json({ Phone: cleanedPhone });
     client.messages
 
-        .list({ limit: 100 })
-        // .then(res.status(200).json(messages => messages.map(m=>(m.sid))))
+        .list({ limit: 9000 })
 
         .then(messages => {
-            const filteredMessages = messages.filter();
-            res.status(200).json({ messages });
+            const filteredMessagesTo = messages.filter(
+                message => message.to === `+1${cleanedPhone}`
+            );
+            const filteredMessagesFrom = messages.filter(
+                message => message.from === `+1${cleanedPhone}`
+            );
+            res.status(200).json({
+                toMessages: filteredMessagesTo,
+                fromMessages: filteredMessagesFrom
+            });
         })
         .catch(err => {
             res.status(500).json({ error: err });
