@@ -41,6 +41,7 @@ function formatCoachName(req, res, next) {
 }
 
 function validateCoachName(req, res, next) {
+    // Calls Coaches table to get all the information of each coach. Not using pagination.
     axios
         .get(
             `https://api.airtable.com/v0/${process.env.AIRTABLE_REFERENCE}/Coaches`,
@@ -52,17 +53,17 @@ function validateCoachName(req, res, next) {
             }
         )
         .then(result => {
+            // filters through all the rows in Coaches table and finds the record of the registering user.
             const records = result.data.records.filter(
                 flea => flea.fields['Full Name'] === req.body.name
             );
 
+            // inserts the needed information (for inputting new coaches in the User and Coaches tables)
+            // into the req.body object for easy access.
             if (records.length > 0) {
                 req.body.userPhone = records[0].fields['Google Voice Number'];
                 req.body.coachId = records[0].id;
                 req.body.role = 'coach';
-                // res.status(200).json({
-                //     ...req.body
-                // });
                 next();
             } else {
                 res.status(400).json({
@@ -75,6 +76,8 @@ function validateCoachName(req, res, next) {
         });
 }
 
+// This middleware inserts the registering coach information into the server database
+// particularly the users table.
 function addToUserTable(req, res, next) {
     coachDb
         .insertNewUser({
@@ -90,6 +93,9 @@ function addToUserTable(req, res, next) {
         });
 }
 
+// This middleware uses pagination to find the patient information from the Intake airtable.
+// getPatientInfo is primarly used for obtaining the information needed to populate the
+// users and patients table with required data.
 function getPatientInfo(req, res, next) {
     const base = new Airtable({ apiKey: process.env.AIRTABLE_KEY }).base(
         process.env.AIRTABLE_REFERENCE
@@ -125,10 +131,8 @@ function getPatientInfo(req, res, next) {
 
         let patientInfo = models.filter(record => record != undefined);
 
-        // res.status(200).json({
-        //     patientList: newModels
-        // });
-
+        // places the resulting array into a req object so that the other middleware in the
+        // chain can access it. (the next middleware is addToUserPatientTable).
         req.patientInfo = patientInfo;
 
         next();
@@ -141,13 +145,19 @@ function getPatientInfo(req, res, next) {
         .eachPage(processPage, processRecords);
 }
 
+// The following middleware adds all the information from req.patientInfo into first the Users table than the
+// patients table.
 function addToUserPatientTable(req, res, next) {
     for (let i = 0; i < req.patientInfo.length; i++) {
         coachDb
             .findCoachByPhone({ userPhone: req.patientInfo[i].userPhone })
             .then(result => {
                 console.log(result);
+
+                // first checks if the patient already exists in the users table. if so
+                // the nested promises are skipped and the loop moves onto the next patient.
                 if (result === undefined) {
+                    // inserts the patient into the users table.
                     coachDb
                         .insertNewUser({
                             userPhone: req.patientInfo[i].userPhone,
@@ -155,6 +165,7 @@ function addToUserPatientTable(req, res, next) {
                             userId: uuidv4()
                         })
                         .then(result => {
+                            // finds the userId of the newly created user record in the users table.
                             coachDb
                                 .findCoachByPhone({
                                     userPhone: req.patientInfo[i].userPhone
@@ -162,6 +173,8 @@ function addToUserPatientTable(req, res, next) {
                                 .then(res => {
                                     console.log('from findCoachByPhone', res);
 
+                                    // Lastly this inserts the patient information into the patients table
+                                    // including the userId.
                                     coachDb
                                         .insertNewPatient({
                                             userId: res.userId,
