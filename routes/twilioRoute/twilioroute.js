@@ -2,7 +2,7 @@ const express = require('express');
 const axios = require('axios');
 const http = require('http');
 const MessagingResponse = require('twilio').twiml.MessagingResponse;
-const cronJob = require('cron').CronJob;
+const cron = require('node-cron');
 
 const {
     generateToken,
@@ -56,6 +56,9 @@ router.get('/messagehistory/:phone', authenticateToken, (req, res) => {
 });
 
 router.post('/schedule', (req, res) => {
+    if (req.body.sec === '') {
+        req.body.sec = '*';
+    }
     if (req.body.min === '') {
         req.body.min = '*';
     }
@@ -71,33 +74,27 @@ router.post('/schedule', (req, res) => {
     if (req.body.weekday === '') {
         req.body.weekday = '*';
     }
-    if (req.body.year === '') {
-        req.body.year = '*';
-    }
     console.log(req.body, 'RECEIVED DATA');
 
-    let cleanedNumber = ('' + req.body.Phone).replace(/\D/g, '');
+    // let cleanedNumber = ('' + req.body.Phone).replace(/\D/g, '');
 
     const numbers = req.body.numbers;
 
-    var textJob = new cronJob(
-        `${req.body.min} ${req.body.hour} ${req.body.dom} ${req.body.month} ${req.body.weekday} ${req.body.year}`,
+    const task = cron.schedule(
+        `${req.body.sec} ${req.body.min} ${req.body.hour} ${req.body.dom} ${req.body.month} ${req.body.weekday}`,
         function() {
-            // for (var i = 0; i < numbers.length; i++) {
-            client.messages.create(
-                {
-                    to: `${req.body.numbers}`,
+            console.log('---------------------');
+            console.log('Running Cron Job');
+            client.messages
+                .create({
+                    body: `${req.body.msg}`,
                     from: '+12055123191',
-                    body: `${req.body.msg}`
-                },
-                function(err, data) {
-                    console.log(data.body);
-                }
-            );
-            // }
-        },
-        null,
-        true
+                    to: `${req.body.numbers}`
+                })
+                .then(result =>
+                    res.status(200).json({ msg: 'message scheduled' })
+                );
+        }
     );
 });
 
