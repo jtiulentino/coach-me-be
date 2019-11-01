@@ -18,6 +18,7 @@ const {
 
 const router = express.Router();
 
+// refactored registration endpoint.
 router.post(
     '/newRegister',
     validateRegisterPost,
@@ -25,11 +26,15 @@ router.post(
     validateCoachName,
     addToUserTable,
     (req, res) => {
+        // used to get the userId from the users table.
         coachDb
             .findCoachByPhone({ userPhone: req.body.userPhone })
             .then(result => {
+                // hashes the coach's password before being inserted into the coaches table
                 const hash = bcrypt.hashSync(req.body.password, 4);
                 req.body.password = hash;
+
+                // inserts coach information into the coaches table.
                 coachDb
                     .insertNewCoach({
                         coachId: req.body.coachId,
@@ -44,6 +49,8 @@ router.post(
                         // });
                         let coach = req.body;
 
+                        // used to find the registering coach's information and generates a jsonwebtoken
+                        // that can be used in the frontend.
                         coachDb
                             .findCoachByEmail({ email: coach.email })
                             .then(userInfo => {
@@ -67,6 +74,7 @@ router.post(
     }
 );
 
+// old register endpoint (no longer in use).
 router.post('/register', (req, res) => {
     let coach = req.body;
 
@@ -140,9 +148,11 @@ router.post('/register', (req, res) => {
         });
 });
 
+// coach login endpoint.
 router.post('/login', validateLoginPost, (req, res) => {
     let coach = req.body;
 
+    // checks to see if the login email is actually in the coaches table.
     coachDb
         .findCoachByEmail({ email: coach.email })
         .then(userInfo => {
@@ -167,7 +177,7 @@ router.post('/login', validateLoginPost, (req, res) => {
 });
 
 // getPatients endpoint: returns an array of patients according to the coachId of the
-// logged in account.
+// logged in account. Uses pagination airtable function.
 router.get(
     '/getPatients',
     authenticateToken,
@@ -225,7 +235,8 @@ router.get(
     }
 );
 
-// getClientGoals endpoint.
+// getClientGoals endpoint. Returns an array of goals of the passed in patientId.
+// The patientId needs to exist on airtable for an array to be returned.
 router.get('/getClientGoals/:id', (req, res) => {
     const Airtable = require('airtable');
     const base = new Airtable({ apiKey: process.env.AIRTABLE_KEY }).base(
@@ -278,7 +289,8 @@ router.get('/getClientGoals/:id', (req, res) => {
         .eachPage(processPage, processRecords);
 });
 
-// getClientMetrics/:id
+// getClientMetrics/:id. Returns an array of all the health metrics of a passed in patientId.
+// The patientId needs to exist on airtable for an array to be returned.
 router.get('/getClientMetrics/:id', (req, res) => {
     const Airtable = require('airtable');
     const base = new Airtable({ apiKey: process.env.AIRTABLE_KEY }).base(
@@ -334,7 +346,7 @@ router.get('/getClientMetrics/:id', (req, res) => {
         .eachPage(processPage, processRecords);
 });
 
-// getLastCheckinTime/:id Returns the date of the last checkin.
+// getLastCheckinTime/:id Returns the date of the last checkin using the patientId from airtable.
 router.get('/getLastCheckinTime/:id', (req, res) => {
     const Airtable = require('airtable');
     const base = new Airtable({ apiKey: process.env.AIRTABLE_KEY }).base(
