@@ -14,6 +14,8 @@ module.exports = {
     getPatientInfo
 };
 
+// validates all posts to /coachRoute/login to see if the req.body has an
+// email and a password key.
 function validateLoginPost(req, res, next) {
     if (req.body.email && req.body.password) {
         next();
@@ -24,6 +26,8 @@ function validateLoginPost(req, res, next) {
     }
 }
 
+// validates all posts to /coachRoute/newRegister to see if the req.body have
+// name, password, and email keys within the req.body.
 function validateRegisterPost(req, res, next) {
     if (req.body.name && req.body.password && req.body.email) {
         next();
@@ -34,6 +38,9 @@ function validateRegisterPost(req, res, next) {
     }
 }
 
+// edge case solution where a registering coach can accidentally enter in multiple
+// spaces in for there name and the endpoint can still find their name in the airtable
+// database.
 function formatCoachName(req, res, next) {
     let coachName = req.body.name.split(/[ ]+/);
     req.body.name = coachName.join(' ');
