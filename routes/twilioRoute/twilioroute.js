@@ -56,7 +56,26 @@ router.get('/messagehistory/:phone', authenticateToken, (req, res) => {
 });
 
 router.post('/schedule', (req, res) => {
-    // res.status(200).json({ lookit: req.body });
+    if (req.body.min === '') {
+        req.body.min = '*';
+    }
+    if (req.body.hour === '') {
+        req.body.hour = '*';
+    }
+    if (req.body.dom === '') {
+        req.body.dom = '*';
+    }
+    if (req.body.month === '') {
+        req.body.month = '*';
+    }
+    if (req.body.weekday === '') {
+        req.body.weekday = '*';
+    }
+    if (req.body.year === '') {
+        req.body.year = '*';
+    }
+    console.log(req.body, 'RECEIVED DATA');
+
     let cleanedNumber = ('' + req.body.Phone).replace(/\D/g, '');
 
     const numbers = req.body.numbers;
@@ -64,18 +83,18 @@ router.post('/schedule', (req, res) => {
     var textJob = new cronJob(
         `${req.body.min} ${req.body.hour} ${req.body.dom} ${req.body.month} ${req.body.weekday} ${req.body.year}`,
         function() {
-            for (var i = 0; i < numbers.length; i++) {
-                client.messages.create(
-                    {
-                        to: numbers[i],
-                        from: '+12055123191',
-                        body: `${req.body.msg}`
-                    },
-                    function(err, data) {
-                        console.log(data.body);
-                    }
-                );
-            }
+            // for (var i = 0; i < numbers.length; i++) {
+            client.messages.create(
+                {
+                    to: `${req.body.numbers}`,
+                    from: '+12055123191',
+                    body: `${req.body.msg}`
+                },
+                function(err, data) {
+                    console.log(data.body);
+                }
+            );
+            // }
         },
         null,
         true
