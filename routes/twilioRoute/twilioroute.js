@@ -74,40 +74,38 @@ router.post('/schedule', (req, res) => {
     if (req.body.weekday === '') {
         req.body.weekday = '*';
     }
-    console.log(req.body, 'RECEIVED DATA');
-
-    // let cleanedNumber = ('' + req.body.Phone).replace(/\D/g, '');
-
     const numbers = req.body.numbers;
+
+    const numbersArray = numbers.split(',').map(function(number) {
+        return (cleanedNumber = ('' + number).replace(/\D/g, ''));
+    });
+
+    console.log(req.body, 'RECEIVED DATA');
+    console.log(numbersArray, 'NUMBER');
+
+    // const cleanedNumber = ('' + numbers).replace(/\D/g, '');
 
     var task = cron.schedule(
         `${req.body.sec} ${req.body.min} ${req.body.hour} ${req.body.dom} ${req.body.month} ${req.body.weekday}`,
         function() {
             console.log('---------------------');
             console.log('Running Cron Job');
-            client.messages
-                .create({
-                    body: `${req.body.msg}`,
-                    from: '+12055123191',
-                    to: `${req.body.numbers}`
+            Promise.all(
+                numbersArray.map(number => {
+                    return client.messages.create({
+                        to: number,
+                        from: '+12055123191',
+                        body: `${req.body.msg}`
+                    });
                 })
+            )
                 .then(result => {
                     res.status(200).json({ msg: 'message scheduled' });
                     task.stop();
-                });
+                })
+                .catch(err => console.error(err));
         }
     );
 });
 
 module.exports = router;
-
-// {
-// 	"min": "03",
-// 	"hour": "9",
-// 	"dom": "*",
-// 	"month": "*",
-// 	"weekday": "*",
-// 	"year": "*",
-// 	"msg": "Sent Sucessfully",
-// 	"Phone": "(509) 720-4080"
-// }
