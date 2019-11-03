@@ -26,19 +26,26 @@ https://coach-me-backend.herokuapp.com/
 
 **Client Routes**
 
-| Method                                                            | Endpoint                             | Access Control         | Description                                |
-| ----------------------------------------------------------------- | ------------------------------------ | ---------------------- | ------------------------------------------ |
-| POST                                                              | `/clientRoute/login`                 | all registered clients | Returns token to access client information |
-| GET                                                               | `/clientRoute/getMetrics`            | client(token required) | Access current and past client Metrics     |
-| GET                                                               | `/clientRoute/getIntakeRecords`      | client(token required) | Receives formated client Objects           |
-| POST                                                              | `/clientRoute/logMetrics`            | client(token required) | input new Health Metric to database        |
-| GET                                                               | `/clientRoute/getCoachInfo`          | client(token required) | returns current coach object               |
-| GET                                                               | `/clientRoute//paginationGetMetrics` | client(token required) | returns full history of Metrics for client |
-| GET                                                               | `/coachRoute/getPatients`            |                        | client(token required)                     | returns full list of patients |
-| GET                                                               | `/coachRoute/getClientMetrics/:id`   | requires clientId      |
-| returns full Metrics history of client id passed in dynamic route |
-| GET                                                               | `/coachRoute/getClientGoals/:id`     | requires clientId      |
-| returns full goal history of client id passed in dynamic route    |
+| Method                                                                              | Endpoint                             | Access Control               | Description                                                                 |
+| ----------------------------------------------------------------------------------- | ------------------------------------ | ---------------------------- | --------------------------------------------------------------------------- |
+| POST                                                                                | `/clientRoute/login`                 | all registered clients       | Returns token to access client information                                  |
+| GET                                                                                 | `/clientRoute/getMetrics`            | client(token required)       | Access current and past client Metrics                                      |
+| GET                                                                                 | `/clientRoute/getIntakeRecords`      | client(token required)       | Receives formated client Objects                                            |
+| POST                                                                                | `/clientRoute/logMetrics`            | client(token required)       | input new Health Metric to database                                         |
+| GET                                                                                 | `/clientRoute/getCoachInfo`          | client(token required)       | returns current coach object                                                |
+| GET                                                                                 | `/clientRoute//paginationGetMetrics` | client(token required)       | returns full history of Metrics for client                                  |
+| GET                                                                                 | `/coachRoute/getPatients`            |                              | client(token required)                                                      | returns full list of patients |
+| GET                                                                                 | `/coachRoute/getClientMetrics/:id`   | requires clientId            |
+| returns full Metrics history of client id passed in dynamic route                   |
+| GET                                                                                 | `/coachRoute/getClientGoals/:id`     | requires clientId            |
+| returns full goal history of client id passed in dynamic route                      |
+| POST                                                                                | `/twilioRoute/twilio`                |                              |
+| returns a string of the sent message's sid if the post was successful               |
+| GET                                                                                 | `/twilioRoute/messagehistory/:phone` | requires client Phone number |
+| returns two arrays with messages that were from and to the number in the url string |
+| POST                                                                                | `/coachRoute/newRegister`            |                              | returns a personalized message and a jsonwebtoken                           |
+| POST                                                                                | `/coachRoute/login`                  |                              | returns a personalized message and a jsonwebtoken                           |
+| GET                                                                                 | `/coachRoute/getLastCheckinTime/:id` |                              | returns the last checkin date and the corresponding patientId from airtable |
 
 returns array of clients that logged in health coach is charged with
 
@@ -202,7 +209,70 @@ _Example_
 
 ---
 
-GET `/coachRoute/getPatients` and `/coachRoute/getClientGoals/:id` and `/coachRoute/getClientMetrics/:id` will return objects like so:
+POST `/coachRoute/newRegister` and `/coachRoute/login`
+<br>
+`/coachRoute/newRegister` returns a message that is personalized for the registering coach and a jsonwebtoken.
+
+_Example_(query)
+
+```javascript
+{
+	"password": "hello there!!!",
+	"email": "(589) 728-4080",
+	"name": "Karin Underwood"
+}
+
+```
+
+_Example_(returned object)
+
+```javascript
+{
+    "message": "Coach Karin Underwood has been register in database.",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjb2FjaElkIjoicmVjWXdEOWVuTUc0bjJ4cUQiLCJjb2FjaE5hbWUiOiJLYXJpbiBVbmRlcndvb2QiLCJpYXQiOjE1NzI2MzUwMzgsImV4cCI6MTU3MjcyMTQzOH0.-rKCBr22T9PUBMPW1ebi-1VaWkuFu1Iaq8EgILz5Ihc"
+}
+
+```
+
+`/coachRoute/login` returns a message that is personalized for the registering coach and a jsonwebtoken.
+
+_Example_(query)
+
+```javascript
+{
+	"password": "hello there!!!",
+	"email": "(589) 728-4080"
+}
+
+```
+
+_Example_(returned object)
+
+```javascript
+{
+    "message": "Welcome back!!!! Karin Underwood",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjb2FjaElkIjoicmVjWXdEOWVuTUc0bjJ4cUQiLCJjb2FjaE5hbWUiOiJLYXJpbiBVbmRlcndvb2QiLCJpYXQiOjE1NzI2MzUzMTQsImV4cCI6MTU3MjcyMTcxNH0.dV7NQxMoDxkTlYwr4NLESGIBRge2lE52PJb4mvZ6MeA"
+}
+```
+
+---
+
+GET `/coachRoute/getLastCheckinTime/:id` returns the last checkin date and patient airtable Id.
+<br>
+`/coachRoute/getLastCheckinTime/:id` returns the last checkin date and patient airtable Id.
+
+_Example_
+
+```javascript
+{
+    "lastCheckin": "2019-10-10T01:18:50.000Z",
+    "clientId": "rec3NQI2MqXCQNQX1"
+}
+```
+
+---
+
+GET `/coachRoute/getPatients` `/coachRoute/getClientGoals/:id` and `/coachRoute/getClientMetrics/:id` will return objects like so:
 <br>
 `/coachRoute/getPatients` returns the full list of client names and client ids that are under the coach's supervision using pagination
 
@@ -252,6 +322,85 @@ _Example_
         }, ...
     ]
 }
+
+```
+
+POST `/twilioRoute/twilio` returns the string of the twilio message's sid if successful:
+<br>
+`/twilioRoute/twilio` returns the string of the twilio message's sid if successful. Expects an object with `message` and `Phone`.
+
+_Example_: request
+
+```javascript
+{
+  "Phone": "(306) 701-1679",
+  "message": "Hello there!!!!"
+}
+
+```
+
+GET `/twilioRoute/messagehistory/:phone` will return two arrays like so:
+<br>
+`/twilioRoute/messagehistory/:phone` returns two arrays (toMessages and fromMessages) that contain objects that are from the twilio api. The objects in each array are filtered according to the passed phone number in the url string.
+
+_Example_
+
+```javascript
+
+"toMessages": [
+        {
+            "accountSid": "AC6d95bb53a84635a8d81ad5293692fbc2",
+            "apiVersion": "2010-04-01",
+            "body": "Sent from your Twilio trial account - The Robots are coming! Head for the hills!",
+            "dateCreated": "2019-10-31T17:42:47.000Z",
+            "dateUpdated": "2019-10-31T17:42:48.000Z",
+            "dateSent": "2019-10-31T17:42:47.000Z",
+            "direction": "outbound-reply",
+            "errorCode": null,
+            "errorMessage": null,
+            "from": "+12513877822",
+            "messagingServiceSid": null,
+            "numMedia": "0",
+            "numSegments": "1",
+            "price": "-0.00750",
+            "priceUnit": "USD",
+            "sid": "SMf222f84d27d95af44370bf8273c90736",
+            "status": "delivered",
+            "subresourceUris": {
+                "media": "/2010-04-01/Accounts/AC6d95bb53a84635a8d81ad5293692fbc2/Messages/SMf222f84d27d95af44370bf8273c90736/Media.json",
+                "feedback": "/2010-04-01/Accounts/AC6d95bb53a84635a8d81ad5293692fbc2/Messages/SMf222f84d27d95af44370bf8273c90736/Feedback.json"
+            },
+            "to": "+15097204080",
+            "uri": "/2010-04-01/Accounts/AC6d95bb53a84635a8d81ad5293692fbc2/Messages/SMf222f84d27d95af44370bf8273c90736.json"
+        }, ...
+  ],
+  "fromMessages": [
+        {
+            "accountSid": "AC6d95bb53a84635a8d81ad5293692fbc2",
+            "apiVersion": "2010-04-01",
+            "body": "Hello there!!! New message!!!",
+            "dateCreated": "2019-10-31T18:01:54.000Z",
+            "dateUpdated": "2019-10-31T18:01:54.000Z",
+            "dateSent": "2019-10-31T18:01:54.000Z",
+            "direction": "inbound",
+            "errorCode": null,
+            "errorMessage": null,
+            "from": "+15097204080",
+            "messagingServiceSid": null,
+            "numMedia": "0",
+            "numSegments": "1",
+            "price": "-0.00750",
+            "priceUnit": "USD",
+            "sid": "SM39f4e8f16a22ced9d8faeb5f8df5885a",
+            "status": "received",
+            "subresourceUris": {
+                "media": "/2010-04-01/Accounts/AC6d95bb53a84635a8d81ad5293692fbc2/Messages/SM39f4e8f16a22ced9d8faeb5f8df5885a/Media.json",
+                "feedback": "/2010-04-01/Accounts/AC6d95bb53a84635a8d81ad5293692fbc2/Messages/SM39f4e8f16a22ced9d8faeb5f8df5885a/Feedback.json"
+            },
+            "to": "+12513877822",
+            "uri": "/2010-04-01/Accounts/AC6d95bb53a84635a8d81ad5293692fbc2/Messages/SM39f4e8f16a22ced9d8faeb5f8df5885a.json"
+        },...
+  ]
 
 ```
 

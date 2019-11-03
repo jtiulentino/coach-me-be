@@ -23,7 +23,7 @@ router.post('/twilio', (req, res) => {
     client.messages
         .create({
             body: `${req.body.message}`,
-            from: '+12055123191',
+            from: '+12513877822',
             to: `+1${cleanedNumber}`
         })
 
@@ -32,7 +32,8 @@ router.post('/twilio', (req, res) => {
             res.status(500).json({ error: err });
         });
 });
-router.get('/messagehistory/:phone', authenticateToken, (req, res) => {
+
+router.get('/messagehistory/:phone', (req, res) => {
     let cleanedPhone = ('' + req.params.phone).replace(/\D/g, '');
     client.messages
 
@@ -46,8 +47,7 @@ router.get('/messagehistory/:phone', authenticateToken, (req, res) => {
                 message => message.from === `+1${cleanedPhone}`
             );
             res.status(200).json({
-                toMessages: filteredMessagesTo,
-                fromMessages: filteredMessagesFrom
+                messages: [...filteredMessagesTo, ...filteredMessagesFrom]
             });
         })
         .catch(err => {
@@ -80,7 +80,7 @@ router.post('/schedule', (req, res) => {
 
     const numbers = req.body.numbers;
 
-    const task = cron.schedule(
+    var task = cron.schedule(
         `${req.body.sec} ${req.body.min} ${req.body.hour} ${req.body.dom} ${req.body.month} ${req.body.weekday}`,
         function() {
             console.log('---------------------');
@@ -91,11 +91,23 @@ router.post('/schedule', (req, res) => {
                     from: '+12055123191',
                     to: `${req.body.numbers}`
                 })
-                .then(result =>
-                    res.status(200).json({ msg: 'message scheduled' })
-                );
+                .then(result => {
+                    res.status(200).json({ msg: 'message scheduled' });
+                    task.stop();
+                });
         }
     );
 });
 
 module.exports = router;
+
+// {
+// 	"min": "03",
+// 	"hour": "9",
+// 	"dom": "*",
+// 	"month": "*",
+// 	"weekday": "*",
+// 	"year": "*",
+// 	"msg": "Sent Sucessfully",
+// 	"Phone": "(509) 720-4080"
+// }
