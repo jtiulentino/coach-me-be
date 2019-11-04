@@ -46,6 +46,9 @@ https://coach-me-backend.herokuapp.com/
 | POST                                                                                | `/coachRoute/newRegister`            |                              | returns a personalized message and a jsonwebtoken                           |
 | POST                                                                                | `/coachRoute/login`                  |                              | returns a personalized message and a jsonwebtoken                           |
 | GET                                                                                 | `/coachRoute/getLastCheckinTime/:id` |                              | returns the last checkin date and the corresponding patientId from airtable |
+| POST                                                                                |`/twilioRoute/schedule` | requires client phone number in request body | creates cronjob instance (still needs some work) |
+| GET                                                                                 | `/twilioRoute/getScheduled/:id` | requires valid clientId in url body | returns an array of all scheduled messages for provided patientId |
+| DELETE                                                                              | `/twilioRoute/deleteScheduled/:id` | requires valid 
 
 returns array of clients that logged in health coach is charged with
 
