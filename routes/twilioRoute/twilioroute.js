@@ -64,7 +64,6 @@ router.get('/messagehistory/:phone', (req, res) => {
                 message => message != undefined
             );
             res.status(200).json({
-                // messages: [...filteredMessagesTo, ...filteredMessagesFrom]
                 message: filteredNulls
             });
         })
