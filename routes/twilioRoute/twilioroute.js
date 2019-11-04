@@ -142,6 +142,25 @@ router.delete('/deleteScheduled/:id', (req, res) => {
         });
 });
 
+router.put('/updateScheduled/:id', (req, res) => {
+    twilioDb
+        .updateScheduled({ scheduleId: req.params.id }, req.body)
+        .then(results => {
+            if (results) {
+                res.status(200).json({
+                    message: `scheduleId ${req.params.id} has been updated.`
+                });
+            } else {
+                res.status(404).json({
+                    message: `unable to find scheduleId ${req.params.id} in database.`
+                });
+            }
+        })
+        .catch(err => {
+            res.status(500).json({ error: err });
+        });
+});
+
 module.exports = router;
 
 // Nick's number:
