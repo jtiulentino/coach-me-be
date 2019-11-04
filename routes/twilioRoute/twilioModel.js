@@ -7,7 +7,9 @@ module.exports = {
     createNewConversation,
     insertNewMessage,
     insertScheduledMessage,
-    getScheduledByPatientId
+    getScheduledByPatientId,
+    deleteScheduled,
+    updateScheduled
 };
 
 function findSenderByPhone(filter) {
@@ -46,4 +48,16 @@ function insertScheduledMessage(messageObject) {
 
 function getScheduledByPatientId(filter) {
     return db('scheduledMessages').where(filter);
+}
+
+function deleteScheduled(filter) {
+    return db('scheduledMessages')
+        .where(filter)
+        .del();
+}
+
+function updateScheduled(filter, updatedScheduled) {
+    return db('scheduledMessages')
+        .where(filter)
+        .update(updatedScheduled);
 }

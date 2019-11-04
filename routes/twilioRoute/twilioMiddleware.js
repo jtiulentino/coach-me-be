@@ -27,9 +27,7 @@ function addToScheduledMessages(req, res, next) {
                     msg: req.body.msg
                 })
                 .then(results => {
-                    res.status(201).json({
-                        message: `scheduled message added to database`
-                    });
+                    next();
                 })
                 .catch(err => {
                     res.status(500).json({ error: err });
