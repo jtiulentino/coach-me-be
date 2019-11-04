@@ -9,6 +9,8 @@ const {
     authenticateToken
 } = require('../coachRoute/coachAuth.js');
 
+const { addToScheduledMessages } = require('./twilioMiddleware.js');
+
 const accountSid = process.env.ACCOUNT_SID;
 const authToken = process.env.AUTH_TOKEN;
 const client = require('twilio')(accountSid, authToken);
@@ -55,7 +57,7 @@ router.get('/messagehistory/:phone', (req, res) => {
         });
 });
 
-router.post('/schedule', (req, res) => {
+router.post('/schedule', addToScheduledMessages, (req, res) => {
     if (req.body.sec === '') {
         req.body.sec = '*';
     }
