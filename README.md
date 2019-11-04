@@ -452,6 +452,27 @@ _Example_: request
 }
 ```
 
+POST `/twilioRoute/getScheduled/:id` returns an array of all scheduled messages written for a particular patientId:
+<br>
+`/twilioRoute/getScheduled/:id`
+
+_Example_:
+
+```javascript
+data: [
+  {
+    "numbers": "(509) 720-4080",
+    "sec": "",
+    "min": "45",
+    "hour": "9",
+    "dom": "",
+    "month": "",
+    "weekday": "",
+    "msg": "hello mason from the past!!!"
+  }, ...
+]
+```
+
 ## 2️⃣ Actions
 
 `findPatientByPhone(filter)` -> finds the clientPhone and references against the phoneNumber in the 'patient-login' DB
