@@ -11,6 +11,8 @@ const {
 
 const { addToScheduledMessages } = require('./twilioMiddleware.js');
 
+const twilioDb = require('./twilioModel.js');
+
 const accountSid = process.env.ACCOUNT_SID;
 const authToken = process.env.AUTH_TOKEN;
 const client = require('twilio')(accountSid, authToken);
@@ -108,6 +110,17 @@ router.post('/schedule', addToScheduledMessages, (req, res) => {
                 .catch(err => console.error(err));
         }
     );
+});
+
+router.get('/getScheduled/:id', (req, res) => {
+    twilioDb
+        .getScheduledByPatientId({ patientId: req.params.id })
+        .then(results => {
+            res.status(200).json({ data: results });
+        })
+        .catch(err => {
+            res.status(500).json({ error: err });
+        });
 });
 
 module.exports = router;
