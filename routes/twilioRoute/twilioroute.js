@@ -95,8 +95,8 @@ router.post('/schedule', addToScheduledMessages, (req, res) => {
             Promise.all(
                 numbersArray.map(number => {
                     return client.messages.create({
-                        to: number,
-                        from: '+12055123191',
+                        to: `+1${numbersArray}`,
+                        from: '+12513877822',
                         body: `${req.body.msg}`
                     });
                 })
@@ -111,3 +111,20 @@ router.post('/schedule', addToScheduledMessages, (req, res) => {
 });
 
 module.exports = router;
+
+// Nick's number:
+// +12513877822
+
+// Isaiah's number:
+// +12055123191
+
+// {
+// 	"numbers": "(509) 720-4080",
+// 	"sec": "",
+// 	"min": "45",
+// 	"hour": "9",
+// 	"dom": "",
+// 	"month": "",
+// 	"weekday": "",
+// 	"msg": "hello mason from the past!!!"
+// }

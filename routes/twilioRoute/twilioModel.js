@@ -12,7 +12,9 @@ module.exports = {
 
 function findSenderByPhone(filter) {
     return db('users')
+        .join('patients', 'patients.userId', 'users.userId')
         .where(filter)
+        .select('patients.patientId')
         .first();
 }
 
