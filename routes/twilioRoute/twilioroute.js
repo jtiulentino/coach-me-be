@@ -51,7 +51,7 @@ router.get('/messagehistory/:phone', (req, res) => {
             //     message => message.from === `+1${cleanedPhone}`
             // );
 
-            const filteredMessages = messages.map(message => {
+            const filteredMessages = messages.reverse().map(message => {
                 if (
                     message.to === `+1${cleanedPhone}` ||
                     message.from === `+1${cleanedPhone}`
@@ -64,6 +64,7 @@ router.get('/messagehistory/:phone', (req, res) => {
                 message => message != undefined
             );
             res.status(200).json({
+                // messages: [...filteredMessagesTo, ...filteredMessagesFrom]
                 message: filteredNulls
             });
         })

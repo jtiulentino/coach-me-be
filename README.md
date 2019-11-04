@@ -26,29 +26,29 @@ https://coach-me-backend.herokuapp.com/
 
 **Client Routes**
 
-| Method                                                                              | Endpoint                             | Access Control               | Description                                                                 |
-| ----------------------------------------------------------------------------------- | ------------------------------------ | ---------------------------- | --------------------------------------------------------------------------- |
-| POST                                                                                | `/clientRoute/login`                 | all registered clients       | Returns token to access client information                                  |
-| GET                                                                                 | `/clientRoute/getMetrics`            | client(token required)       | Access current and past client Metrics                                      |
-| GET                                                                                 | `/clientRoute/getIntakeRecords`      | client(token required)       | Receives formated client Objects                                            |
-| POST                                                                                | `/clientRoute/logMetrics`            | client(token required)       | input new Health Metric to database                                         |
-| GET                                                                                 | `/clientRoute/getCoachInfo`          | client(token required)       | returns current coach object                                                |
-| GET                                                                                 | `/clientRoute//paginationGetMetrics` | client(token required)       | returns full history of Metrics for client                                  |
-| GET                                                                                 | `/coachRoute/getPatients`            |                              | client(token required)                                                      | returns full list of patients |
-| GET                                                                                 | `/coachRoute/getClientMetrics/:id`   | requires clientId            |
+| Method                                                                              | Endpoint                             | Access Control                               | Description                                                                 |
+| ----------------------------------------------------------------------------------- | ------------------------------------ | -------------------------------------------- | --------------------------------------------------------------------------- |
+| POST                                                                                | `/clientRoute/login`                 | all registered clients                       | Returns token to access client information                                  |
+| GET                                                                                 | `/clientRoute/getMetrics`            | client(token required)                       | Access current and past client Metrics                                      |
+| GET                                                                                 | `/clientRoute/getIntakeRecords`      | client(token required)                       | Receives formated client Objects                                            |
+| POST                                                                                | `/clientRoute/logMetrics`            | client(token required)                       | input new Health Metric to database                                         |
+| GET                                                                                 | `/clientRoute/getCoachInfo`          | client(token required)                       | returns current coach object                                                |
+| GET                                                                                 | `/clientRoute//paginationGetMetrics` | client(token required)                       | returns full history of Metrics for client                                  |
+| GET                                                                                 | `/coachRoute/getPatients`            |                                              | client(token required)                                                      | returns full list of patients |
+| GET                                                                                 | `/coachRoute/getClientMetrics/:id`   | requires clientId                            |
 | returns full Metrics history of client id passed in dynamic route                   |
-| GET                                                                                 | `/coachRoute/getClientGoals/:id`     | requires clientId            |
+| GET                                                                                 | `/coachRoute/getClientGoals/:id`     | requires clientId                            |
 | returns full goal history of client id passed in dynamic route                      |
-| POST                                                                                | `/twilioRoute/twilio`                |                              |
+| POST                                                                                | `/twilioRoute/twilio`                |                                              |
 | returns a string of the sent message's sid if the post was successful               |
-| GET                                                                                 | `/twilioRoute/messagehistory/:phone` | requires client Phone number |
+| GET                                                                                 | `/twilioRoute/messagehistory/:phone` | requires client Phone number                 |
 | returns two arrays with messages that were from and to the number in the url string |
-| POST                                                                                | `/coachRoute/newRegister`            |                              | returns a personalized message and a jsonwebtoken                           |
-| POST                                                                                | `/coachRoute/login`                  |                              | returns a personalized message and a jsonwebtoken                           |
-| GET                                                                                 | `/coachRoute/getLastCheckinTime/:id` |                              | returns the last checkin date and the corresponding patientId from airtable |
-| POST                                                                                |`/twilioRoute/schedule` | requires client phone number in request body | creates cronjob instance (still needs some work) |
-| GET                                                                                 | `/twilioRoute/getScheduled/:id` | requires valid clientId in url body | returns an array of all scheduled messages for provided patientId |
-| DELETE                                                                              | `/twilioRoute/deleteScheduled/:id` | requires valid 
+| POST                                                                                | `/coachRoute/newRegister`            |                                              | returns a personalized message and a jsonwebtoken                           |
+| POST                                                                                | `/coachRoute/login`                  |                                              | returns a personalized message and a jsonwebtoken                           |
+| GET                                                                                 | `/coachRoute/getLastCheckinTime/:id` |                                              | returns the last checkin date and the corresponding patientId from airtable |
+| POST                                                                                | `/twilioRoute/schedule`              | requires client phone number in request body | creates cronjob instance (still needs some work)                            |
+| GET                                                                                 | `/twilioRoute/getScheduled/:id`      | requires valid clientId in url body          | returns an array of all scheduled messages for provided patientId           |
+| DELETE                                                                              | `/twilioRoute/deleteScheduled/:id`   | requires valid scheduleId                    | returns a message that says the record was deleted from database            |
 
 returns array of clients that logged in health coach is charged with
 
