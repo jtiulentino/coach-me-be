@@ -5,7 +5,9 @@ module.exports = {
     patientInConversations,
     findCoachSenderById,
     createNewConversation,
-    insertNewMessage
+    insertNewMessage,
+    insertScheduledMessage,
+    getScheduledByPatientId
 };
 
 function findSenderByPhone(filter) {
@@ -14,6 +16,7 @@ function findSenderByPhone(filter) {
         .first();
 }
 
+// database functions for updating messageHistory and conversations (most likely won't be used)
 function patientInConversations(filter) {
     return db('conversations')
         .where(filter)
@@ -32,4 +35,13 @@ function createNewConversation(conversationObject) {
 
 function insertNewMessage(messageObject) {
     return db('messageHistory').insert(messageObject, 'messageId');
+}
+
+// database functions for scheduling messages.
+function insertScheduledMessage(messageObject) {
+    return db('scheduledMessages').insert(messageObject, 'scheduleId');
+}
+
+function getScheduledByPatientId(filter) {
+    return db('scheduledMessages').where(filter);
 }
