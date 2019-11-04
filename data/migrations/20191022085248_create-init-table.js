@@ -80,11 +80,29 @@ exports.up = function(knex) {
                 .inTable('users')
                 .onDelete('CASCADE')
                 .onUpdate('CASCADE');
+        })
+        .createTable('scheduledMessages', tbl => {
+            tbl.uuid('scheduleId').primary();
+            tbl.string('patientId')
+                .notNullable()
+                .unsigned()
+                .references('patientId')
+                .inTable('patients')
+                .onDelete('CASCADE')
+                .onUpdate('CASCADE');
+            tbl.integer('sec');
+            tbl.integer('min');
+            tbl.integer('hour');
+            tbl.integer('dom');
+            tbl.integer('month');
+            tbl.integer('weekday');
+            tbl.text('msg');
         });
 };
 
 exports.down = function(knex) {
     return knex.schema
+        .dropTableIfExists('scheduledMessages')
         .dropTableIfExists('messageHistory')
         .dropTableIfExists('conversations')
         .dropTableIfExists('patients')
