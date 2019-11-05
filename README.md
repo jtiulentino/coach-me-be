@@ -452,7 +452,7 @@ _Example_: request
 }
 ```
 
-POST `/twilioRoute/getScheduled/:id` returns an array of all scheduled messages written for a particular patientId:
+GET `/twilioRoute/getScheduled/:id` returns an array of all scheduled messages written for a particular patientId:
 <br>
 `/twilioRoute/getScheduled/:id`
 
@@ -461,7 +461,7 @@ _Example_:
 ```javascript
 data: [
   {
-    "numbers": "(509) 720-4080",
+    "patientId": "rec3NQI2MqXCQNQX1",
     "sec": "",
     "min": "45",
     "hour": "9",
