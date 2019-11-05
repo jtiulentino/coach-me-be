@@ -14,9 +14,9 @@ const {
     getLoginAmount,
     addPatient
 } = require('./clientMiddleware.js');
-const accountSid = process.env.ACCOUNT_SID;
-const authToken = process.env.AUTH_TOKEN;
-const client = require('twilio')(accountSid, authToken);
+// const accountSid = process.env.ACCOUNT_SID;
+// const authToken = process.env.AUTH_TOKEN;
+// const client = require('twilio')(accountSid, authToken);
 
 const router = express.Router();
 
