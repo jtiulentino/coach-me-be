@@ -36,9 +36,17 @@ describe('server', () => {
     describe('GET /paginationGetMetrics', async () => {
         it('should return 404 if a user tries to hit endpoint without a webtoken', async () => {
             const response = await request(server)
-                .get('clientRoute/getMetrics')
+                .get('/clientRoute/paginationGetMetrics')
                 .set('Accept', 'application/json');
-            expect(response).toBe('hello');
+            expect(response.status).toBe(401);
+        });
+
+        it('should return 200 if a user has a valid token', async () => {
+            const response = await request(server)
+                .post('/clientRoute/login')
+                .send({ clientPhone: '1111111111' })
+                .set('Accept', 'application/json');
+            // expect(response.text).toBe(200);
         });
 
         it('should return text/html', done => {
@@ -51,7 +59,7 @@ describe('server', () => {
         });
     });
 
-    describe('/coachRoute endpoints', () => {
+    describe('/coachRoute endpoints', async () => {
         describe('POST /coachRoute/newRegister', async () => {
             it('should return a 404 if you enter a name that is not in airtable', () => {
                 request(server)
@@ -63,9 +71,6 @@ describe('server', () => {
                     })
                     .then(result => {
                         expect(result.status).toBe(200);
-                    })
-                    .catch(err => {
-                        console.log(err);
                     });
             });
         });
