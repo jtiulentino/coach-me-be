@@ -20,27 +20,25 @@ describe('server', () => {
     //     }
     // };
 
-    // Same reoccuring 500 error upon testing login. Login works perfectly when using postman.
-    // describe('POST /login', () => {
-    //     it('should return 200', () => {
-    //         return (
-    //             request(server)
-    //                 .post('/clientRoute/login')
-    //                 .send({ clientPhone: '1111111111' })
-    //                 // .set(requestOptions)
-    //                 .then(res => {
-    //                     expect(res.status).toBe(200);
-    //                     expect(res.body.clientPhone).toBe('1111111111');
-    //                 })
-    //         );
-    //     });
-    // });
+    describe('POST /login', async () => {
+        it('should return 200', () => {
+            request(server)
+                .post('/clientRoute/login')
+                .send({ clientPhone: '1111111111' })
+                .set('Accept', 'application/json')
+                // .set(requestOptions)
+                .then(res => {
+                    expect(res.status).toBe(200);
+                });
+        });
+    });
 
-    describe('GET /getIntakeRecords', async () => {
+    describe('GET /paginationGetMetrics', async () => {
         it('should return 404 if a user tries to hit endpoint without a webtoken', async () => {
-            const res = await request(server).get('/getIntakeRecords');
-            // set(requestOptions)
-            expect(res.status).toBe(404);
+            const response = await request(server)
+                .get('clientRoute/getMetrics')
+                .set('Accept', 'application/json');
+            expect(response).toBe('hello');
         });
 
         it('should return text/html', done => {
@@ -50,6 +48,26 @@ describe('server', () => {
                     expect(res.type).toMatch(/text/i);
                     done();
                 });
+        });
+    });
+
+    describe('/coachRoute endpoints', () => {
+        describe('POST /coachRoute/newRegister', async () => {
+            it('should return a 404 if you enter a name that is not in airtable', () => {
+                request(server)
+                    .post('/coachRoute/newRegister')
+                    .send({
+                        name: 'mason karsevar',
+                        email: 'masonkarsevar@gmail.com',
+                        password: 'mkarse79'
+                    })
+                    .then(result => {
+                        expect(result.status).toBe(200);
+                    })
+                    .catch(err => {
+                        console.log(err);
+                    });
+            });
         });
     });
 });
