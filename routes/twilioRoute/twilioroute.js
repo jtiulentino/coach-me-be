@@ -96,6 +96,7 @@ router.post('/schedule', (req, res) => {
                         to: number,
                         from: '+12055123191',
                         body: `${req.body.msg}`
+                        // attachments
                     });
                 })
             )
