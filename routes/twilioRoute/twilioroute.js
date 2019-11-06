@@ -44,14 +44,28 @@ router.get('/messagehistory/:phone', (req, res) => {
         .list({ limit: 9000 })
 
         .then(messages => {
-            const filteredMessagesTo = messages.filter(
-                message => message.to === `+1${cleanedPhone}`
-            );
-            const filteredMessagesFrom = messages.filter(
-                message => message.from === `+1${cleanedPhone}`
+            // const filteredMessagesTo = messages.filter(
+            //     message => message.to === `+1${cleanedPhone}`
+            // );
+            // const filteredMessagesFrom = messages.filter(
+            //     message => message.from === `+1${cleanedPhone}`
+            // );
+
+            const filteredMessages = messages.reverse().map(message => {
+                if (
+                    message.to === `+1${cleanedPhone}` ||
+                    message.from === `+1${cleanedPhone}`
+                ) {
+                    return message;
+                }
+            });
+
+            const filteredNulls = filteredMessages.filter(
+                message => message != undefined
             );
             res.status(200).json({
-                messages: [...filteredMessagesTo, ...filteredMessagesFrom]
+                // messages: [...filteredMessagesTo, ...filteredMessagesFrom]
+                message: filteredNulls
             });
         })
         .catch(err => {

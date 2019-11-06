@@ -372,7 +372,7 @@ router.get('/getLastCheckinTime/:id', (req, res) => {
             // return record.id;
             if (patientId === record.id) {
                 return {
-                    lastCheckin: record.get('Last check-in')
+                    lastCheckin: record.get('Days Since Last Check-in')
                 };
             }
         });
