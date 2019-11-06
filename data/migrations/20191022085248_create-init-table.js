@@ -97,11 +97,24 @@ exports.up = function(knex) {
             tbl.integer('month');
             tbl.integer('weekday');
             tbl.text('msg');
+        })
+        .createTable('recoveries', tbl => {
+            tbl.uuid('recoverId').primary();
+            tbl.string('coachId')
+                .notNullable()
+                .unsigned()
+                .references('coachId')
+                .inTable('coaches')
+                .onDelete()
+                .onUpdate();
+            tbl.string('resetPasswordToken');
+            tbl.string('resetPasswordExpires');
         });
 };
 
 exports.down = function(knex) {
     return knex.schema
+        .dropTableIfExists('recoveries')
         .dropTableIfExists('scheduledMessages')
         .dropTableIfExists('messageHistory')
         .dropTableIfExists('conversations')
