@@ -139,4 +139,21 @@ describe('server', () => {
             );
         });
     });
+    // hello!!!
+    describe('GET /coachRoute/getLastCheckinTime/:id', async () => {
+        it('should return a 200 if you enter a valid patientId', async () => {
+            const response = await request(server)
+                .get('/coachRoute/getLastCheckinTime/rec3NQI2MqXCQNQX1')
+                .set('Accept', 'application/json');
+            expect(response.status).toBe(200);
+        });
+        it('should return an array of all the health goals of a patient', async () => {
+            const response = await request(server)
+                .get('/coachRoute/getLastCheckinTime/rec3NQI2MqXCQNQX1')
+                .set('Accept', 'application/json');
+            expect(response.text).toBe(
+                '{"lastCheckin":26,"clientId":"rec3NQI2MqXCQNQX1"}'
+            );
+        });
+    });
 });
