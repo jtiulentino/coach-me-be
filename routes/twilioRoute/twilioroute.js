@@ -9,6 +9,10 @@ const {
     authenticateToken
 } = require('../coachRoute/coachAuth.js');
 
+const { addToScheduledMessages } = require('./twilioMiddleware.js');
+
+const twilioDb = require('./twilioModel.js');
+
 const accountSid = process.env.ACCOUNT_SID;
 const authToken = process.env.AUTH_TOKEN;
 const client = require('twilio')(accountSid, authToken);
@@ -40,14 +44,28 @@ router.get('/messagehistory/:phone', (req, res) => {
         .list({ limit: 9000 })
 
         .then(messages => {
-            const filteredMessagesTo = messages.filter(
-                message => message.to === `+1${cleanedPhone}`
-            );
-            const filteredMessagesFrom = messages.filter(
-                message => message.from === `+1${cleanedPhone}`
+            // const filteredMessagesTo = messages.filter(
+            //     message => message.to === `+1${cleanedPhone}`
+            // );
+            // const filteredMessagesFrom = messages.filter(
+            //     message => message.from === `+1${cleanedPhone}`
+            // );
+
+            const filteredMessages = messages.reverse().map(message => {
+                if (
+                    message.to === `+1${cleanedPhone}` ||
+                    message.from === `+1${cleanedPhone}`
+                ) {
+                    return message;
+                }
+            });
+
+            const filteredNulls = filteredMessages.filter(
+                message => message != undefined
             );
             res.status(200).json({
-                messages: [...filteredMessagesTo, ...filteredMessagesFrom]
+                // messages: [...filteredMessagesTo, ...filteredMessagesFrom]
+                message: filteredNulls
             });
         })
         .catch(err => {
@@ -55,7 +73,7 @@ router.get('/messagehistory/:phone', (req, res) => {
         });
 });
 
-router.post('/schedule', (req, res) => {
+router.post('/schedule', addToScheduledMessages, (req, res) => {
     if (req.body.sec === '') {
         req.body.sec = '*';
     }
@@ -93,8 +111,8 @@ router.post('/schedule', (req, res) => {
             Promise.all(
                 numbersArray.map(number => {
                     return client.messages.create({
-                        to: number,
-                        from: '+12055123191',
+                        to: `+1${numbersArray}`,
+                        from: '+12513877822',
                         body: `${req.body.msg}`
                         // attachments
                     });
@@ -109,4 +127,70 @@ router.post('/schedule', (req, res) => {
     );
 });
 
+router.get('/getScheduled/:id', (req, res) => {
+    twilioDb
+        .getScheduledByPatientId({ patientId: req.params.id })
+        .then(results => {
+            res.status(200).json({ data: results });
+        })
+        .catch(err => {
+            res.status(500).json({ error: err });
+        });
+});
+
+router.delete('/deleteScheduled/:id', (req, res) => {
+    twilioDb
+        .deleteScheduled({ scheduleId: req.params.id })
+        .then(results => {
+            if (results) {
+                res.status(200).json({
+                    message: `scheduled message scheduleId ${req.params.id} has been deleted.`
+                });
+            } else {
+                res.status(404).json({
+                    message: `scheduled message scheduleId ${req.params.id} can not be found.`
+                });
+            }
+        })
+        .catch(err => {
+            res.status(500).json({ message: 'unable to delete entry' });
+        });
+});
+
+router.put('/updateScheduled/:id', (req, res) => {
+    twilioDb
+        .updateScheduled({ scheduleId: req.params.id }, req.body)
+        .then(results => {
+            if (results) {
+                res.status(200).json({
+                    message: `scheduleId ${req.params.id} has been updated.`
+                });
+            } else {
+                res.status(404).json({
+                    message: `unable to find scheduleId ${req.params.id} in database.`
+                });
+            }
+        })
+        .catch(err => {
+            res.status(500).json({ error: err });
+        });
+});
+
 module.exports = router;
+
+// Nick's number:
+// +12513877822
+
+// Isaiah's number:
+// +12055123191
+
+// {
+// 	"numbers": "(509) 720-4080",
+// 	"sec": "",
+// 	"min": "45",
+// 	"hour": "9",
+// 	"dom": "",
+// 	"month": "",
+// 	"weekday": "",
+// 	"msg": "hello mason from the past!!!"
+// }
