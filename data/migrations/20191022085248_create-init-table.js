@@ -105,8 +105,8 @@ exports.up = function(knex) {
                 .unsigned()
                 .references('coachId')
                 .inTable('coaches')
-                .onDelete()
-                .onUpdate();
+                .onDelete('CASCADE')
+                .onUpdate('CASCADE');
             tbl.string('resetPasswordToken');
             tbl.string('resetPasswordExpires');
         });

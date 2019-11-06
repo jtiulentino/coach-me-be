@@ -6,7 +6,8 @@ module.exports = {
     findCoachByPhone,
     findCoachByEmail,
     insertNewPatient,
-    insertConversation
+    insertConversation,
+    insertRecoveryPassword
 };
 
 function findCoachByPhone(filter) {
@@ -35,4 +36,9 @@ function insertNewPatient(patientObject) {
 
 function insertConversation(conversationObject) {
     return db('conversations').insert(conversationObject, 'id');
+}
+
+// forgot password model function (recoveries table):
+function insertRecoveryPassword(passwordObject) {
+    return db('recoveries').insert(passwordObject, 'id');
 }
