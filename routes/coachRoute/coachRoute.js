@@ -163,6 +163,7 @@ router.post('/login', validateLoginPost, (req, res) => {
                 const token = generateToken(userInfo);
                 res.status(200).json({
                     message: `Welcome back!!!! ${userInfo.coachName}`,
+                    coachName: userInfo.coachName,
                     token
                 });
             } else {
