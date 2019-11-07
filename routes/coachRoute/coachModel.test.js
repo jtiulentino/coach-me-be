@@ -1,6 +1,7 @@
 const coachDb = require('./coachModel.js');
 const db = require('../../data/dbConfig.js');
 
+// hello
 describe('coachModel.js helper functions', () => {
     afterAll(async () => {
         await db('users').truncate();

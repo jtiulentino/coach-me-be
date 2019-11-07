@@ -4,6 +4,7 @@ const db = require('../data/dbConfig');
 const Clients = require('../routes/clientModel');
 const axios = require('axios');
 
+// hello
 describe('server', () => {
     // beforeEach(async () => {
     //     await db('patient-login').truncate();
@@ -139,7 +140,6 @@ describe('server', () => {
             );
         });
     });
-    // hello!!!
     describe('GET /coachRoute/getLastCheckinTime/:id', async () => {
         it('should return a 200 if you enter a valid patientId', async () => {
             const response = await request(server)
