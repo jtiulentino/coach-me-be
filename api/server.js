@@ -5,6 +5,7 @@ const basicRoute = require('../routes/basicRoute.js');
 const coachRoute = require('../routes/coachRoute/coachRoute.js');
 const forgotRoute = require('../routes/forgotPassword.js');
 const resetRoute = require('../routes/resetPassword.js');
+const updatePasswordRoute = require('../routes/updatePasswordViaEmail.js');
 const twilioRoute = require('../routes/twilioRoute/twilioroute.js');
 
 const server = express();
@@ -18,6 +19,8 @@ server.use('/coachRoute', coachRoute);
 server.use('/forgotRoute', forgotRoute);
 
 server.use('/resetRoute', resetRoute);
+
+server.use('/updatePasswordRoute', updatePasswordRoute);
 
 // having trouble testing this endpoint.
 server.use('/twilioRoute', twilioRoute);
