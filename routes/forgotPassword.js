@@ -1,6 +1,6 @@
 const crypto = require('crypto');
 const bcrypt = require('bcryptjs');
-const User = require('./coachRoute/coachModel.js');
+const coachDb = require('./coachRoute/coachModel.js');
 const express = require('express');
 const uuidv4 = require('uuid/v4');
 

@@ -114,6 +114,7 @@ router.post('/schedule', addToScheduledMessages, (req, res) => {
                         to: `+1${numbersArray}`,
                         from: '+12513877822',
                         body: `${req.body.msg}`
+                        // attachments
                     });
                 })
             )
