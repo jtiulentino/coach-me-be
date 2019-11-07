@@ -156,6 +156,7 @@ router.post('/login', validateLoginPost, (req, res) => {
     coachDb
         .findCoachByEmail({ email: coach.email })
         .then(userInfo => {
+            console.log(userInfo);
             if (
                 coach &&
                 bcrypt.compareSync(coach.password, userInfo.password)
