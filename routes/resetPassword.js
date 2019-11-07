@@ -8,7 +8,7 @@ router.get('/reset/:resetPasswordToken', (req, res, next) => {
     User.findCoachByToken({
         resetPasswordToken: req.params.resetPasswordToken
     }).then(user => {
-        if (user === null) {
+        if (user === undefined) {
             console.log('password reset link is invalid or has expired');
             res.status(400).json({
                 message: 'password reset link is invalid or has expired'
