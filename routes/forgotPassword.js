@@ -3,6 +3,7 @@ const bcrypt = require('bcryptjs');
 const coachDb = require('./coachRoute/coachModel.js');
 const express = require('express');
 const uuidv4 = require('uuid/v4');
+const User = require('./coachRoute/coachModel.js');
 
 const nodemailer = require('nodemailer');
 
