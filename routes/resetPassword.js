@@ -3,10 +3,9 @@ const User = require('./coachRoute/coachModel.js');
 
 const router = express.Router();
 
-router.get('/reset', (req, res, next) => {
+router.get('/reset/:resetPasswordToken', (req, res, next) => {
     User.findCoachByEmail({
-        resetPasswordToken: req.query.resetPasswordToken,
-        resetPasswordExpires: Date.now() // Check if an hour has passed using Date.now()
+        resetPasswordToken: req.params.resetPasswordToken
     }).then(user => {
         if (user === null) {
             console.log('password reset link is invalid or has expired');
