@@ -7,7 +7,11 @@ module.exports = {
     findCoachByEmail,
     insertNewPatient,
     insertConversation,
-    insertRecoveryPassword
+    insertRecoveryPassword,
+    findCoachByToken,
+    findCoachByEmailJoin,
+    updateCoachRecord,
+    deleteRecoveryInstance
 };
 
 function findCoachByPhone(filter) {
@@ -41,4 +45,32 @@ function insertConversation(conversationObject) {
 // forgot password model function (recoveries table):
 function insertRecoveryPassword(passwordObject) {
     return db('recoveries').insert(passwordObject, 'id');
+}
+
+// forgot password model function (/resetRoute/reset)
+function findCoachByToken(passwordObject) {
+    return db('recoveries')
+        .join('coaches', 'coaches.coachId', 'recoveries.coachId')
+        .where(passwordObject)
+        .first();
+}
+
+// update password model function (/updatePasswordRoute/updatePasswordViaEmail)
+function findCoachByEmailJoin(coachObject) {
+    return db('coaches')
+        .join('recoveries', 'recoveries.coachId', 'coaches.coachId')
+        .where(coachObject)
+        .first();
+}
+
+function updateCoachRecord(coachObject, updateCoach) {
+    return db('coaches')
+        .where(coachObject)
+        .update(updateCoach);
+}
+
+function deleteRecoveryInstance(recoveryObject) {
+    return db('recoveries')
+        .where(recoveryObject)
+        .del();
 }

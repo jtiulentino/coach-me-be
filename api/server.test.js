@@ -4,7 +4,6 @@ const db = require('../data/dbConfig');
 const Clients = require('../routes/clientModel');
 const axios = require('axios');
 
-// hello
 describe('server', () => {
     // beforeEach(async () => {
     //     await db('patient-login').truncate();
