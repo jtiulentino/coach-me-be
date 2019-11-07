@@ -267,7 +267,8 @@ router.get('/getClientGoals/:id', (req, res) => {
                         goal: record.get("This week's goal"),
                         goalDetails: record.get('Goal details'),
                         startDate: record.get('Date of Check-in'),
-                        metGoal: record.get('Met goal?')
+                        metGoal: record.get('Met goal?'),
+                        notes: record.get('Notes from check-in')
                     };
                 }
             }
