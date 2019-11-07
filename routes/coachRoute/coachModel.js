@@ -47,6 +47,7 @@ function insertRecoveryPassword(passwordObject) {
 // forgot password model function ()
 function findCoachByToken(passwordObject) {
     return db('recoveries')
+        .join('coaches', 'coaches.coachId', 'recoveries.coachId')
         .where(passwordObject)
         .first();
 }

@@ -1,18 +1,22 @@
 const bcrypt = require('bcryptjs');
 const User = require('./coachRoute/coachModel.js');
+const express = require('express');
 
 const router = express.Router();
 
 router.get('/reset/:resetPasswordToken', (req, res, next) => {
-    User.findCoachByEmail({
+    User.findCoachByToken({
         resetPasswordToken: req.params.resetPasswordToken
     }).then(user => {
         if (user === null) {
             console.log('password reset link is invalid or has expired');
-            res.json('password reset link is invalid or has expired');
+            res.status(400).json({
+                message: 'password reset link is invalid or has expired'
+            });
         } else {
-            res.status(200).send({
-                username: user.username,
+            res.status(200).json({
+                username: user.email,
+                name: user.coachName,
                 message: 'password reset link a-ok'
             });
         }
