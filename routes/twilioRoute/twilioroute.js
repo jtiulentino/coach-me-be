@@ -23,11 +23,12 @@ router.post('/twilio', (req, res) => {
     let cleanedNumber = ('' + req.body.Phone).replace(/\D/g, '');
 
     // res.status(200).json({ cleaned });
+    console.log('number from dotenv file', process.env.TWILIO_NUMBER);
 
     client.messages
         .create({
             body: `${req.body.message}`,
-            from: '+12513877822',
+            from: `${process.env.TWILIO_NUMBER}`,
             to: `+1${cleanedNumber}`
         })
 
@@ -50,7 +51,6 @@ router.get('/messagehistory/:phone', (req, res) => {
             // const filteredMessagesFrom = messages.filter(
             //     message => message.from === `+1${cleanedPhone}`
             // );
-
             const filteredMessages = messages.reverse().map(message => {
                 if (
                     message.to === `+1${cleanedPhone}` ||
@@ -112,7 +112,7 @@ router.post('/schedule', addToScheduledMessages, (req, res) => {
                 numbersArray.map(number => {
                     return client.messages.create({
                         to: `+1${numbersArray}`,
-                        from: '+12513877822',
+                        from: `${process.env.TWILIO_NUMBER}`,
                         body: `${req.body.msg}`
                         // attachments
                     });
