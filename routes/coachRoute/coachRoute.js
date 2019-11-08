@@ -57,6 +57,7 @@ router.post(
                                 const token = generateToken(userInfo);
                                 res.status(200).json({
                                     message: `Coach ${userInfo.coachName} has been register in database.`,
+                                    coachName: userInfo.coachName,
                                     token
                                 });
                             })
