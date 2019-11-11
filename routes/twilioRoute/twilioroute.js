@@ -102,7 +102,6 @@ router.post('/schedule', addToScheduledMessages, (req, res) => {
     console.log(numbersArray, 'NUMBER');
 
     // const cleanedNumber = ('' + numbers).replace(/\D/g, '');
-
     var task = cron.schedule(
         `${req.body.sec} ${req.body.min} ${req.body.hour} ${req.body.dom} ${req.body.month} ${req.body.weekday}`,
         function() {
@@ -194,3 +193,32 @@ module.exports = router;
 // 	"weekday": "",
 // 	"msg": "hello mason from the past!!!"
 // }
+
+// task = cron.schedule(`* 5 * * * *`, => {
+//     if (table.date === exists) {
+//         for( let i=0; i < table.date.length; i++) {
+//             if(moment.now().tz() === table.date[i]) {
+//                 twiliosendmessage()
+//             } else {
+//                 console.log('no message')
+//             }
+//         }
+//     } else {
+//         if(`${table.day}/${table.hour}:${table.minute}` === moment.now(someformat)) {
+//             twiliosendmessage()
+//         } else {
+//             console.log('no message')
+//         }
+//     }
+// })
+
+// {
+//     "msg": "hello!!!",
+//     "numbers": "5097204080",
+//     "sec": "",
+//     "min": "43",
+//     "hour": "10",
+//     "dom": "",
+//     "month": "",
+//     "weekday": ""
+//    }
