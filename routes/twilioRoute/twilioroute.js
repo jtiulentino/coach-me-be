@@ -78,58 +78,58 @@ router.get('/messagehistory/:phone', (req, res) => {
 });
 
 // Old cron scheduling function will most likely remove it.
-// router.post('/schedule', addToScheduledMessages, (req, res) => {
-//     if (req.body.sec === '') {
-//         req.body.sec = '*';
-//     }
-//     if (req.body.min === '') {
-//         req.body.min = '*';
-//     }
-//     if (req.body.hour === '') {
-//         req.body.hour = '*';
-//     }
-//     if (req.body.dom === '') {
-//         req.body.dom = '*';
-//     }
-//     if (req.body.month === '') {
-//         req.body.month = '*';
-//     }
-//     if (req.body.weekday === '') {
-//         req.body.weekday = '*';
-//     }
-//     const numbers = req.body.numbers;
+router.post('/schedule', addToScheduledMessages, (req, res) => {
+    if (req.body.sec === '') {
+        req.body.sec = '*';
+    }
+    if (req.body.min === '') {
+        req.body.min = '*';
+    }
+    if (req.body.hour === '') {
+        req.body.hour = '*';
+    }
+    if (req.body.dom === '') {
+        req.body.dom = '*';
+    }
+    if (req.body.month === '') {
+        req.body.month = '*';
+    }
+    if (req.body.weekday === '') {
+        req.body.weekday = '*';
+    }
+    const numbers = req.body.numbers;
 
-//     const numbersArray = numbers.split(',').map(function(number) {
-//         return (cleanedNumber = ('' + number).replace(/\D/g, ''));
-//     });
+    const numbersArray = numbers.split(',').map(function(number) {
+        return (cleanedNumber = ('' + number).replace(/\D/g, ''));
+    });
 
-//     console.log(req.body, 'RECEIVED DATA');
-//     console.log(numbersArray, 'NUMBER');
+    console.log(req.body, 'RECEIVED DATA');
+    console.log(numbersArray, 'NUMBER');
 
-//     // const cleanedNumber = ('' + numbers).replace(/\D/g, '');
-//     var task = cron.schedule(
-//         `${req.body.sec} ${req.body.min} ${req.body.hour} ${req.body.dom} ${req.body.month} ${req.body.weekday}`,
-//         function() {
-//             console.log('---------------------');
-//             console.log('Running Cron Job');
-//             Promise.all(
-//                 numbersArray.map(number => {
-//                     return client.messages.create({
-//                         to: `+1${numbersArray}`,
-//                         from: `${process.env.TWILIO_NUMBER}`,
-//                         body: `${req.body.msg}`
-//                         // attachments
-//                     });
-//                 })
-//             )
-//                 .then(result => {
-//                     res.status(200).json({ msg: 'message scheduled' });
-//                     task.stop();
-//                 })
-//                 .catch(err => console.error(err));
-//         }
-//     );
-// });
+    // const cleanedNumber = ('' + numbers).replace(/\D/g, '');
+    var task = cron.schedule(
+        `${req.body.sec} ${req.body.min} ${req.body.hour} ${req.body.dom} ${req.body.month} ${req.body.weekday}`,
+        function() {
+            console.log('---------------------');
+            console.log('Running Cron Job');
+            Promise.all(
+                numbersArray.map(number => {
+                    return client.messages.create({
+                        to: `+1${numbersArray}`,
+                        from: `${process.env.TWILIO_NUMBER}`,
+                        body: `${req.body.msg}`
+                        // attachments
+                    });
+                })
+            )
+                .then(result => {
+                    res.status(200).json({ msg: 'message scheduled' });
+                    task.stop();
+                })
+                .catch(err => console.error(err));
+        }
+    );
+});
 
 // Scheduling crude functionality:
 router.post('/postScheduled', validateScheduledPost, (req, res) => {

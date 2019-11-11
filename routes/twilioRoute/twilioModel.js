@@ -64,5 +64,7 @@ function updateScheduled(filter, updatedScheduled) {
 }
 
 function getAllScheduled() {
-    return db('scheduledMessages');
+    return db('scheduledMessages')
+        .join('patients', 'patients.patientId', 'scheduledMessages.patientId')
+        .join('users', 'patients.userId', 'users.userId');
 }
