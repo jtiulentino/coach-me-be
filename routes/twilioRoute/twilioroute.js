@@ -1,4 +1,5 @@
 const express = require('express');
+const uuidv4 = require('uuid/v4');
 const axios = require('axios');
 const http = require('http');
 const MessagingResponse = require('twilio').twiml.MessagingResponse;
@@ -9,7 +10,10 @@ const {
     authenticateToken
 } = require('../coachRoute/coachAuth.js');
 
-const { addToScheduledMessages } = require('./twilioMiddleware.js');
+const {
+    addToScheduledMessages,
+    validateScheduledPost
+} = require('./twilioMiddleware.js');
 
 const twilioDb = require('./twilioModel.js');
 
@@ -73,57 +77,74 @@ router.get('/messagehistory/:phone', (req, res) => {
         });
 });
 
-router.post('/schedule', addToScheduledMessages, (req, res) => {
-    if (req.body.sec === '') {
-        req.body.sec = '*';
-    }
-    if (req.body.min === '') {
-        req.body.min = '*';
-    }
-    if (req.body.hour === '') {
-        req.body.hour = '*';
-    }
-    if (req.body.dom === '') {
-        req.body.dom = '*';
-    }
-    if (req.body.month === '') {
-        req.body.month = '*';
-    }
-    if (req.body.weekday === '') {
-        req.body.weekday = '*';
-    }
-    const numbers = req.body.numbers;
+// Old cron scheduling function will most likely remove it.
+// router.post('/schedule', addToScheduledMessages, (req, res) => {
+//     if (req.body.sec === '') {
+//         req.body.sec = '*';
+//     }
+//     if (req.body.min === '') {
+//         req.body.min = '*';
+//     }
+//     if (req.body.hour === '') {
+//         req.body.hour = '*';
+//     }
+//     if (req.body.dom === '') {
+//         req.body.dom = '*';
+//     }
+//     if (req.body.month === '') {
+//         req.body.month = '*';
+//     }
+//     if (req.body.weekday === '') {
+//         req.body.weekday = '*';
+//     }
+//     const numbers = req.body.numbers;
 
-    const numbersArray = numbers.split(',').map(function(number) {
-        return (cleanedNumber = ('' + number).replace(/\D/g, ''));
-    });
+//     const numbersArray = numbers.split(',').map(function(number) {
+//         return (cleanedNumber = ('' + number).replace(/\D/g, ''));
+//     });
 
-    console.log(req.body, 'RECEIVED DATA');
-    console.log(numbersArray, 'NUMBER');
+//     console.log(req.body, 'RECEIVED DATA');
+//     console.log(numbersArray, 'NUMBER');
 
-    // const cleanedNumber = ('' + numbers).replace(/\D/g, '');
-    var task = cron.schedule(
-        `${req.body.sec} ${req.body.min} ${req.body.hour} ${req.body.dom} ${req.body.month} ${req.body.weekday}`,
-        function() {
-            console.log('---------------------');
-            console.log('Running Cron Job');
-            Promise.all(
-                numbersArray.map(number => {
-                    return client.messages.create({
-                        to: `+1${numbersArray}`,
-                        from: `${process.env.TWILIO_NUMBER}`,
-                        body: `${req.body.msg}`
-                        // attachments
-                    });
-                })
-            )
-                .then(result => {
-                    res.status(200).json({ msg: 'message scheduled' });
-                    task.stop();
-                })
-                .catch(err => console.error(err));
-        }
-    );
+//     // const cleanedNumber = ('' + numbers).replace(/\D/g, '');
+//     var task = cron.schedule(
+//         `${req.body.sec} ${req.body.min} ${req.body.hour} ${req.body.dom} ${req.body.month} ${req.body.weekday}`,
+//         function() {
+//             console.log('---------------------');
+//             console.log('Running Cron Job');
+//             Promise.all(
+//                 numbersArray.map(number => {
+//                     return client.messages.create({
+//                         to: `+1${numbersArray}`,
+//                         from: `${process.env.TWILIO_NUMBER}`,
+//                         body: `${req.body.msg}`
+//                         // attachments
+//                     });
+//                 })
+//             )
+//                 .then(result => {
+//                     res.status(200).json({ msg: 'message scheduled' });
+//                     task.stop();
+//                 })
+//                 .catch(err => console.error(err));
+//         }
+//     );
+// });
+
+// Scheduling crude functionality:
+router.post('/postScheduled', validateScheduledPost, (req, res) => {
+    req.body.scheduleId = uuidv4();
+
+    twilioDb
+        .insertScheduledMessage(req.body)
+        .then(results => {
+            res.status(201).json({
+                message: `new scheduled message has been inserted for patientId ${req.body.patientId}`
+            });
+        })
+        .catch(err => {
+            res.status(500).json({ error: err });
+        });
 });
 
 router.get('/getScheduled/:id', (req, res) => {
@@ -175,6 +196,23 @@ router.put('/updateScheduled/:id', (req, res) => {
         });
 });
 
+// get request for possible cron server:
+router.get('/getAllScheduledMessages', (req, res) => {
+    twilioDb
+        .getAllScheduled()
+        .then(results => {
+            res.status(200).json({
+                message: 'receiving all messages from messageHistory table.',
+                data: results
+            });
+        })
+        .catch(err => {
+            res.status(500).json({
+                error: err
+            });
+        });
+});
+
 module.exports = router;
 
 // Nick's number:
@@ -184,14 +222,12 @@ module.exports = router;
 // +12055123191
 
 // {
-// 	"numbers": "(509) 720-4080",
-// 	"sec": "",
-// 	"min": "45",
-// 	"hour": "9",
-// 	"dom": "",
-// 	"month": "",
-// 	"weekday": "",
-// 	"msg": "hello mason from the past!!!"
+// 	"patientId": "recfessIT3c69UFi7",
+// 	"scheduleDate": "july 22nd",
+//     "msg": "hello mason from the past!!!",
+//     "min": "",
+//     "hour": "",
+//     "weekday": ""
 // }
 
 // task = cron.schedule(`* 5 * * * *`, => {

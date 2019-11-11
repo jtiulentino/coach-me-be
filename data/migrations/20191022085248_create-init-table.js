@@ -90,12 +90,10 @@ exports.up = function(knex) {
                 .inTable('patients')
                 .onDelete('CASCADE')
                 .onUpdate('CASCADE');
-            tbl.integer('sec');
             tbl.integer('min');
             tbl.integer('hour');
-            tbl.integer('dom');
-            tbl.integer('month');
             tbl.integer('weekday');
+            tbl.string('scheduleDate');
             tbl.text('msg');
         })
         .createTable('recoveries', tbl => {
