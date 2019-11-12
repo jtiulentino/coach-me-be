@@ -249,6 +249,14 @@ module.exports = router;
 // })
 
 // {
+// 	"patientId": "recmLlbDsUaCMUFhf",
+//     "msg": "hello mason good morning!",
+//     "min": "07",
+//     "hour": "8",
+//     "weekday": "Tuesday"
+// }
+
+// {
 //     "msg": "hello!!!",
 //     "numbers": "5097204080",
 //     "sec": "",

@@ -93,7 +93,10 @@ exports.up = function(knex) {
             tbl.string('min');
             tbl.string('hour');
             tbl.string('weekday');
-            tbl.string('scheduleDate');
+            tbl.string('dom');
+            tbl.string('month');
+            tbl.string('year');
+            tbl.string('ampm');
             tbl.text('msg');
         })
         .createTable('recoveries', tbl => {
