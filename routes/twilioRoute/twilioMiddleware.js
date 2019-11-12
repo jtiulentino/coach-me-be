@@ -5,7 +5,8 @@ const Airtable = require('airtable');
 const coachDb = require('./twilioModel.js');
 
 module.exports = {
-    addToScheduledMessages
+    addToScheduledMessages,
+    validateScheduledPost
 };
 
 function addToScheduledMessages(req, res, next) {
@@ -36,4 +37,15 @@ function addToScheduledMessages(req, res, next) {
         .catch(err => {
             res.status(500).json({ error: err });
         });
+}
+
+function validateScheduledPost(req, res, next) {
+    const message = req.body;
+    if (message.patientId && message.msg) {
+        next();
+    } else {
+        res.status(401).json({
+            message: 'Missing patientId or message in post request.'
+        });
+    }
 }

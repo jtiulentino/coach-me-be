@@ -7,12 +7,12 @@ exports.up = function(knex) {
       tbl.string("loginTime", 500);
     })
     .createTable("users", tbl => {
-      tbl.string("id").primary();
+      tbl.string("userId").primary();
       tbl.string("role", 255);
       tbl.string("userPhone", 255).notNullable();
     })
     .createTable("coaches", tbl => {
-      tbl.string("id").primary();
+      tbl.string("coachId").primary();
       tbl.string("coachName", 255).notNullable();
       tbl
         .string("email", 255)
@@ -23,18 +23,18 @@ exports.up = function(knex) {
         .string("userId")
         .notNullable()
         .unsigned()
-        .references("id")
+        .references("userId")
         .inTable("users")
         .onDelete("CASCADE")
         .onUpdate("CASCADE");
     })
     .createTable("patients", tbl => {
-      tbl.uuid("patientId").primary();
+      tbl.string("patientId").primary();
       tbl
         .string("userId")
         .notNullable()
         .unsigned()
-        .references("id")
+        .references("userId")
         .inTable("users")
         .onDelete("CASCADE")
         .onUpdate("CASCADE");
@@ -42,24 +42,24 @@ exports.up = function(knex) {
         .string("coachId", 255)
         .notNullable()
         .unsigned()
-        .references("id")
+        .references("coachId")
         .inTable("coaches")
         .onDelete("CASCADE")
         .onUpdate("CASCADE");
       tbl.string("patientName", 255);
     })
     .createTable("conversations", tbl => {
-      tbl.uuid("conversationId").primary();
+      tbl.string("conversationId").primary();
       tbl
         .string("coachId")
         .notNullable()
         .unsigned()
-        .references("id")
+        .references("coachId")
         .inTable("coaches")
         .onDelete("CASCADE")
         .onUpdate("CASCADE");
       tbl
-        .uuid("patientId")
+        .string("patientId")
         .notNullable()
         .unsigned()
         .references("patientId")
@@ -69,9 +69,9 @@ exports.up = function(knex) {
       tbl.string("createdDate", 255);
     })
     .createTable("messageHistory", tbl => {
-      tbl.uuid("messageId").primary();
+      tbl.string("messageId").primary();
       tbl
-        .uuid("conversationId")
+        .string("conversationId")
         .notNullable()
         .unsigned()
         .references("conversationId")
@@ -84,36 +84,37 @@ exports.up = function(knex) {
         .string("senderId")
         .notNullable()
         .unsigned()
-        .references("id")
+        .references("userId")
         .inTable("users")
         .onDelete("CASCADE")
         .onUpdate("CASCADE");
     })
     .createTable("scheduledMessages", tbl => {
-      tbl.uuid("scheduleId").primary();
+      tbl.string("scheduleId").primary();
       tbl
-        .uuid("patientId")
+        .string("patientId")
         .notNullable()
         .unsigned()
         .references("patientId")
         .inTable("patients")
         .onDelete("CASCADE")
         .onUpdate("CASCADE");
-      tbl.integer("sec");
-      tbl.integer("min");
-      tbl.integer("hour");
-      tbl.integer("dom");
-      tbl.integer("month");
-      tbl.integer("weekday");
+      tbl.string("min");
+      tbl.string("hour");
+      tbl.string("weekday");
+      tbl.string("dom");
+      tbl.string("month");
+      tbl.string("year");
+      tbl.string("ampm");
       tbl.text("msg");
     })
     .createTable("recoveries", tbl => {
-      tbl.uuid("recoverId").primary();
+      tbl.string("recoverId").primary();
       tbl
         .string("coachId")
         .notNullable()
         .unsigned()
-        .references("id")
+        .references("coachId")
         .inTable("coaches")
         .onDelete("CASCADE")
         .onUpdate("CASCADE");
