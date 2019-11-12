@@ -42,7 +42,7 @@ exports.up = function(knex) {
         .uuid("coachId", 255)
         .notNullable()
         .unsigned()
-        .references("coachId")
+        .references("id")
         .inTable("coaches")
         .onDelete("CASCADE")
         .onUpdate("CASCADE");
@@ -54,7 +54,7 @@ exports.up = function(knex) {
         .uuid("coachId")
         .notNullable()
         .unsigned()
-        .references("coachId")
+        .references("id")
         .inTable("coaches")
         .onDelete("CASCADE")
         .onUpdate("CASCADE");
@@ -113,7 +113,7 @@ exports.up = function(knex) {
         .uuid("coachId")
         .notNullable()
         .unsigned()
-        .references("coachId")
+        .references("id")
         .inTable("coaches")
         .onDelete("CASCADE")
         .onUpdate("CASCADE");
