@@ -37,11 +37,11 @@ router.post(
         // inserts coach information into the coaches table.
         coachDb
           .insertNewCoach({
-            coachId: req.body.coachId,
+            id: req.body.coachId,
             coachName: req.body.name,
             email: req.body.email,
             password: req.body.password,
-            userId: result.userId
+            userId: result.id
           })
           .then(result => {
             // res.status(201).json({
