@@ -1,4 +1,5 @@
 const express = require('express');
+const uuidv4 = require('uuid/v4');
 const axios = require('axios');
 const http = require('http');
 const MessagingResponse = require('twilio').twiml.MessagingResponse;
@@ -9,7 +10,10 @@ const {
     authenticateToken
 } = require('../coachRoute/coachAuth.js');
 
-const { addToScheduledMessages } = require('./twilioMiddleware.js');
+const {
+    addToScheduledMessages,
+    validateScheduledPost
+} = require('./twilioMiddleware.js');
 
 const twilioDb = require('./twilioModel.js');
 
@@ -73,6 +77,7 @@ router.get('/messagehistory/:phone', (req, res) => {
         });
 });
 
+// Old cron scheduling function will most likely remove it.
 router.post('/schedule', addToScheduledMessages, (req, res) => {
     if (req.body.sec === '') {
         req.body.sec = '*';
@@ -102,7 +107,6 @@ router.post('/schedule', addToScheduledMessages, (req, res) => {
     console.log(numbersArray, 'NUMBER');
 
     // const cleanedNumber = ('' + numbers).replace(/\D/g, '');
-
     var task = cron.schedule(
         `${req.body.sec} ${req.body.min} ${req.body.hour} ${req.body.dom} ${req.body.month} ${req.body.weekday}`,
         function() {
@@ -125,6 +129,22 @@ router.post('/schedule', addToScheduledMessages, (req, res) => {
                 .catch(err => console.error(err));
         }
     );
+});
+
+// Scheduling crude functionality:
+router.post('/postScheduled', validateScheduledPost, (req, res) => {
+    req.body.scheduleId = uuidv4();
+
+    twilioDb
+        .insertScheduledMessage(req.body)
+        .then(results => {
+            res.status(201).json({
+                message: `new scheduled message has been inserted for patientId ${req.body.patientId}`
+            });
+        })
+        .catch(err => {
+            res.status(500).json({ error: err });
+        });
 });
 
 router.get('/getScheduled/:id', (req, res) => {
@@ -176,6 +196,23 @@ router.put('/updateScheduled/:id', (req, res) => {
         });
 });
 
+// get request for possible cron server:
+router.get('/getAllScheduledMessages', (req, res) => {
+    twilioDb
+        .getAllScheduled()
+        .then(results => {
+            res.status(200).json({
+                message: 'receiving all messages from messageHistory table.',
+                data: results
+            });
+        })
+        .catch(err => {
+            res.status(500).json({
+                error: err
+            });
+        });
+});
+
 module.exports = router;
 
 // Nick's number:
@@ -185,12 +222,47 @@ module.exports = router;
 // +12055123191
 
 // {
-// 	"numbers": "(509) 720-4080",
-// 	"sec": "",
-// 	"min": "45",
-// 	"hour": "9",
-// 	"dom": "",
-// 	"month": "",
-// 	"weekday": "",
-// 	"msg": "hello mason from the past!!!"
+// 	"patientId": "recfessIT3c69UFi7",
+// 	"scheduleDate": "july 22nd",
+//     "msg": "hello mason from the past!!!",
+//     "min": "",
+//     "hour": "",
+//     "weekday": ""
 // }
+
+// task = cron.schedule(`* 5 * * * *`, => {
+//     if (table.date === exists) {
+//         for( let i=0; i < table.date.length; i++) {
+//             if(moment.now().tz() === table.date[i]) {
+//                 twiliosendmessage()
+//             } else {
+//                 console.log('no message')
+//             }
+//         }
+//     } else {
+//         if(`${table.day}/${table.hour}:${table.minute}` === moment.now(someformat)) {
+//             twiliosendmessage()
+//         } else {
+//             console.log('no message')
+//         }
+//     }
+// })
+
+// {
+// 	"patientId": "recmLlbDsUaCMUFhf",
+//     "msg": "hello mason good morning!",
+//     "min": "07",
+//     "hour": "8",
+//     "weekday": "Tuesday"
+// }
+
+// {
+//     "msg": "hello!!!",
+//     "numbers": "5097204080",
+//     "sec": "",
+//     "min": "43",
+//     "hour": "10",
+//     "dom": "",
+//     "month": "",
+//     "weekday": ""
+//    }

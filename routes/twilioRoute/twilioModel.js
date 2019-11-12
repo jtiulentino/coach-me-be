@@ -9,7 +9,8 @@ module.exports = {
     insertScheduledMessage,
     getScheduledByPatientId,
     deleteScheduled,
-    updateScheduled
+    updateScheduled,
+    getAllScheduled
 };
 
 function findSenderByPhone(filter) {
@@ -60,4 +61,10 @@ function updateScheduled(filter, updatedScheduled) {
     return db('scheduledMessages')
         .where(filter)
         .update(updatedScheduled);
+}
+
+function getAllScheduled() {
+    return db('scheduledMessages')
+        .join('patients', 'patients.patientId', 'scheduledMessages.patientId')
+        .join('users', 'patients.userId', 'users.userId');
 }
