@@ -18,7 +18,7 @@ exports.up = function(knex) {
                 .unique()
                 .notNullable();
             tbl.string('password', 255).notNullable();
-            tbl.string('userId')
+            tbl.uuid('userId')
                 .notNullable()
                 .unsigned()
                 .references('userId')
@@ -28,14 +28,14 @@ exports.up = function(knex) {
         })
         .createTable('patients', tbl => {
             tbl.uuid('patientId').primary();
-            tbl.string('userId')
+            tbl.uuid('userId')
                 .notNullable()
                 .unsigned()
                 .references('userId')
                 .inTable('users')
                 .onDelete('CASCADE')
                 .onUpdate('CASCADE');
-            tbl.string('coachId', 255)
+            tbl.uuid('coachId', 255)
                 .notNullable()
                 .unsigned()
                 .references('coachId')
@@ -46,14 +46,14 @@ exports.up = function(knex) {
         })
         .createTable('conversations', tbl => {
             tbl.uuid('conversationId').primary();
-            tbl.string('coachId')
+            tbl.uuid('coachId')
                 .notNullable()
                 .unsigned()
                 .references('coachId')
                 .inTable('coaches')
                 .onDelete('CASCADE')
                 .onUpdate('CASCADE');
-            tbl.string('patientId')
+            tbl.uuid('patientId')
                 .notNullable()
                 .unsigned()
                 .references('patientId')
@@ -64,7 +64,7 @@ exports.up = function(knex) {
         })
         .createTable('messageHistory', tbl => {
             tbl.uuid('messageId').primary();
-            tbl.string('conversationId')
+            tbl.uuid('conversationId')
                 .notNullable()
                 .unsigned()
                 .references('conversationId')
@@ -73,7 +73,7 @@ exports.up = function(knex) {
                 .onUpdate('CASCADE');
             tbl.string('createdDate', 255);
             tbl.string('textContent');
-            tbl.string('senderId')
+            tbl.uuid('senderId')
                 .notNullable()
                 .unsigned()
                 .references('userId')
@@ -83,7 +83,7 @@ exports.up = function(knex) {
         })
         .createTable('scheduledMessages', tbl => {
             tbl.uuid('scheduleId').primary();
-            tbl.string('patientId')
+            tbl.uuid('patientId')
                 .notNullable()
                 .unsigned()
                 .references('patientId')
@@ -100,7 +100,7 @@ exports.up = function(knex) {
         })
         .createTable('recoveries', tbl => {
             tbl.uuid('recoverId').primary();
-            tbl.string('coachId')
+            tbl.uuid('coachId')
                 .notNullable()
                 .unsigned()
                 .references('coachId')
