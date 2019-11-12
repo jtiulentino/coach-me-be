@@ -90,7 +90,7 @@ function addToUserTable(req, res, next) {
     .insertNewUser({
       userPhone: req.body.userPhone,
       role: req.body.role,
-      id: uuidv4()
+      userId: uuidv4()
     })
     .then(result => {
       next();
