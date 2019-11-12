@@ -12,7 +12,7 @@ exports.up = function(knex) {
       tbl.string("userPhone", 255).notNullable();
     })
     .createTable("coaches", tbl => {
-      tbl.uuid("coachId").primary();
+      tbl.uuid("id").primary();
       tbl.string("coachName", 255).notNullable();
       tbl
         .string("email", 255)
