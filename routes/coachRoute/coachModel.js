@@ -21,11 +21,11 @@ function findCoachByPhone(filter) {
 }
 
 function insertNewUser(userObject) {
-  return db("users").insert(userObject, "id");
+  return db("users").insert(userObject);
 }
 
 function insertNewCoach(coachObject) {
-  return db("coaches").insert(coachObject, "id");
+  return db("coaches").insert(coachObject);
 }
 
 function findCoachByEmail(filter) {
@@ -35,16 +35,16 @@ function findCoachByEmail(filter) {
 }
 
 function insertNewPatient(patientObject) {
-  return db("patients").insert(patientObject, "id");
+  return db("patients").insert(patientObject);
 }
 
 function insertConversation(conversationObject) {
-  return db("conversations").insert(conversationObject, "id");
+  return db("conversations").insert(conversationObject);
 }
 
 // forgot password model function (recoveries table):
 function insertRecoveryPassword(passwordObject) {
-  return db("recoveries").insert(passwordObject, "id");
+  return db("recoveries").insert(passwordObject);
 }
 
 // forgot password model function (/resetRoute/reset)
