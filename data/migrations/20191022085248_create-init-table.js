@@ -31,7 +31,7 @@ exports.up = function(knex) {
     .createTable("patients", tbl => {
       tbl.uuid("patientId").primary();
       tbl
-        .uuid("userId")
+        .string("userId")
         .notNullable()
         .unsigned()
         .references("id")
@@ -39,7 +39,7 @@ exports.up = function(knex) {
         .onDelete("CASCADE")
         .onUpdate("CASCADE");
       tbl
-        .uuid("coachId", 255)
+        .string("coachId", 255)
         .notNullable()
         .unsigned()
         .references("id")
@@ -51,7 +51,7 @@ exports.up = function(knex) {
     .createTable("conversations", tbl => {
       tbl.uuid("conversationId").primary();
       tbl
-        .uuid("coachId")
+        .string("coachId")
         .notNullable()
         .unsigned()
         .references("id")
@@ -81,7 +81,7 @@ exports.up = function(knex) {
       tbl.string("createdDate", 255);
       tbl.string("textContent");
       tbl
-        .uuid("senderId")
+        .string("senderId")
         .notNullable()
         .unsigned()
         .references("id")
@@ -110,7 +110,7 @@ exports.up = function(knex) {
     .createTable("recoveries", tbl => {
       tbl.uuid("recoverId").primary();
       tbl
-        .uuid("coachId")
+        .string("coachId")
         .notNullable()
         .unsigned()
         .references("id")
