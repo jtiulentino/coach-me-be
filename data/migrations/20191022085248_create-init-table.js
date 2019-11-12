@@ -7,12 +7,12 @@ exports.up = function(knex) {
       tbl.string("loginTime", 500);
     })
     .createTable("users", tbl => {
-      tbl.uuid("id").primary();
+      tbl.string("id").primary();
       tbl.string("role", 255);
       tbl.string("userPhone", 255).notNullable();
     })
     .createTable("coaches", tbl => {
-      tbl.uuid("id").primary();
+      tbl.string("id").primary();
       tbl.string("coachName", 255).notNullable();
       tbl
         .string("email", 255)
@@ -20,7 +20,7 @@ exports.up = function(knex) {
         .notNullable();
       tbl.string("password", 255).notNullable();
       tbl
-        .uuid("userId")
+        .string("userId")
         .notNullable()
         .unsigned()
         .references("id")
