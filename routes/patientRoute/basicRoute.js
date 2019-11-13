@@ -70,27 +70,6 @@ router.get("/getIntakeRecords", (req, res) => {
     });
 });
 
-router.get("/fakeRecord", (req, res) => {
-  axios
-    .get(
-      `https://api.airtable.com/v0/${process.env.AIRTABLE_REFERENCE}/Outcomes?maxRecords=100`,
-      {
-        headers: {
-          accept: "application/json",
-          Authorization: `Bearer ${process.env.AIRTABLE_KEY}`
-        }
-      }
-    )
-    .then(results => {
-      const newArray = [...results.data.records];
-      console.log(newArray.length);
-      res.status(200).json({ data: "message" });
-    })
-    .catch(err => {
-      res.status(500).json({ error: err });
-    });
-});
-
 // patch for the getMetrics problem of only being able to get back 100 records.
 router.get("/paginationGetMetrics", authenticateToken, (req, res) => {
   const Airtable = require("airtable");
@@ -144,35 +123,6 @@ router.get("/paginationGetMetrics", authenticateToken, (req, res) => {
       view: "Grid view"
     })
     .eachPage(processPage, processRecords);
-});
-
-router.get("/paginationExperiment", authenticateToken, (req, res) => {
-  const Airtable = require("airtable");
-  const base = new Airtable({ apiKey: process.env.AIRTABLE_KEY }).base(
-    process.env.AIRTABLE_REFERENCE
-  );
-
-  base("Outcomes")
-    .select({
-      view: "Grid view"
-    })
-    .eachPage(
-      function page(records, fetchNextPage) {
-        records.forEach(function(record) {
-          console.log("Retrieved", record.get("Client_Name")[0]);
-        });
-
-        fetchNextPage();
-      },
-      function done(err) {
-        if (err) {
-          console.log(err);
-          return;
-        }
-      }
-    );
-
-  res.status(200).json({ message: req.clientInfo.clientId });
 });
 
 router.post(
