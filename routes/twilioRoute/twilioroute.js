@@ -1,9 +1,5 @@
 const express = require("express");
 const uuidv4 = require("uuid/v4");
-const axios = require("axios");
-const http = require("http");
-const MessagingResponse = require("twilio").twiml.MessagingResponse;
-const cron = require("node-cron");
 
 const {
   generateToken,
@@ -18,12 +14,11 @@ const accountSid = process.env.ACCOUNT_SID;
 const authToken = process.env.AUTH_TOKEN;
 const client = require("twilio")(accountSid, authToken);
 const router = express.Router();
+
 //sends message through twilio
 router.post("/twilio", (req, res) => {
-  // res.status(200).json({ lookit: req.body });
   let cleanedNumber = ("" + req.body.Phone).replace(/\D/g, "");
 
-  // res.status(200).json({ cleaned });
   console.log("number from dotenv file", process.env.TWILIO_NUMBER);
 
   client.messages
@@ -46,12 +41,6 @@ router.get("/messagehistory/:phone", (req, res) => {
     .list({ limit: 9000 })
 
     .then(messages => {
-      // const filteredMessagesTo = messages.filter(
-      //     message => message.to === `+1${cleanedPhone}`
-      // );
-      // const filteredMessagesFrom = messages.filter(
-      //     message => message.from === `+1${cleanedPhone}`
-      // );
       const filteredMessages = messages.reverse().map(message => {
         if (
           message.to === `+1${cleanedPhone}` ||
@@ -65,7 +54,6 @@ router.get("/messagehistory/:phone", (req, res) => {
         message => message != undefined
       );
       res.status(200).json({
-        // messages: [...filteredMessagesTo, ...filteredMessagesFrom]
         message: filteredNulls
       });
     })
