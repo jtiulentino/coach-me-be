@@ -232,9 +232,7 @@ router.post(
                     // console.log(results.data.records);
                     // return token and client info from intake table
                     res.status(200).json({
-                        message: `Welcome back, ${
-                            clientObject.fields['Client Name']
-                        }!`,
+                        message: `Welcome back, ${clientObject.fields['Client Name']}!`,
                         loginAttempts: req.loginTime,
                         token,
                         clientObject
@@ -330,10 +328,13 @@ router.get('/getCoachInfo', authenticateToken, (req, res) => {
             const coachObject = {};
             for (let i = 0; i < result.data.records.length; i++) {
                 if (req.clientInfo.coachId === result.data.records[i].id) {
-                    (coachObject.coachName =
-                        result.data.records[i].fields['Full Name']),
-                        (coachObject.coachUrl =
-                            result.data.records[i].fields.Photo[0].url);
+                    coachObject.coachName =
+                        result.data.records[i].fields['Full Name'];
+                    coachObject.coachUrl = result.data.records[i].fields[
+                        'Coach Photo'
+                    ][0].url
+                        ? result.data.records[i].fields['Coach Photo'][0].url
+                        : null;
                 }
             }
 
@@ -344,7 +345,7 @@ router.get('/getCoachInfo', authenticateToken, (req, res) => {
             });
         })
         .catch(err => {
-            res.status(500).json({ error: err });
+            res.status(500).json({ error: err.message });
         });
 });
 
