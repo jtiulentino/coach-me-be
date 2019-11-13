@@ -11,8 +11,6 @@ const router = express.Router();
 
 router.post("/forgotPassword", (req, res, next) => {
   // Error Handling
-
-  console.log("email from forget route", req.body.email);
   if (req.body.email === "") {
     res.json("email required");
   }
@@ -21,19 +19,10 @@ router.post("/forgotPassword", (req, res, next) => {
       email: req.body.email
     })
     .then(user => {
-      console.log(user, "USER FOUND");
       if (user === null) {
-        console.log("email not in database");
         res.status(400).json({ message: "email not in db" });
       } else {
         const token = crypto.randomBytes(20).toString("hex");
-        console.log(token);
-        // res.status(200).json({ token, user });
-        // May need to be changed to use custom function
-        // user.update({
-        //     resetPasswordToken: token,
-        //     resetPasswordExpires: Date.now() + 360000
-        // });
 
         coachDb
           .insertRecoveryPassword({
@@ -43,9 +32,6 @@ router.post("/forgotPassword", (req, res, next) => {
             coachId: user.coachId
           })
           .then(results => {
-            console.log(
-              "message from insert Recovery: recovery instance has been added to database."
-            );
             const transporter = nodemailer.createTransport({
               service: "gmail",
               auth: {
@@ -69,12 +55,10 @@ router.post("/forgotPassword", (req, res, next) => {
 
             transporter.sendMail(mailOptions, function(err, response) {
               if (err) {
-                console.log("there was an error: ", err);
                 res.status(401).json({
                   message: "invalid username or password."
                 });
               } else {
-                console.log("here is the res: ", response);
                 res.status(200).json({
                   message: "recovery email sent"
                 });

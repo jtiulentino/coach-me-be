@@ -8,10 +8,7 @@ router.post("/updatePasswordViaEmail", (req, res, next) => {
   User.findCoachByEmailJoin({
     email: req.body.email
   }).then(user => {
-    // res.status(200).json({ message: user });
-    // res.status(200).json({ user });
     if (user !== undefined) {
-      console.log("user exists in db");
       const hash = bcrypt.hashSync(req.body.password, 4);
       req.body.password = hash;
 
@@ -37,22 +34,7 @@ router.post("/updatePasswordViaEmail", (req, res, next) => {
         .catch(err => {
           res.status(500).json({ error: err });
         });
-      // res.status(200).json({ user: req.body });
-      // bcrypt
-      //     .hash(req.body.password, BCRYPT_SALT_ROUNDS)
-      //     .then(hashedPassword => {
-      //         user.update({
-      //             password: hashedPassword,
-      //             resetPasswordToken: null,
-      //             resetPasswordExpires: null
-      //         });
-      //     })
-      //     .then(() => {
-      //         console.log('password updated');
-      //         res.status(200).send({ message: 'password updated' });
-      //     });
     } else {
-      console.log("no user exists in database to update");
       res.status(404).json({
         message: "no user exists in database to update"
       });
