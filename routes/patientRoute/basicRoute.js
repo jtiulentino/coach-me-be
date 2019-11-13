@@ -193,41 +193,6 @@ router.post(
   }
 );
 
-router.get("/getMetrics", authenticateToken, (req, res) => {
-  // res.status(200).json({ message: req.clientInfo });
-  axios
-    .get(
-      `https://api.airtable.com/v0/${process.env.AIRTABLE_REFERENCE}/Outcomes?filterByFormula=OR({Blood_sugar}!='',{Weight}!='',{Blood_pressure_over}!='')`,
-      requestOptions
-    )
-    .then(results => {
-      // declare clientRecords out of the for loop scope to reference data returned from outcomes table
-      const clientRecords = [];
-      // looping through data received
-
-      console.log("client name", results.data.records[0].fields.Client_Name[0]);
-      for (let j = 0; j < results.data.records.length; j++) {
-        console.log("results in j", results.data.records[j].fields.Client_Name);
-        if (
-          // if the client name is equal to the clientId from intake table then return client record
-          results.data.records[j].fields.Client_Name &&
-          results.data.records[j].fields.Client_Name[0] ===
-            req.clientInfo.clientId
-        ) {
-          // push into empty array so we can access records
-          clientRecords.push(results.data.records[j]);
-        }
-      }
-      console.log("clientRecords", clientRecords);
-
-      res.status(200).json({ message: "it worked!!!", clientRecords });
-    })
-    .catch(err => {
-      console.log(err);
-      res.status(500).json({ error: err });
-    });
-});
-
 router.post(
   "/logMetrics",
   authenticateToken,
