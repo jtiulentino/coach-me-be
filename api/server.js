@@ -3,9 +3,9 @@ const configureMiddleware = require("./middleware");
 
 const basicRoute = require("../routes/patientRoute/basicRoute.js");
 const coachRoute = require("../routes/coachRoute/coachRoute.js");
-const forgotRoute = require("../routes/forgotPassword.js");
-const resetRoute = require("../routes/resetPassword.js");
-const updatePasswordRoute = require("../routes/updatePasswordViaEmail.js");
+const forgotRoute = require("../routes/forgotRoute/forgotPassword.js");
+const resetRoute = require("../routes/forgotRoute/resetPassword.js");
+const updatePasswordRoute = require("../routes/forgotRoute/updatePasswordViaEmail.js");
 const twilioRoute = require("../routes/twilioRoute/twilioroute.js");
 
 const server = express();
