@@ -313,6 +313,7 @@ router.get("/getLastCheckinTime/:id", (req, res) => {
 });
 
 // creates conversation instance in the conversations table. Requires coachId and patientId:
+// This route is most likely redundant since twilio has message history storage built into the library.
 router.post("/makeConversation", authenticateToken, (req, res) => {
   req.body.coachId = req.clientInfo.coachId;
   req.body.conversationId = uuidv4();

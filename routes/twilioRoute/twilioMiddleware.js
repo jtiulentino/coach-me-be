@@ -5,6 +5,8 @@ module.exports = {
   validateScheduledPost
 };
 
+// validation middleware for the /twilioRoute/postScheduled and /twilioRoute/updateScheduled endpoints.
+// checks if the request body contains a patientId and a message.
 function validateScheduledPost(req, res, next) {
   const message = req.body;
   if (message.patientId && message.msg) {

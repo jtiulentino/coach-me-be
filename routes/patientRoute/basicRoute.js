@@ -226,7 +226,7 @@ router.get("/getCoachInfo", authenticateToken, (req, res) => {
           coachObject.coachId = result.data.records[i].id;
           coachObject.coachName = result.data.records[i].fields["Full Name"];
           // coachObject.coachUrl = result.data.records[i].fields.Photo[0].url;
-          console.log(result.data.records[i].fields);
+          console.log(result.data.records[i]);
         }
       }
 

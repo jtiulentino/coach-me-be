@@ -1,6 +1,8 @@
 const express = require("express");
 const uuidv4 = require("uuid/v4");
 
+// Will need to install authentication for all the endpoints in
+// the /twilioRoute/
 const {
   generateToken,
   authenticateToken
@@ -15,10 +17,16 @@ const authToken = process.env.AUTH_TOKEN;
 const client = require("twilio")(accountSid, authToken);
 const router = express.Router();
 
-//sends message through twilio
+// sends sms message through twilio.
 router.post("/twilio", (req, res) => {
+  // reformats the phone number from the request body from (509) 789-9090 to 5097899090
+  // Phone numbers in the airtable are stored as (509) 789-9090
   let cleanedNumber = ("" + req.body.Phone).replace(/\D/g, "");
 
+  // twilio messaging client function. Accepts a from phone number
+  // (needs to be a twilio number purchased from the twilio site),
+  // a to phone number (will need to be validated if using trial account),
+  // and a message in the body.
   client.messages
     .create({
       body: `${req.body.message}`,
@@ -26,19 +34,25 @@ router.post("/twilio", (req, res) => {
       to: `+1${cleanedNumber}`
     })
 
+    // Returns the messages special id if the function is successful.
     .then(message => res.status(201).json(message.sid))
     .catch(err => {
       res.status(500).json({ error: err });
     });
 });
 
+// Uses the twilio message history async function to get back the entire message history
+// of a specific twilio number.
 router.get("/messagehistory/:phone", (req, res) => {
+  // format phone number from (509) 780-9090 to 5097809090.
   let cleanedPhone = ("" + req.params.phone).replace(/\D/g, "");
   client.messages
 
     .list({ limit: 9000 })
 
     .then(messages => {
+      // filters the twilio message history by the phone number in req.params
+      // Want to receive back inbound and outbound.
       const filteredMessages = messages.reverse().map(message => {
         if (
           message.to === `+1${cleanedPhone}` ||
@@ -48,6 +62,7 @@ router.get("/messagehistory/:phone", (req, res) => {
         }
       });
 
+      // filters out possible null values (safety feature for imperfect data)
       const filteredNulls = filteredMessages.filter(
         message => message != undefined
       );
@@ -61,6 +76,8 @@ router.get("/messagehistory/:phone", (req, res) => {
 });
 
 // Scheduling crude functionality:
+
+// Inserts scheduled message to the scheduledMessages table in database.
 router.post("/postScheduled", validateScheduledPost, (req, res) => {
   req.body.scheduleId = uuidv4();
 
@@ -76,6 +93,8 @@ router.post("/postScheduled", validateScheduledPost, (req, res) => {
     });
 });
 
+// returns back an array of all scheduled messages for a specific patientId (patientId are
+// from the airtable)
 router.get("/getScheduled/:id", (req, res) => {
   twilioDb
     .getScheduledByPatientId({ patientId: req.params.id })
@@ -87,6 +106,8 @@ router.get("/getScheduled/:id", (req, res) => {
     });
 });
 
+// deletes a specific scheduled message from the scheduledMessages table using the
+// scheduleId primary key. scheduleIds are created using uuidv4 function.
 router.delete("/deleteScheduled/:id", (req, res) => {
   twilioDb
     .deleteScheduled({ scheduleId: req.params.id })
@@ -106,6 +127,8 @@ router.delete("/deleteScheduled/:id", (req, res) => {
     });
 });
 
+// updates a specific scheduled message in the scheduledMessages table using the
+// scheduleId primary key. patientId and msg are required for this command to be successful.
 router.put("/updateScheduled/:id", validateScheduledPost, (req, res) => {
   twilioDb
     .updateScheduled({ scheduleId: req.params.id }, req.body)
@@ -125,7 +148,8 @@ router.put("/updateScheduled/:id", validateScheduledPost, (req, res) => {
     });
 });
 
-// get request for possible cron server:
+// get request for the cron message scheduling server. Returns all of the
+// scheduled messages from the scheduledMessages table.
 router.get("/getAllScheduledMessages", (req, res) => {
   twilioDb
     .getAllScheduled()
