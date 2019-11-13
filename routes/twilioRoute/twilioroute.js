@@ -19,8 +19,6 @@ const router = express.Router();
 router.post("/twilio", (req, res) => {
   let cleanedNumber = ("" + req.body.Phone).replace(/\D/g, "");
 
-  console.log("number from dotenv file", process.env.TWILIO_NUMBER);
-
   client.messages
     .create({
       body: `${req.body.message}`,

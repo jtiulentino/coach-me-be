@@ -159,8 +159,6 @@ function addToUserPatientTable(req, res, next) {
     coachDb
       .findCoachByPhone({ userPhone: req.patientInfo[i].userPhone })
       .then(result => {
-        console.log(result);
-
         // first checks if the patient already exists in the users table. if so
         // the nested promises are skipped and the loop moves onto the next patient.
         if (result === undefined) {
@@ -178,8 +176,6 @@ function addToUserPatientTable(req, res, next) {
                   userPhone: req.patientInfo[i].userPhone
                 })
                 .then(res => {
-                  console.log("from findCoachByPhone", res);
-
                   // Lastly this inserts the patient information into the patients table
                   // including the userId.
                   coachDb

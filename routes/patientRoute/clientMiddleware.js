@@ -105,12 +105,9 @@ function addPatient(req, res, next) {
         loginTime: 0
       })
         .then(result => {
-          console.log("insertNewClient2", result);
-          // res.status(201).json({ message: result });
           next();
         })
         .catch(err => {
-          console.log("insertNewClient ERROR", err);
           res.status(500).json({ error: "INSERT not working" });
         });
     } else {
@@ -125,7 +122,6 @@ function getLoginAmount(req, res, next) {
   findPatientByPhone({ phoneNumber: req.body.clientPhone })
     .first()
     .then(result => {
-      console.log("insertNewClient1", result);
       //check to see if the result has a loginTime that has a value less than or equal to zero.
 
       if (result.loginTime <= 0) {

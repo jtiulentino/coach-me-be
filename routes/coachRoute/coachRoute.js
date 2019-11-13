@@ -83,7 +83,6 @@ router.post("/login", validateLoginPost, (req, res) => {
   coachDb
     .findCoachByEmail({ email: coach.email })
     .then(userInfo => {
-      console.log(userInfo);
       if (coach && bcrypt.compareSync(coach.password, userInfo.password)) {
         const token = generateToken(userInfo);
         res.status(200).json({
@@ -202,8 +201,6 @@ router.get("/getClientGoals/:id", (req, res) => {
 
     let newModels = models.filter(record => record != undefined);
 
-    console.log("new models", newModels);
-
     res.status(200).json({
       patientGoals: newModels
     });
@@ -256,8 +253,6 @@ router.get("/getClientMetrics/:id", (req, res) => {
     });
 
     let newModels = models.filter(record => record != undefined);
-
-    console.log("new models", newModels);
 
     res.status(200).json({
       patientMetrics: newModels

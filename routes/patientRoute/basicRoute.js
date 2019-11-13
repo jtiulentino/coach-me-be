@@ -111,8 +111,6 @@ router.get("/paginationGetMetrics", authenticateToken, (req, res) => {
 
     let newModels = models.filter(record => record != undefined);
 
-    console.log("new models", newModels);
-
     res.status(200).json({
       clientRecords: newModels
     });
@@ -139,8 +137,6 @@ router.post(
       }
     };
 
-    console.log("from the router body", process.env.AIRTABLE_KEY);
-
     axios
       .get(
         `https://api.airtable.com/v0/${process.env.AIRTABLE_REFERENCE}/Intake`,
@@ -158,19 +154,16 @@ router.post(
             // does the "phone number" from client login match any of the "phone" keys from records?
             req.body.clientPhone === results.data.records[i].fields.Phone
           ) {
-            console.log(results.data.records[i]);
             // if it does then spread results into clientObject to be referenced
             clientObject = { ...results.data.records[i] };
             // stick the new clientObject with reference data in the token
             token = generateToken(clientObject);
-            console.log("token", token);
           }
         }
 
         // checks if the login user phone number exists in the intake airtable.
         // returns a status code 401 if the user can't be found.
 
-        console.log("login attempts", req.loginTime);
         if (clientObject.id) {
           // console.log(results.data.records);
           // return token and client info from intake table
@@ -187,7 +180,6 @@ router.post(
         }
       })
       .catch(err => {
-        console.log(err);
         res.status(500).json({ error: err });
       });
   }
