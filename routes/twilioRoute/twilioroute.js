@@ -177,7 +177,7 @@ router.delete("/deleteScheduled/:id", (req, res) => {
     });
 });
 
-router.put("/updateScheduled/:id", (req, res) => {
+router.put("/updateScheduled/:id", validateScheduledPost, (req, res) => {
   twilioDb
     .updateScheduled({ scheduleId: req.params.id }, req.body)
     .then(results => {
@@ -222,47 +222,9 @@ module.exports = router;
 // +12055123191
 
 // {
-// 	"patientId": "recfessIT3c69UFi7",
-// 	"scheduleDate": "july 22nd",
-//     "msg": "hello mason from the past!!!",
-//     "min": "",
-//     "hour": "",
-//     "weekday": ""
-// }
-
-// task = cron.schedule(`* 5 * * * *`, => {
-//     if (table.date === exists) {
-//         for( let i=0; i < table.date.length; i++) {
-//             if(moment.now().tz() === table.date[i]) {
-//                 twiliosendmessage()
-//             } else {
-//                 console.log('no message')
-//             }
-//         }
-//     } else {
-//         if(`${table.day}/${table.hour}:${table.minute}` === moment.now(someformat)) {
-//             twiliosendmessage()
-//         } else {
-//             console.log('no message')
-//         }
-//     }
-// })
-
-// {
 // 	"patientId": "recmLlbDsUaCMUFhf",
 //     "msg": "hello mason good morning!",
 //     "min": "07",
 //     "hour": "8",
 //     "weekday": "Tuesday"
 // }
-
-// {
-//     "msg": "hello!!!",
-//     "numbers": "5097204080",
-//     "sec": "",
-//     "min": "43",
-//     "hour": "10",
-//     "dom": "",
-//     "month": "",
-//     "weekday": ""
-//    }
