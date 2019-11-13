@@ -15,10 +15,10 @@ https://coach-me-backend.herokuapp.com/
 
 ### Backend framework
 
--   Node.js and Express gives us the flexibility to control the flow of requests to airtable in a controlled and easy to read environment.
--   We are going to need a database that can be seeded with massive amounts of data and control the relationships between the tables.
--   Custom Middleware
--   prebuilt middleware packages
+- Node.js and Express gives us the flexibility to control the flow of requests to airtable in a controlled and easy to read environment.
+- We are going to need a database that can be seeded with massive amounts of data and control the relationships between the tables.
+- Custom Middleware
+- prebuilt middleware packages
 
 ---
 
@@ -26,30 +26,30 @@ https://coach-me-backend.herokuapp.com/
 
 **Client Routes**
 
-| Method                                                                              | Endpoint                             | Access Control                               | Description                                                                 |
-| ----------------------------------------------------------------------------------- | ------------------------------------ | -------------------------------------------- | --------------------------------------------------------------------------- |
-| POST                                                                                | `/clientRoute/login`                 | all registered clients                       | Returns token to access client information                                  |
-| GET                                                                                 | `/clientRoute/getMetrics`            | client(token required)                       | Access current and past client Metrics                                      |
-| GET                                                                                 | `/clientRoute/getIntakeRecords`      | client(token required)                       | Receives formated client Objects                                            |
-| POST                                                                                | `/clientRoute/logMetrics`            | client(token required)                       | input new Health Metric to database                                         |
-| GET                                                                                 | `/clientRoute/getCoachInfo`          | client(token required)                       | returns current coach object                                                |
-| GET                                                                                 | `/clientRoute//paginationGetMetrics` | client(token required)                       | returns full history of Metrics for client                                  |
-| GET                                                                                 | `/coachRoute/getPatients`            |                                              | client(token required)                                                      | returns full list of patients |
-| GET                                                                                 | `/coachRoute/getClientMetrics/:id`   | requires clientId                            |
+| Method                                                                              | Endpoint                               | Access Control                                       | Description                                                                 |
+| ----------------------------------------------------------------------------------- | -------------------------------------- | ---------------------------------------------------- | --------------------------------------------------------------------------- |
+| POST                                                                                | `/clientRoute/login`                   | all registered clients                               | Returns token to access client information                                  |
+| GET                                                                                 | `/clientRoute/getIntakeRecords`        | client(token required)                               | Receives formated client Objects                                            |
+| POST                                                                                | `/clientRoute/logMetrics`              | client(token required)                               | input new Health Metric to database                                         |
+| GET                                                                                 | `/clientRoute/getCoachInfo`            | client(token required)                               | returns current coach object                                                |
+| GET                                                                                 | `/clientRoute//paginationGetMetrics`   | client(token required)                               | returns full history of Metrics for client                                  |
+| GET                                                                                 | `/coachRoute/getPatients`              |                                                      | client(token required)                                                      | returns full list of patients |
+| GET                                                                                 | `/coachRoute/getClientMetrics/:id`     | requires clientId                                    |
 | returns full Metrics history of client id passed in dynamic route                   |
-| GET                                                                                 | `/coachRoute/getClientGoals/:id`     | requires clientId                            |
+| GET                                                                                 | `/coachRoute/getClientGoals/:id`       | requires clientId                                    |
 | returns full goal history of client id passed in dynamic route                      |
-| POST                                                                                | `/twilioRoute/twilio`                |                                              |
+| POST                                                                                | `/twilioRoute/twilio`                  |                                                      |
 | returns a string of the sent message's sid if the post was successful               |
-| GET                                                                                 | `/twilioRoute/messagehistory/:phone` | requires client Phone number                 |
+| GET                                                                                 | `/twilioRoute/messagehistory/:phone`   | requires client Phone number                         |
 | returns two arrays with messages that were from and to the number in the url string |
-| POST                                                                                | `/coachRoute/newRegister`            |                                              | returns a personalized message and a jsonwebtoken                           |
-| POST                                                                                | `/coachRoute/login`                  |                                              | returns a personalized message and a jsonwebtoken                           |
-| GET                                                                                 | `/coachRoute/getLastCheckinTime/:id` |                                              | returns the last checkin date and the corresponding patientId from airtable |
-| POST                                                                                | `/twilioRoute/schedule`              | requires client phone number in request body | creates cronjob instance (still needs some work)                            |
-| GET                                                                                 | `/twilioRoute/getScheduled/:id`      | requires valid clientId in url body          | returns an array of all scheduled messages for provided patientId           |
-| DELETE                                                                              | `/twilioRoute/deleteScheduled/:id`   | requires valid scheduleId                    | returns a message that says the record was deleted from database            |
-| PUT                                                                                 | `/twilioRoute/updateScheduled/:id`   | requires valid scheduleId                    | returns a message that says the record was updated in database              |
+| POST                                                                                | `/coachRoute/newRegister`              |                                                      | returns a personalized message and a jsonwebtoken                           |
+| POST                                                                                | `/coachRoute/login`                    |                                                      | returns a personalized message and a jsonwebtoken                           |
+| GET                                                                                 | `/coachRoute/getLastCheckinTime/:id`   |                                                      | returns the last checkin date and the corresponding patientId from airtable |
+| POST                                                                                | `/twilioRoute/postScheduled`           | requires patientId and msg (message) in request body | creates scheduled cron instance within the scheduledMessages table          |
+| GET                                                                                 | `/twilioRoute/getScheduled/:id`        | requires valid clientId in url body                  | returns an array of all scheduled messages for provided patientId           |
+| DELETE                                                                              | `/twilioRoute/deleteScheduled/:id`     | requires valid scheduleId                            | returns a message that says the record was deleted from database            |
+| PUT                                                                                 | `/twilioRoute/updateScheduled/:id`     | requires valid scheduleId                            | returns a message that says the record was updated in database              |
+| GET                                                                                 | `/twilioRoute/getAllScheduledMessages` |                                                      | returns all of the scheduled messages from the scheduledMessages table      |
 
 returns array of clients that logged in health coach is charged with
 
@@ -61,7 +61,7 @@ _Example_
 
 ```javascript
 {
-    clientPhone: '1234567899';
+  clientPhone: "1234567899";
 }
 ```
 
@@ -111,7 +111,7 @@ _Example_
 
 ---
 
-GET `/clientRoute/getMetrics` and `/clientRoute/paginationGetMetrics` will return objects like so:
+GET `/clientRoute/paginationGetMetrics` will return objects like so:
 <br>
 `/paginationGetMetrics` returns the full client history using pagination
 
@@ -119,7 +119,6 @@ _Example_
 
 ```javascript
 {
-  "message": "it worked!!!",
   "clientRecords": [
     {
       "id": "rec0gkAMkknlJLb8p",
@@ -233,7 +232,8 @@ _Example_(returned object)
 ```javascript
 {
     "message": "Coach Karin Underwood has been register in database.",
-    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjb2FjaElkIjoicmVjWXdEOWVuTUc0bjJ4cUQiLCJjb2FjaE5hbWUiOiJLYXJpbiBVbmRlcndvb2QiLCJpYXQiOjE1NzI2MzUwMzgsImV4cCI6MTU3MjcyMTQzOH0.-rKCBr22T9PUBMPW1ebi-1VaWkuFu1Iaq8EgILz5Ihc"
+    "coachName": "Karin Underwood",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjb2FjaElkIjoicmVjWXdEOWVuTUc0bjJ4cUQiLCJjb2FjaE5hbWUiOiJLYXJpbiBVbmRlcndvb2QiLCJpYXQiOjE1NzM2ODQwODUsImV4cCI6MTU3Mzc3MDQ4NX0.Vv0lrAHXY2YcOZR7JZNIXJyRKonNO2gbxxiZ4j0ZS6Y"
 }
 
 ```
@@ -255,7 +255,8 @@ _Example_(returned object)
 ```javascript
 {
     "message": "Welcome back!!!! Karin Underwood",
-    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjb2FjaElkIjoicmVjWXdEOWVuTUc0bjJ4cUQiLCJjb2FjaE5hbWUiOiJLYXJpbiBVbmRlcndvb2QiLCJpYXQiOjE1NzI2MzUzMTQsImV4cCI6MTU3MjcyMTcxNH0.dV7NQxMoDxkTlYwr4NLESGIBRge2lE52PJb4mvZ6MeA"
+    "coachName": "Karin Underwood",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjb2FjaElkIjoicmVjWXdEOWVuTUc0bjJ4cUQiLCJjb2FjaE5hbWUiOiJLYXJpbiBVbmRlcndvb2QiLCJpYXQiOjE1NzM2ODQxMTQsImV4cCI6MTU3Mzc3MDUxNH0.FuMX_uJ1BypzIwKo68reU8RGxu571XLp2ICmFeTDJg0"
 }
 ```
 
@@ -269,8 +270,8 @@ _Example_
 
 ```javascript
 {
-    "lastCheckin": "2019-10-10T01:18:50.000Z",
-    "clientId": "rec3NQI2MqXCQNQX1"
+    "lastCheckin": 34,
+    "clientId": "rec3NQI2MqXCQNQx1"
 }
 ```
 
@@ -285,8 +286,23 @@ _Example_
 ```javascript
 "patientList": [
         {
-            "clientName": "Joycee",
-            "clientId": "rec3NQI2MqXCQNQX1"
+            "clientName": "Bearimy",
+            "clientId": "rec3NQI2MqXCQNQX1",
+            "conditions": [
+                "High blood pressure"
+            ],
+            "motivations": "Be sexy, start dating again",
+            "language": "English",
+            "clientPhone": "(555) 639-1639"
+        },
+        {
+            "clientName": "Elida",
+            "clientId": "rec7clIcwyscyaLhp",
+            "conditions": [
+                "Pre-diabetes"
+            ],
+            "language": "Spanish",
+            "clientPhone": "(555) 679-2711"
         }, ...
 ]
 
@@ -299,13 +315,20 @@ _Example_
 ```javascript
 "patientGoals": [
         {
-            "clientId": "rec3NQI2MqXCQNQX1",
-            "goal": "Eating breakfast\nDo squats",
-            "goalDetails": "Going on more walks; no details on stew\n\nNumbers not what she expectedDidn't get to exercise more than 2xs a week; high calorie tiramisu for birthday\nGetting back on track - skipping a lot of things - don't miss it\nClothes fitting better",
-            "startDate": "2019-10-10T01:02:00.000Z",
-            "metGoal": "Yes"
+            "clientId": "rec7clIcwyscyaLhp",
+            "goal": "Walk for 10 minutes, once this week",
+            "goalDetails": "Still wants to lose weight, hasn't been doing much",
+            "startDate": "2019-09-28T00:35:00.000Z",
+            "metGoal": "No",
+            "notes": "He looks very tired! Maybe we should focus on sleep in the future?\nHe still says that he wants to lose weight."
+        },
+        {
+            "clientId": "rec7clIcwyscyaLhp",
+            "goalDetails": "N/A",
+            "startDate": "2019-09-01T22:00:00.000Z",
+            "notes": "Responsive, he said he had a good night"
         }, ...
-]
+  ]
 }
 
 ```
@@ -351,15 +374,15 @@ _Example_
 
 ```javascript
 
-"toMessages": [
+  "message": [
         {
             "accountSid": "AC6d95bb53a84635a8d81ad5293692fbc2",
             "apiVersion": "2010-04-01",
-            "body": "Sent from your Twilio trial account - The Robots are coming! Head for the hills!",
-            "dateCreated": "2019-10-31T17:42:47.000Z",
-            "dateUpdated": "2019-10-31T17:42:48.000Z",
-            "dateSent": "2019-10-31T17:42:47.000Z",
-            "direction": "outbound-reply",
+            "body": "Sent from your Twilio trial account - derps",
+            "dateCreated": "2019-10-30T21:10:02.000Z",
+            "dateUpdated": "2019-10-30T21:10:02.000Z",
+            "dateSent": "2019-10-30T21:10:02.000Z",
+            "direction": "outbound-api",
             "errorCode": null,
             "errorMessage": null,
             "from": "+12513877822",
@@ -368,64 +391,59 @@ _Example_
             "numSegments": "1",
             "price": "-0.00750",
             "priceUnit": "USD",
-            "sid": "SMf222f84d27d95af44370bf8273c90736",
+            "sid": "SMb175398fe0494182871a83ae4310e7a9",
             "status": "delivered",
             "subresourceUris": {
-                "media": "/2010-04-01/Accounts/AC6d95bb53a84635a8d81ad5293692fbc2/Messages/SMf222f84d27d95af44370bf8273c90736/Media.json",
-                "feedback": "/2010-04-01/Accounts/AC6d95bb53a84635a8d81ad5293692fbc2/Messages/SMf222f84d27d95af44370bf8273c90736/Feedback.json"
-            },
-            "to": "+15097204080",
-            "uri": "/2010-04-01/Accounts/AC6d95bb53a84635a8d81ad5293692fbc2/Messages/SMf222f84d27d95af44370bf8273c90736.json"
-        }, ...
-  ],
-  "fromMessages": [
-        {
-            "accountSid": "AC6d95bb53a84635a8d81ad5293692fbc2",
-            "apiVersion": "2010-04-01",
-            "body": "Hello there!!! New message!!!",
-            "dateCreated": "2019-10-31T18:01:54.000Z",
-            "dateUpdated": "2019-10-31T18:01:54.000Z",
-            "dateSent": "2019-10-31T18:01:54.000Z",
-            "direction": "inbound",
-            "errorCode": null,
-            "errorMessage": null,
-            "from": "+15097204080",
-            "messagingServiceSid": null,
-            "numMedia": "0",
-            "numSegments": "1",
-            "price": "-0.00750",
-            "priceUnit": "USD",
-            "sid": "SM39f4e8f16a22ced9d8faeb5f8df5885a",
-            "status": "received",
-            "subresourceUris": {
-                "media": "/2010-04-01/Accounts/AC6d95bb53a84635a8d81ad5293692fbc2/Messages/SM39f4e8f16a22ced9d8faeb5f8df5885a/Media.json",
-                "feedback": "/2010-04-01/Accounts/AC6d95bb53a84635a8d81ad5293692fbc2/Messages/SM39f4e8f16a22ced9d8faeb5f8df5885a/Feedback.json"
-            },
-            "to": "+12513877822",
-            "uri": "/2010-04-01/Accounts/AC6d95bb53a84635a8d81ad5293692fbc2/Messages/SM39f4e8f16a22ced9d8faeb5f8df5885a.json"
-        },...
+                "media": "/2010-04-01/Accounts/AC6d95bb53a84635a8d81ad5293692fbc2/Messages/SMb175398fe0494182871a83ae4310e7a9/Media.json",
+                "feedback": "/2010-04-01/Accounts/AC6d95bb53a84635a8d81ad5293692fbc2/Messages/SMb175398fe0494182871a83ae4310e7a9/Feedback.json"
+            },...
   ]
 
 ```
 
-POST `/twilioRoute/schedule` returns a success message when cronjob is running:
+POST `/twilioRoute/postScheduled` returns a success message and inserts the scheduled message to the scheduledMessages table:
 <br>
-`/twilioRoute/schedule` returns a success message when cronjob is running.
+`/twilioRoute/postScheduled` returns a success message.
 
-_Example_: request
+_Example_: request weekly
 
 ```javascript
 {
-	"numbers": "(509) 720-4080",
-	"sec": "",
-	"min": "45",
-	"hour": "9",
-	"dom": "",
-	"month": "",
-	"weekday": "",
-	"msg": "hello mason from the past!!!"
+    "patientId": "recmLlbDsUaCMUFhf",
+    "msg": "hello mason good morning!",
+    "min": "09",
+    "hour": "2",
+    "ampm": "pm",
+    "weekday": "Tuesday",
+    "dom": "",
+    "month": "",
+    "year": "2019"
 }
 
+```
+
+_Example_: request monthly
+
+```javascript
+{
+    "patientId": "recmLlbDsUaCMUFhf",
+    "msg": "hello mason good morning!",
+    "min": "09",
+    "hour": "2",
+    "ampm": "pm",
+    "weekday": "",
+    "dom": "12",
+    "month": "Nov",
+    "year": "2019"
+}
+```
+
+_Example_: return object
+
+```javascript
+{
+    "message": "new scheduled message has been inserted for patientId recmLlbDsUaCMUFhf"
+}
 ```
 
 DELETE `/twilioRoute/deleteScheduled/:id` returns a message saying the scheduleId in the url string has been deleted from the database:
@@ -436,7 +454,7 @@ _Example_: request
 
 ```javascript
 {
-    message: `scheduled message scheduleId 333d1d89-1e82-4743-b987-97974cfe0586 has been deleted.`;
+  message: `scheduled message scheduleId 333d1d89-1e82-4743-b987-97974cfe0586 has been deleted.`;
 }
 ```
 
@@ -444,11 +462,43 @@ PUT `/twilioRoute/updateScheduled/:id` returns a message saying the scheduleId i
 <br>
 `/twilioRoute/deleteSchedule/:id` returns a message saying the scheduleId in the url string has been updated in the database.
 
-_Example_: request
+_Example_: request weekly
 
 ```javascript
 {
-    message: `scheduleId 333d1d89-1e82-4743-b987-97974cfe0586 has been updated.`;
+    "patientId": "recmLlbDsUaCMUFhf",
+    "msg": "hello mason good morning!",
+    "min": "09",
+    "hour": "2",
+    "ampm": "pm",
+    "weekday": "Tuesday",
+    "dom": "",
+    "month": "",
+    "year": "2019"
+}
+```
+
+_Example_: request monthly
+
+```javascript
+{
+    "patientId": "recmLlbDsUaCMUFhf",
+    "msg": "hello mason good morning!",
+    "min": "09",
+    "hour": "2",
+    "ampm": "pm",
+    "weekday": "",
+    "dom": "12",
+    "month": "Nov",
+    "year": "2019"
+}
+```
+
+_Example_: return object
+
+```javascript
+{
+  message: `scheduleId 333d1d89-1e82-4743-b987-97974cfe0586 has been updated.`;
 }
 ```
 
@@ -461,15 +511,40 @@ _Example_:
 ```javascript
 data: [
   {
-    "patientId": "rec3NQI2MqXCQNQX1",
-    "sec": "",
-    "min": "45",
-    "hour": "9",
-    "dom": "",
-    "month": "",
-    "weekday": "",
-    "msg": "hello mason from the past!!!"
-  }, ...
+            "scheduleId": "5f35abba-0034-4268-b021-2b54a028ebb5",
+            "patientId": "recmLlbDsUaCMUFhf",
+            "min": "09",
+            "hour": "2",
+            "weekday": "Tuesday",
+            "dom": "",
+            "month": "",
+            "year": "2019",
+            "ampm": "pm",
+            "msg": "hello mason good morning!"
+        }, ...
+]
+```
+
+GET `/twilioRoute/getAllScheduledMessages` returns an array of all scheduled messages in the scheduledMessages table:
+<br>
+`/twilioRoute/getAllScheduledMessages`
+
+_Example_:
+
+```javascript
+data: [
+  {
+            "scheduleId": "5f35abba-0034-4268-b021-2b54a028ebb5",
+            "patientId": "recmLlbDsUaCMUFhf",
+            "min": "09",
+            "hour": "2",
+            "weekday": "Tuesday",
+            "dom": "",
+            "month": "",
+            "year": "2019",
+            "ampm": "pm",
+            "msg": "hello mason good morning!"
+        }, ...
 ]
 ```
 
@@ -498,16 +573,16 @@ In order for the app to function correctly, the user must set up their own envir
 
 create a .env file that includes the following:
 
--   PORT
--   AIRTABLE\*KEY
--   JWT_SECRET
+- PORT
+- AIRTABLE\*KEY
+- JWT_SECRET
 
 🚫 These are just examples, replace them with the specifics for your app
 _ STAGING_DB - optional development db for using functionality not available in SQLite
 _ NODE\*ENV - set to "development" until ready for "production"
 
--   JWT*SECRET - you can generate this by using a python shell and running import random''.join([random.SystemRandom().choice('abcdefghijklmnopqrstuvwxyz0123456789!@#\$%^&amp;*(-_=+)') for i in range(50)])
-    _ SENDGRID_API_KEY - this is generated in your Sendgrid account \* stripe_secret - this is generated in the Stripe dashboard
+- JWT*SECRET - you can generate this by using a python shell and running import random''.join([random.SystemRandom().choice('abcdefghijklmnopqrstuvwxyz0123456789!@#\$%^&amp;*(-_=+)') for i in range(50)])
+  _ SENDGRID_API_KEY - this is generated in your Sendgrid account \* stripe_secret - this is generated in the Stripe dashboard
 
 ## Contributing
 
@@ -519,10 +594,10 @@ Please note we have a [code of conduct](./code_of_conduct.md). Please follow it 
 
 **If you are having an issue with the existing project code, please submit a bug report under the following guidelines:**
 
--   Check first to see if your issue has already been reported.
--   Check to see if the issue has recently been fixed by attempting to reproduce the issue using the latest master branch in the repository.
--   Create a live example of the problem.
--   Submit a detailed bug report including your environment & browser, steps to reproduce the issue, actual and expected outcomes, where you believe the issue is originating from, and any potential solutions you have considered.
+- Check first to see if your issue has already been reported.
+- Check to see if the issue has recently been fixed by attempting to reproduce the issue using the latest master branch in the repository.
+- Create a live example of the problem.
+- Submit a detailed bug report including your environment & browser, steps to reproduce the issue, actual and expected outcomes, where you believe the issue is originating from, and any potential solutions you have considered.
 
 ### Feature Requests
 
@@ -536,11 +611,11 @@ Remember that this project is licensed under the MIT license, and by submitting 
 
 #### Pull Request Guidelines
 
--   Ensure any install or build dependencies are removed before the end of the layer when doing a build.
--   Update the README.md with details of changes to the interface, including new plist variables, exposed ports, useful file locations and container parameters.
--   Ensure that your code conforms to our existing code conventions and test coverage.
--   Include the relevant issue number, if applicable.
--   You may merge the Pull Request in once you have the sign-off of two other developers, or if you do not have permission to do that, you may request the second reviewer to merge it for you.
+- Ensure any install or build dependencies are removed before the end of the layer when doing a build.
+- Update the README.md with details of changes to the interface, including new plist variables, exposed ports, useful file locations and container parameters.
+- Ensure that your code conforms to our existing code conventions and test coverage.
+- Include the relevant issue number, if applicable.
+- You may merge the Pull Request in once you have the sign-off of two other developers, or if you do not have permission to do that, you may request the second reviewer to merge it for you.
 
 ### Attribution
 
