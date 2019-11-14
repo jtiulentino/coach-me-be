@@ -15,10 +15,10 @@ https://coach-me-backend.herokuapp.com/
 
 ### Backend framework
 
-- Node.js and Express gives us the flexibility to control the flow of requests to airtable in a controlled and easy to read environment.
-- We are going to need a database that can be seeded with massive amounts of data and control the relationships between the tables.
-- Custom Middleware
-- prebuilt middleware packages
+-   Node.js and Express gives us the flexibility to control the flow of requests to airtable in a controlled and easy to read environment.
+-   We are going to need a database that can be seeded with massive amounts of data and control the relationships between the tables.
+-   Custom Middleware
+-   prebuilt middleware packages
 
 ---
 
@@ -26,31 +26,29 @@ https://coach-me-backend.herokuapp.com/
 
 **Client Routes**
 
-| Method                                                                              | Endpoint                                      | Access Control                                       | Description                                                                 |
-| ----------------------------------------------------------------------------------- | --------------------------------------------- | ---------------------------------------------------- | --------------------------------------------------------------------------- |
-| POST                                                                                | `/clientRoute/login`                          | all registered clients                               | Returns token to access client information                                  |
-| GET                                                                                 | `/clientRoute/getIntakeRecords`               | client(token required)                               | Receives formated client Objects                                            |
-| POST                                                                                | `/clientRoute/logMetrics`                     | client(token required)                               | input new Health Metric to database                                         |
-| GET                                                                                 | `/clientRoute/getCoachInfo`                   | client(token required)                               | returns current coach object                                                |
-| GET                                                                                 | `/clientRoute//paginationGetMetrics`          | client(token required)                               | returns full history of Metrics for client                                  |
-| GET                                                                                 | `/coachRoute/getPatients`                     |           coach(token required)               | returns array of clients that logged in health coach is charged with |
-| GET                                                                                 | `/coachRoute/getClientMetrics/:id`            | requires clientId                                    | returns full Metrics history of client id passed in dynamic route                   |
-| GET                                                                                 | `/coachRoute/getClientGoals/:id`              | requires clientId                                    | returns full goal history of client id passed in dynamic route                      |
-| POST                                                                                | `/twilioRoute/twilio`                         | coach(token required)                                                      | returns a string of the sent message's sid if the post was successful               |
-| GET                                                                                 | `/twilioRoute/messagehistory/:phone`          | requires client Phone number and coach(token required)                        | returns two arrays with messages that were from and to the number in the url string |
-| POST                                                                                | `/coachRoute/newRegister`                     |                                                      | returns a personalized message and a jsonwebtoken                           |
-| POST                                                                                | `/coachRoute/login`                           |                                                      | returns a personalized message and a jsonwebtoken                           |
-| GET                                                                                 | `/coachRoute/getLastCheckinTime/:id`          |                                                      | returns the last checkin date and the corresponding patientId from airtable |
-| POST                                                                                | `/twilioRoute/postScheduled`                  | requires patientId and msg (message) in request body | creates scheduled cron instance within the scheduledMessages table          |
-| GET                                                                                 | `/twilioRoute/getScheduled/:id`               | requires valid clientId in url body                  | returns an array of all scheduled messages for provided patientId           |
-| DELETE                                                                              | `/twilioRoute/deleteScheduled/:id`            | requires valid scheduleId                            | returns a message that says the record was deleted from database            |
-| PUT                                                                                 | `/twilioRoute/updateScheduled/:id`            | requires valid scheduleId                            | returns a message that says the record was updated in database              |
-| GET                                                                                 | `/twilioRoute/getAllScheduledMessages`        |                                                      | returns all of the scheduled messages from the scheduledMessages table      |
-| POST                                                                                | `/forgotRoute/forgotPassword`                 | requires valid email                                 | returns a success message when recovery email is sent                               |
-| GET                                                                                 | `/resetRoute/reset/:resetPasswordToken`       |                                                      | returns an object with user information if token is valid                   |
-| POST                                                                                | `/updatePasswordRoute/updatePasswordViaEmail` | requires valid email with a password                 | returns a success message saying that the password has been updated         |
-
-
+| Method | Endpoint                                      | Access Control                                         | Description                                                                         |
+| ------ | --------------------------------------------- | ------------------------------------------------------ | ----------------------------------------------------------------------------------- |
+| POST   | `/clientRoute/login`                          | all registered clients                                 | Returns token to access client information                                          |
+| GET    | `/clientRoute/getIntakeRecords`               | client(token required)                                 | Receives formated client Objects                                                    |
+| POST   | `/clientRoute/logMetrics`                     | client(token required)                                 | input new Health Metric to database                                                 |
+| GET    | `/clientRoute/getCoachInfo`                   | client(token required)                                 | returns current coach object                                                        |
+| GET    | `/clientRoute//paginationGetMetrics`          | client(token required)                                 | returns full history of Metrics for client                                          |
+| GET    | `/coachRoute/getPatients`                     | coach(token required)                                  | returns array of clients that logged in health coach is charged with                |
+| GET    | `/coachRoute/getClientMetrics/:id`            | requires clientId                                      | returns full Metrics history of client id passed in dynamic route                   |
+| GET    | `/coachRoute/getClientGoals/:id`              | requires clientId                                      | returns full goal history of client id passed in dynamic route                      |
+| POST   | `/twilioRoute/twilio`                         | coach(token required)                                  | returns a string of the sent message's sid if the post was successful               |
+| GET    | `/twilioRoute/messagehistory/:phone`          | requires client Phone number and coach(token required) | returns two arrays with messages that were from and to the number in the url string |
+| POST   | `/coachRoute/newRegister`                     |                                                        | returns a personalized message and a jsonwebtoken                                   |
+| POST   | `/coachRoute/login`                           |                                                        | returns a personalized message and a jsonwebtoken                                   |
+| GET    | `/coachRoute/getLastCheckinTime/:id`          |                                                        | returns the last checkin date and the corresponding patientId from airtable         |
+| POST   | `/twilioRoute/postScheduled`                  | requires patientId and msg (message) in request body   | creates scheduled cron instance within the scheduledMessages table                  |
+| GET    | `/twilioRoute/getScheduled/:id`               | requires valid clientId in url body                    | returns an array of all scheduled messages for provided patientId                   |
+| DELETE | `/twilioRoute/deleteScheduled/:id`            | requires valid scheduleId                              | returns a message that says the record was deleted from database                    |
+| PUT    | `/twilioRoute/updateScheduled/:id`            | requires valid scheduleId                              | returns a message that says the record was updated in database                      |
+| GET    | `/twilioRoute/getAllScheduledMessages`        |                                                        | returns all of the scheduled messages from the scheduledMessages table              |
+| POST   | `/forgotRoute/forgotPassword`                 | requires valid email                                   | returns a success message when recovery email is sent                               |
+| GET    | `/resetRoute/reset/:resetPasswordToken`       |                                                        | returns an object with user information if token is valid                           |
+| POST   | `/updatePasswordRoute/updatePasswordViaEmail` | requires valid email with a password                   | returns a success message saying that the password has been updated                 |
 
 # Data Model - Clients
 
@@ -60,7 +58,7 @@ _Example_
 
 ```javascript
 {
-  clientPhone: "1234567899";
+    clientPhone: '1234567899';
 }
 ```
 
@@ -453,7 +451,7 @@ _Example_: request
 
 ```javascript
 {
-  message: `scheduled message scheduleId 333d1d89-1e82-4743-b987-97974cfe0586 has been deleted.`;
+    message: `scheduled message scheduleId 333d1d89-1e82-4743-b987-97974cfe0586 has been deleted.`;
 }
 ```
 
@@ -497,7 +495,7 @@ _Example_: return object
 
 ```javascript
 {
-  message: `scheduleId 333d1d89-1e82-4743-b987-97974cfe0586 has been updated.`;
+    message: `scheduleId 333d1d89-1e82-4743-b987-97974cfe0586 has been updated.`;
 }
 ```
 
@@ -631,16 +629,23 @@ In order for the app to function correctly, the user must set up their own envir
 
 create a .env file that includes the following:
 
-- PORT
-- AIRTABLE\*KEY
-- JWT_SECRET
+-   PORT
+-   AIRTABLE_REFERENCE (Airtable database reference)
+-   AIRTABLE_KEY (Airtable credentials)
+-   JWT_SECRET (jsonwebtoken secret )
+-   ACCOUNT_SID (Twilio account special id)
+-   AUTH_TOKEN (Twilio account authentication token)
+-   TWILIO_NUMBER (Twilio sender number)
+-   EMAIL_ADDRESS (Email address used for forgot password route)
+-   EMAIL_PASSWORD (Email password used for forgot password route)
+-   SERVER_SECRET (Secret string. Used to authenticate /twilioRoute/getAllScheduledMessages get requests)
 
 🚫 These are just examples, replace them with the specifics for your app
 _ STAGING_DB - optional development db for using functionality not available in SQLite
 _ NODE\*ENV - set to "development" until ready for "production"
 
-- JWT*SECRET - you can generate this by using a python shell and running import random''.join([random.SystemRandom().choice('abcdefghijklmnopqrstuvwxyz0123456789!@#\$%^&amp;*(-_=+)') for i in range(50)])
-  _ SENDGRID_API_KEY - this is generated in your Sendgrid account \* stripe_secret - this is generated in the Stripe dashboard
+-   JWT*SECRET - you can generate this by using a python shell and running import random''.join([random.SystemRandom().choice('abcdefghijklmnopqrstuvwxyz0123456789!@#\$%^&amp;*(-_=+)') for i in range(50)])
+    _ SENDGRID_API_KEY - this is generated in your Sendgrid account \* stripe_secret - this is generated in the Stripe dashboard
 
 ## Contributing
 
@@ -652,10 +657,10 @@ Please note we have a [code of conduct](./code_of_conduct.md). Please follow it 
 
 **If you are having an issue with the existing project code, please submit a bug report under the following guidelines:**
 
-- Check first to see if your issue has already been reported.
-- Check to see if the issue has recently been fixed by attempting to reproduce the issue using the latest master branch in the repository.
-- Create a live example of the problem.
-- Submit a detailed bug report including your environment & browser, steps to reproduce the issue, actual and expected outcomes, where you believe the issue is originating from, and any potential solutions you have considered.
+-   Check first to see if your issue has already been reported.
+-   Check to see if the issue has recently been fixed by attempting to reproduce the issue using the latest master branch in the repository.
+-   Create a live example of the problem.
+-   Submit a detailed bug report including your environment & browser, steps to reproduce the issue, actual and expected outcomes, where you believe the issue is originating from, and any potential solutions you have considered.
 
 ### Feature Requests
 
@@ -669,11 +674,11 @@ Remember that this project is licensed under the MIT license, and by submitting 
 
 #### Pull Request Guidelines
 
-- Ensure any install or build dependencies are removed before the end of the layer when doing a build.
-- Update the README.md with details of changes to the interface, including new plist variables, exposed ports, useful file locations and container parameters.
-- Ensure that your code conforms to our existing code conventions and test coverage.
-- Include the relevant issue number, if applicable.
-- You may merge the Pull Request in once you have the sign-off of two other developers, or if you do not have permission to do that, you may request the second reviewer to merge it for you.
+-   Ensure any install or build dependencies are removed before the end of the layer when doing a build.
+-   Update the README.md with details of changes to the interface, including new plist variables, exposed ports, useful file locations and container parameters.
+-   Ensure that your code conforms to our existing code conventions and test coverage.
+-   Include the relevant issue number, if applicable.
+-   You may merge the Pull Request in once you have the sign-off of two other developers, or if you do not have permission to do that, you may request the second reviewer to merge it for you.
 
 ### Attribution
 
