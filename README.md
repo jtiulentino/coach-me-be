@@ -33,15 +33,11 @@ https://coach-me-backend.herokuapp.com/
 | POST                                                                                | `/clientRoute/logMetrics`                     | client(token required)                               | input new Health Metric to database                                         |
 | GET                                                                                 | `/clientRoute/getCoachInfo`                   | client(token required)                               | returns current coach object                                                |
 | GET                                                                                 | `/clientRoute//paginationGetMetrics`          | client(token required)                               | returns full history of Metrics for client                                  |
-| GET                                                                                 | `/coachRoute/getPatients`                     |                                                      | client(token required)                                                      | returns full list of patients |
-| GET                                                                                 | `/coachRoute/getClientMetrics/:id`            | requires clientId                                    |
-| returns full Metrics history of client id passed in dynamic route                   |
-| GET                                                                                 | `/coachRoute/getClientGoals/:id`              | requires clientId                                    |
-| returns full goal history of client id passed in dynamic route                      |
-| POST                                                                                | `/twilioRoute/twilio`                         |                                                      |
-| returns a string of the sent message's sid if the post was successful               |
-| GET                                                                                 | `/twilioRoute/messagehistory/:phone`          | requires client Phone number                         |
-| returns two arrays with messages that were from and to the number in the url string |
+| GET                                                                                 | `/coachRoute/getPatients`                     |           client(token required)               | returns array of clients that logged in health coach is charged with |
+| GET                                                                                 | `/coachRoute/getClientMetrics/:id`            | requires clientId                                    | returns full Metrics history of client id passed in dynamic route                   |
+| GET                                                                                 | `/coachRoute/getClientGoals/:id`              | requires clientId                                    | returns full goal history of client id passed in dynamic route                      |
+| POST                                                                                | `/twilioRoute/twilio`                         |                                                      | returns a string of the sent message's sid if the post was successful               |
+| GET                                                                                 | `/twilioRoute/messagehistory/:phone`          | requires client Phone number                         | returns two arrays with messages that were from and to the number in the url string |
 | POST                                                                                | `/coachRoute/newRegister`                     |                                                      | returns a personalized message and a jsonwebtoken                           |
 | POST                                                                                | `/coachRoute/login`                           |                                                      | returns a personalized message and a jsonwebtoken                           |
 | GET                                                                                 | `/coachRoute/getLastCheckinTime/:id`          |                                                      | returns the last checkin date and the corresponding patientId from airtable |
@@ -50,12 +46,11 @@ https://coach-me-backend.herokuapp.com/
 | DELETE                                                                              | `/twilioRoute/deleteScheduled/:id`            | requires valid scheduleId                            | returns a message that says the record was deleted from database            |
 | PUT                                                                                 | `/twilioRoute/updateScheduled/:id`            | requires valid scheduleId                            | returns a message that says the record was updated in database              |
 | GET                                                                                 | `/twilioRoute/getAllScheduledMessages`        |                                                      | returns all of the scheduled messages from the scheduledMessages table      |
-| POST                                                                                | `/forgotRoute/forgotPassword`                 | requires valid email                                 |
-| returns a success message when recovery email is sent                               |
+| POST                                                                                | `/forgotRoute/forgotPassword`                 | requires valid email                                 | returns a success message when recovery email is sent                               |
 | GET                                                                                 | `/resetRoute/reset/:resetPasswordToken`       |                                                      | returns an object with user information if token is valid                   |
 | POST                                                                                | `/updatePasswordRoute/updatePasswordViaEmail` | requires valid email with a password                 | returns a success message saying that the password has been updated         |
 
-returns array of clients that logged in health coach is charged with
+
 
 # Data Model - Clients
 
