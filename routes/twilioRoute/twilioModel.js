@@ -21,7 +21,8 @@ function findSenderByPhone(filter) {
     .first();
 }
 
-// database functions for updating messageHistory and conversations (most likely won't be used)
+// database functions for updating messageHistory and conversations
+// (most likely won't be used since twilio has this functionality built in)
 function patientInConversations(filter) {
   return db("conversations")
     .where(filter)
@@ -63,6 +64,8 @@ function updateScheduled(filter, updatedScheduled) {
     .update(updatedScheduled);
 }
 
+// Import helper function for the cron server. Used to schedule and deploy all messages within the
+// scheduledMessages table.
 function getAllScheduled() {
   return db("scheduledMessages")
     .join("patients", "patients.patientId", "scheduledMessages.patientId")

@@ -75,79 +75,6 @@ router.post(
   }
 );
 
-// old register endpoint (no longer in use).
-router.post("/register", (req, res) => {
-  let coach = req.body;
-
-  const hash = bcrypt.hashSync(coach.password, 4);
-  coach.password = hash;
-
-  axios
-    .get(
-      `https://api.airtable.com/v0/${process.env.AIRTABLE_REFERENCE}/Coaches`,
-      {
-        headers: {
-          accept: "application/json",
-          Authorization: `Bearer ${process.env.AIRTABLE_KEY}`
-        }
-      }
-    )
-    .then(result => {
-      const records = result.data.records.filter(
-        flea => flea.fields["Full Name"] === req.body.name
-      );
-
-      const coachObject = {};
-      coachObject.coachId = records[0].id;
-      coachObject.phoneNumber = records[0].fields["Google Voice Number"];
-      const newCoachObject = { ...coachObject, ...coach };
-
-      // res.status(200).json({ newCoachObject });
-
-      coachDb
-        .insertNewUser({
-          userPhone: newCoachObject.phoneNumber,
-          role: "coach",
-          userId: uuidv4()
-        })
-        .then(results => {
-          console.log(newCoachObject);
-          coachDb
-            .findCoachByPhone({
-              userPhone: newCoachObject.phoneNumber
-            })
-            .then(results => {
-              coachDb
-                .insertNewCoach({
-                  id: newCoachObject.coachId,
-                  userId: results.userId,
-                  coachName: newCoachObject.name,
-                  password: newCoachObject.password,
-                  email: newCoachObject.email
-                })
-                .then(results => {
-                  res.status(200).json({
-                    message: "a new coach has been registered",
-                    id: results[0]
-                  });
-                })
-                .catch(err => {
-                  res.status(500).json({ error: err });
-                });
-            })
-            .catch(err => {
-              res.status(500).json({ error: err });
-            });
-        })
-        .catch(err => {
-          res.status(500).json({ error: err });
-        });
-    })
-    .catch(err => {
-      res.status(500).json({ error: err });
-    });
-});
-
 // coach login endpoint.
 router.post("/login", validateLoginPost, (req, res) => {
   let coach = req.body;
@@ -156,7 +83,6 @@ router.post("/login", validateLoginPost, (req, res) => {
   coachDb
     .findCoachByEmail({ email: coach.email })
     .then(userInfo => {
-      console.log(userInfo);
       if (coach && bcrypt.compareSync(coach.password, userInfo.password)) {
         const token = generateToken(userInfo);
         res.status(200).json({
@@ -275,8 +201,6 @@ router.get("/getClientGoals/:id", (req, res) => {
 
     let newModels = models.filter(record => record != undefined);
 
-    console.log("new models", newModels);
-
     res.status(200).json({
       patientGoals: newModels
     });
@@ -329,8 +253,6 @@ router.get("/getClientMetrics/:id", (req, res) => {
     });
 
     let newModels = models.filter(record => record != undefined);
-
-    console.log("new models", newModels);
 
     res.status(200).json({
       patientMetrics: newModels
@@ -391,6 +313,7 @@ router.get("/getLastCheckinTime/:id", (req, res) => {
 });
 
 // creates conversation instance in the conversations table. Requires coachId and patientId:
+// This route is most likely redundant since twilio has message history storage built into the library.
 router.post("/makeConversation", authenticateToken, (req, res) => {
   req.body.coachId = req.clientInfo.coachId;
   req.body.conversationId = uuidv4();

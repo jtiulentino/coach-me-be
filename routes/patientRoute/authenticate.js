@@ -5,8 +5,15 @@ module.exports = {
   authenticateToken
 };
 
-function generateToken(coach) {
-  const payload = { coachId: coach.coachId, coachName: coach.coachName };
+function generateToken(client) {
+  const payload = {
+    // this is referencing intake table
+    // commit difference
+    clientId: client.fields["Coaching master table"][0],
+    clientName: client.fields["Client Name"],
+    clientPhone: client.fields.Phone,
+    coachId: client.fields.Coach[0]
+  };
 
   const options = {
     expiresIn: "1d"
