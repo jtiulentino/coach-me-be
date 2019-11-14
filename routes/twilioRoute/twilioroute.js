@@ -8,7 +8,10 @@ const {
     authenticateToken
 } = require('../coachRoute/coachAuth.js');
 
-const { validateScheduledPost } = require('./twilioMiddleware.js');
+const {
+    validateScheduledPost,
+    authenticateServer
+} = require('./twilioMiddleware.js');
 
 const twilioDb = require('./twilioModel.js');
 
@@ -150,7 +153,7 @@ router.put('/updateScheduled/:id', validateScheduledPost, (req, res) => {
 
 // get request for the cron message scheduling server. Returns all of the
 // scheduled messages from the scheduledMessages table.
-router.get('/getAllScheduledMessages', (req, res) => {
+router.get('/getAllScheduledMessages', authenticateServer, (req, res) => {
     twilioDb
         .getAllScheduled()
         .then(results => {
