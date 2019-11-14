@@ -220,7 +220,7 @@ _Example_(query)
 ```javascript
 {
 	"password": "hello there!!!",
-	"email": "(589) 728-4080",
+	"email": "mkarse@gmail.com",
 	"name": "Karin Underwood"
 }
 
@@ -244,7 +244,7 @@ _Example_(query)
 ```javascript
 {
 	"password": "hello there!!!",
-	"email": "(589) 728-4080"
+	"email": "mkarse@gmail.com"
 }
 
 ```
