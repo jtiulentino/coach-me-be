@@ -24,7 +24,7 @@ function authenticateServer(req, res, next) {
     const token = req.headers.authorization;
 
     if (token === process.env.SERVER_SECRET) {
-        res.status(200).json({ message: 'server has been authenticated' });
+        next();
     } else {
         res.status(401).json({ message: 'Invalid credentials.' });
     }
