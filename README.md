@@ -407,7 +407,7 @@ _Example_: request weekly
 ```javascript
 {
     "patientId": "recmLlbDsUaCMUFhf",
-    "msg": "hello mason good morning!",
+    "msg": "hello good morning!",
     "min": "09",
     "hour": "2",
     "ampm": "pm",
@@ -424,7 +424,7 @@ _Example_: request monthly
 ```javascript
 {
     "patientId": "recmLlbDsUaCMUFhf",
-    "msg": "hello mason good morning!",
+    "msg": "hello good morning!",
     "min": "09",
     "hour": "2",
     "ampm": "pm",
@@ -464,7 +464,7 @@ _Example_: request weekly
 ```javascript
 {
     "patientId": "recmLlbDsUaCMUFhf",
-    "msg": "hello mason good morning!",
+    "msg": "hello good morning!",
     "min": "09",
     "hour": "2",
     "ampm": "pm",
@@ -480,7 +480,7 @@ _Example_: request monthly
 ```javascript
 {
     "patientId": "recmLlbDsUaCMUFhf",
-    "msg": "hello mason good morning!",
+    "msg": "hello good morning!",
     "min": "09",
     "hour": "2",
     "ampm": "pm",
@@ -517,7 +517,7 @@ data: [
             "month": "",
             "year": "2019",
             "ampm": "pm",
-            "msg": "hello mason good morning!"
+            "msg": "hello good morning!"
         }, ...
 ]
 ```
@@ -540,7 +540,7 @@ data: [
             "month": "",
             "year": "2019",
             "ampm": "pm",
-            "msg": "hello mason good morning!"
+            "msg": "hello good morning!"
         }, ...
 ]
 ```
