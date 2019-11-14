@@ -38,11 +38,13 @@ function insertNewPatient(patientObject) {
   return db("patients").insert(patientObject);
 }
 
+// Accompanying helper function with /coachRoute/makeConversation route. This function
+// is most likely redundant since message history is built into the twilio messaging library.
 function insertConversation(conversationObject) {
   return db("conversations").insert(conversationObject);
 }
 
-// forgot password model function (recoveries table):
+// forgot password model function (/forgotRoute/forgotPassword):
 function insertRecoveryPassword(passwordObject) {
   return db("recoveries").insert(passwordObject);
 }

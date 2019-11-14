@@ -1,4 +1,4 @@
-const db = require("../data/dbConfig.js");
+const db = require("../../data/dbConfig.js");
 
 module.exports = {
   findPatientByPhone,
@@ -20,8 +20,4 @@ function updateLoginTime(filter, changes) {
 
 function insertNewClient(filter) {
   return db("patient-login").insert(filter);
-  // .then(res => {
-  //     const [client] = res;
-  //     return findPatientByPhone({ id: client });
-  // });
 }
