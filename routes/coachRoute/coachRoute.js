@@ -196,7 +196,8 @@ router.get('/getClientGoals/:id', (req, res) => {
                         goalDetails: record.get('Goal details'),
                         startDate: record.get('Date of Check-in'),
                         metGoal: record.get('Met goal?'),
-                        notes: record.get('Notes from check-in')
+                        notes: record.get('Notes from check-in'),
+                        followups: record.get('Any follow-ups?')
                     };
                 }
             }
