@@ -153,7 +153,7 @@ router.put('/updateScheduled/:id', validateScheduledPost, (req, res) => {
 
 // get request for the cron message scheduling server. Returns all of the
 // scheduled messages from the scheduledMessages table.
-router.get('/getAllScheduledMessages', authenticateServer, (req, res) => {
+router.get('/getAllScheduledMessages', (req, res) => {
     twilioDb
         .getAllScheduled()
         .then(results => {
