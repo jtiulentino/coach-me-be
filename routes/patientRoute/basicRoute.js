@@ -237,7 +237,7 @@ router.get('/getCoachInfo', authenticateToken, (req, res) => {
             }
 
             res.status(200).json({
-                results: coachObject
+                coachObject
             });
         })
         .catch(err => {
