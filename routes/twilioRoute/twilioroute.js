@@ -21,7 +21,7 @@ const client = require('twilio')(accountSid, authToken);
 const router = express.Router();
 
 // sends sms message through twilio.
-router.post('/twilio', authenticateToken, (req, res) => {
+router.post('/twilio', (req, res) => {
     // reformats the phone number from the request body from (509) 789-9090 to 5097899090
     // Phone numbers in the airtable are stored as (509) 789-9090
     let cleanedNumber = ('' + req.body.Phone).replace(/\D/g, '');
@@ -46,7 +46,7 @@ router.post('/twilio', authenticateToken, (req, res) => {
 
 // Uses the twilio message history async function to get back the entire message history
 // of a specific twilio number.
-router.get('/messagehistory/:phone', authenticateToken, (req, res) => {
+router.get('/messagehistory/:phone', (req, res) => {
     // format phone number from (509) 780-9090 to 5097809090.
     let cleanedPhone = ('' + req.params.phone).replace(/\D/g, '');
     client.messages
