@@ -224,27 +224,20 @@ router.get('/getCoachInfo', authenticateToken, (req, res) => {
             requestOptions
         )
         .then(result => {
-            // console.log('in coach table', result.data.records);
-
             const coachObject = {};
             for (let i = 0; i < result.data.records.length; i++) {
                 if (req.clientInfo.coachId === result.data.records[i].id) {
-                    // console.log(result.data.records[i]);
+                    console.log(result.data.records[i]);
                     coachObject.coachId = result.data.records[i].id;
                     coachObject.coachName =
                         result.data.records[i].fields['Full Name'];
-                    coachObject.coachUrl = result.data.records[i].fields[
-                        'Coach Photo'
-                    ][0].url
-                        ? result.data.records[i].fields['Coach Photo'][0].url
-                        : null;
+                    coachObject.coachUrl =
+                        result.data.records[i].fields['Coach Photo'][0].url;
                 }
             }
 
-            // console.log('from for loop', coachObject);
-
             res.status(200).json({
-                results: result.data
+                results: coachObject
             });
         })
         .catch(err => {
