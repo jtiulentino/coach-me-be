@@ -12,9 +12,11 @@ https://coach-me-backend.herokuapp.com/
 ### Backend framework
 
 -   Node.js and Express gives us the flexibility to control the flow of requests to airtable in a controlled and easy to read environment.
--   We are going to need a database that can be seeded with massive amounts of data and control the relationships between the tables.
--   Custom Middleware
--   prebuilt middleware packages
+-  Twilio API to allow for posting and receiving sms messages
+ - Cron Jobs to allow for scheduling repeatable tasks
+ - Airtable API to get existing data from stakeholder
+
+
 
 ---
 
