@@ -1,44 +1,13 @@
-const axios = require('axios');
-const uuidv4 = require('uuid/v4');
 const Airtable = require('airtable');
-
-const coachDb = require('./twilioModel.js');
+const twilioDb = require('./twilioModel.js');
 
 module.exports = {
-    addToScheduledMessages,
-    validateScheduledPost
+    validateScheduledPost,
+    authenticateServer
 };
 
-function addToScheduledMessages(req, res, next) {
-    // res.status(200).json({ body: req.body });
-
-    coachDb
-        .findSenderByPhone({ userPhone: req.body.numbers })
-        .then(results => {
-            coachDb
-                .insertScheduledMessage({
-                    scheduleId: uuidv4(),
-                    patientId: results.patientId,
-                    sec: req.body.sec,
-                    min: req.body.min,
-                    hour: req.body.hour,
-                    dom: req.body.dom,
-                    month: req.body.month,
-                    weekday: req.body.weekday,
-                    msg: req.body.msg
-                })
-                .then(results => {
-                    next();
-                })
-                .catch(err => {
-                    res.status(500).json({ error: err });
-                });
-        })
-        .catch(err => {
-            res.status(500).json({ error: err });
-        });
-}
-
+// validation middleware for the /twilioRoute/postScheduled and /twilioRoute/updateScheduled endpoints.
+// checks if the request body contains a patientId and a message.
 function validateScheduledPost(req, res, next) {
     const message = req.body;
     if (message.patientId && message.msg) {
@@ -48,4 +17,34 @@ function validateScheduledPost(req, res, next) {
             message: 'Missing patientId or message in post request.'
         });
     }
+}
+
+// authentication function (only used by the cron server):
+function authenticateServer(req, res, next) {
+    const token = req.headers.authorization;
+
+    if (token === process.env.SERVER_SECRET) {
+        next();
+    } else {
+        res.status(401).json({ message: 'Invalid credentials.' });
+    }
+
+    // if (token) {
+    //     jwt.verify(token, process.env.JWT_SECRET, (err, decodedToken) => {
+    //         if (err) {
+    //             console.log(err);
+    //             res.status(401).json({ error: 'that token does not work' });
+    //         } else if (decodedToken.role !== 'coach') {
+    //             res.status(401).json({
+    //                 message:
+    //                     'Patients are not allowed to access this part of the site'
+    //             });
+    //         } else {
+    //             req.clientInfo = decodedToken;
+    //             next();
+    //         }
+    //     });
+    // } else {
+    //     res.status(401).json({ error: 'NO TOKEN' });
+    // }
 }

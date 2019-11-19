@@ -1,18 +1,16 @@
 const express = require('express');
 const uuidv4 = require('uuid/v4');
-const axios = require('axios');
-const http = require('http');
-const MessagingResponse = require('twilio').twiml.MessagingResponse;
-const cron = require('node-cron');
 
+// Will need to install authentication for all the endpoints in
+// the /twilioRoute/
 const {
     generateToken,
     authenticateToken
 } = require('../coachRoute/coachAuth.js');
 
 const {
-    addToScheduledMessages,
-    validateScheduledPost
+    validateScheduledPost,
+    authenticateServer
 } = require('./twilioMiddleware.js');
 
 const twilioDb = require('./twilioModel.js');
@@ -21,14 +19,17 @@ const accountSid = process.env.ACCOUNT_SID;
 const authToken = process.env.AUTH_TOKEN;
 const client = require('twilio')(accountSid, authToken);
 const router = express.Router();
-//sends message through twilio
+
+// sends sms message through twilio.
 router.post('/twilio', (req, res) => {
-    // res.status(200).json({ lookit: req.body });
+    // reformats the phone number from the request body from (509) 789-9090 to 5097899090
+    // Phone numbers in the airtable are stored as (509) 789-9090
     let cleanedNumber = ('' + req.body.Phone).replace(/\D/g, '');
 
-    // res.status(200).json({ cleaned });
-    console.log('number from dotenv file', process.env.TWILIO_NUMBER);
-
+    // twilio messaging client function. Accepts a from phone number
+    // (needs to be a twilio number purchased from the twilio site),
+    // a to phone number (will need to be validated if using trial account),
+    // and a message in the body.
     client.messages
         .create({
             body: `${req.body.message}`,
@@ -36,25 +37,25 @@ router.post('/twilio', (req, res) => {
             to: `+1${cleanedNumber}`
         })
 
+        // Returns the messages special id if the function is successful.
         .then(message => res.status(201).json(message.sid))
         .catch(err => {
             res.status(500).json({ error: err });
         });
 });
 
+// Uses the twilio message history async function to get back the entire message history
+// of a specific twilio number.
 router.get('/messagehistory/:phone', (req, res) => {
+    // format phone number from (509) 780-9090 to 5097809090.
     let cleanedPhone = ('' + req.params.phone).replace(/\D/g, '');
     client.messages
 
         .list({ limit: 9000 })
 
         .then(messages => {
-            // const filteredMessagesTo = messages.filter(
-            //     message => message.to === `+1${cleanedPhone}`
-            // );
-            // const filteredMessagesFrom = messages.filter(
-            //     message => message.from === `+1${cleanedPhone}`
-            // );
+            // filters the twilio message history by the phone number in req.params
+            // Want to receive back inbound and outbound.
             const filteredMessages = messages.reverse().map(message => {
                 if (
                     message.to === `+1${cleanedPhone}` ||
@@ -64,11 +65,11 @@ router.get('/messagehistory/:phone', (req, res) => {
                 }
             });
 
+            // filters out possible null values (safety feature for imperfect data)
             const filteredNulls = filteredMessages.filter(
                 message => message != undefined
             );
             res.status(200).json({
-                // messages: [...filteredMessagesTo, ...filteredMessagesFrom]
                 message: filteredNulls
             });
         })
@@ -77,61 +78,9 @@ router.get('/messagehistory/:phone', (req, res) => {
         });
 });
 
-// Old cron scheduling function will most likely remove it.
-router.post('/schedule', addToScheduledMessages, (req, res) => {
-    if (req.body.sec === '') {
-        req.body.sec = '*';
-    }
-    if (req.body.min === '') {
-        req.body.min = '*';
-    }
-    if (req.body.hour === '') {
-        req.body.hour = '*';
-    }
-    if (req.body.dom === '') {
-        req.body.dom = '*';
-    }
-    if (req.body.month === '') {
-        req.body.month = '*';
-    }
-    if (req.body.weekday === '') {
-        req.body.weekday = '*';
-    }
-    const numbers = req.body.numbers;
-
-    const numbersArray = numbers.split(',').map(function(number) {
-        return (cleanedNumber = ('' + number).replace(/\D/g, ''));
-    });
-
-    console.log(req.body, 'RECEIVED DATA');
-    console.log(numbersArray, 'NUMBER');
-
-    // const cleanedNumber = ('' + numbers).replace(/\D/g, '');
-    var task = cron.schedule(
-        `${req.body.sec} ${req.body.min} ${req.body.hour} ${req.body.dom} ${req.body.month} ${req.body.weekday}`,
-        function() {
-            console.log('---------------------');
-            console.log('Running Cron Job');
-            Promise.all(
-                numbersArray.map(number => {
-                    return client.messages.create({
-                        to: `+1${numbersArray}`,
-                        from: `${process.env.TWILIO_NUMBER}`,
-                        body: `${req.body.msg}`
-                        // attachments
-                    });
-                })
-            )
-                .then(result => {
-                    res.status(200).json({ msg: 'message scheduled' });
-                    task.stop();
-                })
-                .catch(err => console.error(err));
-        }
-    );
-});
-
 // Scheduling crude functionality:
+
+// Inserts scheduled message to the scheduledMessages table in database.
 router.post('/postScheduled', validateScheduledPost, (req, res) => {
     req.body.scheduleId = uuidv4();
 
@@ -147,6 +96,8 @@ router.post('/postScheduled', validateScheduledPost, (req, res) => {
         });
 });
 
+// returns back an array of all scheduled messages for a specific patientId (patientId are
+// from the airtable)
 router.get('/getScheduled/:id', (req, res) => {
     twilioDb
         .getScheduledByPatientId({ patientId: req.params.id })
@@ -158,6 +109,8 @@ router.get('/getScheduled/:id', (req, res) => {
         });
 });
 
+// deletes a specific scheduled message from the scheduledMessages table using the
+// scheduleId primary key. scheduleIds are created using uuidv4 function.
 router.delete('/deleteScheduled/:id', (req, res) => {
     twilioDb
         .deleteScheduled({ scheduleId: req.params.id })
@@ -177,7 +130,9 @@ router.delete('/deleteScheduled/:id', (req, res) => {
         });
 });
 
-router.put('/updateScheduled/:id', (req, res) => {
+// updates a specific scheduled message in the scheduledMessages table using the
+// scheduleId primary key. patientId and msg are required for this command to be successful.
+router.put('/updateScheduled/:id', validateScheduledPost, (req, res) => {
     twilioDb
         .updateScheduled({ scheduleId: req.params.id }, req.body)
         .then(results => {
@@ -196,7 +151,8 @@ router.put('/updateScheduled/:id', (req, res) => {
         });
 });
 
-// get request for possible cron server:
+// get request for the cron message scheduling server. Returns all of the
+// scheduled messages from the scheduledMessages table.
 router.get('/getAllScheduledMessages', (req, res) => {
     twilioDb
         .getAllScheduled()
@@ -222,47 +178,9 @@ module.exports = router;
 // +12055123191
 
 // {
-// 	"patientId": "recfessIT3c69UFi7",
-// 	"scheduleDate": "july 22nd",
-//     "msg": "hello mason from the past!!!",
-//     "min": "",
-//     "hour": "",
-//     "weekday": ""
-// }
-
-// task = cron.schedule(`* 5 * * * *`, => {
-//     if (table.date === exists) {
-//         for( let i=0; i < table.date.length; i++) {
-//             if(moment.now().tz() === table.date[i]) {
-//                 twiliosendmessage()
-//             } else {
-//                 console.log('no message')
-//             }
-//         }
-//     } else {
-//         if(`${table.day}/${table.hour}:${table.minute}` === moment.now(someformat)) {
-//             twiliosendmessage()
-//         } else {
-//             console.log('no message')
-//         }
-//     }
-// })
-
-// {
 // 	"patientId": "recmLlbDsUaCMUFhf",
 //     "msg": "hello mason good morning!",
 //     "min": "07",
 //     "hour": "8",
 //     "weekday": "Tuesday"
 // }
-
-// {
-//     "msg": "hello!!!",
-//     "numbers": "5097204080",
-//     "sec": "",
-//     "min": "43",
-//     "hour": "10",
-//     "dom": "",
-//     "month": "",
-//     "weekday": ""
-//    }

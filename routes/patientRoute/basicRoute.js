@@ -72,27 +72,6 @@ router.get('/getIntakeRecords', (req, res) => {
         });
 });
 
-router.get('/fakeRecord', (req, res) => {
-    axios
-        .get(
-            `https://api.airtable.com/v0/${process.env.AIRTABLE_REFERENCE}/Outcomes?maxRecords=100`,
-            {
-                headers: {
-                    accept: 'application/json',
-                    Authorization: `Bearer ${process.env.AIRTABLE_KEY}`
-                }
-            }
-        )
-        .then(results => {
-            const newArray = [...results.data.records];
-            console.log(newArray.length);
-            res.status(200).json({ data: 'message' });
-        })
-        .catch(err => {
-            res.status(500).json({ error: err });
-        });
-});
-
 // patch for the getMetrics problem of only being able to get back 100 records.
 router.get('/paginationGetMetrics', authenticateToken, (req, res) => {
     const Airtable = require('airtable');
@@ -138,8 +117,6 @@ router.get('/paginationGetMetrics', authenticateToken, (req, res) => {
 
         let newModels = models.filter(record => record != undefined);
 
-        console.log('new models', newModels);
-
         res.status(200).json({
             clientRecords: newModels
         });
@@ -150,35 +127,6 @@ router.get('/paginationGetMetrics', authenticateToken, (req, res) => {
             view: 'Grid view'
         })
         .eachPage(processPage, processRecords);
-});
-
-router.get('/paginationExperiment', authenticateToken, (req, res) => {
-    const Airtable = require('airtable');
-    const base = new Airtable({ apiKey: process.env.AIRTABLE_KEY }).base(
-        process.env.AIRTABLE_REFERENCE
-    );
-
-    base('Outcomes')
-        .select({
-            view: 'Grid view'
-        })
-        .eachPage(
-            function page(records, fetchNextPage) {
-                records.forEach(function(record) {
-                    console.log('Retrieved', record.get('Client_Name')[0]);
-                });
-
-                fetchNextPage();
-            },
-            function done(err) {
-                if (err) {
-                    console.log(err);
-                    return;
-                }
-            }
-        );
-
-    res.status(200).json({ message: req.clientInfo.clientId });
 });
 
 router.post(
@@ -194,8 +142,6 @@ router.post(
                 Authorization: `Bearer ${process.env.AIRTABLE_KEY}`
             }
         };
-
-        console.log('from the router body', process.env.AIRTABLE_KEY);
 
         axios
             .get(
@@ -215,26 +161,21 @@ router.post(
                         req.body.clientPhone ===
                         results.data.records[i].fields.Phone
                     ) {
-                        console.log(results.data.records[i]);
                         // if it does then spread results into clientObject to be referenced
                         clientObject = { ...results.data.records[i] };
                         // stick the new clientObject with reference data in the token
                         token = generateToken(clientObject);
-                        console.log('token', token);
                     }
                 }
 
                 // checks if the login user phone number exists in the intake airtable.
                 // returns a status code 401 if the user can't be found.
 
-                console.log('login attempts', req.loginTime);
                 if (clientObject.id) {
                     // console.log(results.data.records);
                     // return token and client info from intake table
                     res.status(200).json({
-                        message: `Welcome back, ${
-                            clientObject.fields['Client Name']
-                        }!`,
+                        message: `Welcome back, ${clientObject.fields['Client Name']}!`,
                         loginAttempts: req.loginTime,
                         token,
                         clientObject
@@ -246,52 +187,10 @@ router.post(
                 }
             })
             .catch(err => {
-                console.log(err);
                 res.status(500).json({ error: err });
             });
     }
 );
-
-router.get('/getMetrics', authenticateToken, (req, res) => {
-    // res.status(200).json({ message: req.clientInfo });
-    axios
-        .get(
-            `https://api.airtable.com/v0/${process.env.AIRTABLE_REFERENCE}/Outcomes?filterByFormula=OR({Blood_sugar}!='',{Weight}!='',{Blood_pressure_over}!='')`,
-            requestOptions
-        )
-        .then(results => {
-            // declare clientRecords out of the for loop scope to reference data returned from outcomes table
-            const clientRecords = [];
-            // looping through data received
-
-            console.log(
-                'client name',
-                results.data.records[0].fields.Client_Name[0]
-            );
-            for (let j = 0; j < results.data.records.length; j++) {
-                console.log(
-                    'results in j',
-                    results.data.records[j].fields.Client_Name
-                );
-                if (
-                    // if the client name is equal to the clientId from intake table then return client record
-                    results.data.records[j].fields.Client_Name &&
-                    results.data.records[j].fields.Client_Name[0] ===
-                        req.clientInfo.clientId
-                ) {
-                    // push into empty array so we can access records
-                    clientRecords.push(results.data.records[j]);
-                }
-            }
-            console.log('clientRecords', clientRecords);
-
-            res.status(200).json({ message: 'it worked!!!', clientRecords });
-        })
-        .catch(err => {
-            console.log(err);
-            res.status(500).json({ error: err });
-        });
-});
 
 router.post(
     '/logMetrics',
@@ -325,19 +224,17 @@ router.get('/getCoachInfo', authenticateToken, (req, res) => {
             requestOptions
         )
         .then(result => {
-            // console.log('in coach table', result.data.records);
-
             const coachObject = {};
             for (let i = 0; i < result.data.records.length; i++) {
                 if (req.clientInfo.coachId === result.data.records[i].id) {
-                    (coachObject.coachName =
-                        result.data.records[i].fields['Full Name']),
-                        (coachObject.coachUrl =
-                            result.data.records[i].fields.Photo[0].url);
+                    console.log(result.data.records[i]);
+                    coachObject.coachId = result.data.records[i].id;
+                    coachObject.coachName =
+                        result.data.records[i].fields['Full Name'];
+                    coachObject.coachUrl =
+                        result.data.records[i].fields['Coach Photo'][0].url;
                 }
             }
-
-            // console.log('from for loop', coachObject);
 
             res.status(200).json({
                 coachObject
@@ -357,7 +254,7 @@ module.exports = router;
 //       {
 //         "fields": {
 //           "Client_Name": [
-//             "recPWedfYT2Op9PBw"
+//             "recmLlbDsUaCMUFhf"
 //           ],
 //           "Date_time": null,
 //                   "Blood_sugar":123435643561234,
