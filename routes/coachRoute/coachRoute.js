@@ -157,7 +157,7 @@ router.get(
 
         base('Intake')
             .select({
-                view: 'All Clients (Non Test)'
+                view: 'Grid View'
             })
             .eachPage(processPage, processRecords);
     }
