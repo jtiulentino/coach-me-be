@@ -303,7 +303,12 @@ router.get('/getLastCheckinTime/:id', (req, res) => {
             }
         });
 
-        let newModels = models.filter(record => record != undefined);
+        let newModels = models.filter(record => record !== undefined);
+        console.log('see whats in this', newModels);
+
+        if (newModels.length === 0) {
+            newModels.push({ lastCheckin: NaN });
+        }
 
         res.status(200).json({
             lastCheckin: newModels[0].lastCheckin,
