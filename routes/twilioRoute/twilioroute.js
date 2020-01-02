@@ -24,8 +24,10 @@ const router = express.Router();
 router.post('/twilio', (req, res) => {
     // reformats the phone number from the request body from (509) 789-9090 to 5097899090
     // Phone numbers in the airtable are stored as (509) 789-9090
+    console.log("Posting")
+    console.log(req.body)
     let cleanedNumber = ('' + req.body.Phone).replace(/\D/g, '');
-
+    console.log(cleanedNumber)
     // twilio messaging client function. Accepts a from phone number
     // (needs to be a twilio number purchased from the twilio site),
     // a to phone number (will need to be validated if using trial account),

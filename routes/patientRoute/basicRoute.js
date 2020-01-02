@@ -149,7 +149,6 @@ router.post(
                 requestOptions
             )
             .then(results => {
-                console.log("Results?")
                 console.log('body type', Number(req.body.clientPhone));
                 // need to put the results in an object so it will return json data
                 let clientObject = {};
