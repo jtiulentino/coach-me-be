@@ -149,7 +149,8 @@ router.post(
                 requestOptions
             )
             .then(results => {
-                // console.log('body type', Number(req.body.clientPhone));
+                console.log("Results?")
+                console.log('body type', Number(req.body.clientPhone));
                 // need to put the results in an object so it will return json data
                 let clientObject = {};
                 // declare token outside of for loop because the loop has its own scope, and we need clientObject to be generated inside the token
@@ -181,6 +182,7 @@ router.post(
                         clientObject
                     });
                 } else {
+                    console.log("Janelle Test")
                     res.status(401).json({
                         message: 'user cannot be found in database'
                     });
